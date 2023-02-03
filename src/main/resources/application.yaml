@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/qaprotours?currentSchema=qaprotours}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    change-log: classpath:db/db.changelog.yaml
+    enabled: false
+    default-schema: qaprotours
+security:
+  jwt:
+    secret: c2VjcmV0aWdpdWhvaWhvdWpvaWpiZ2p5dnViamg=
+    access: 3600000
+    refresh: 2592000000
+springdoc:
+  override-with-generic-response: false
