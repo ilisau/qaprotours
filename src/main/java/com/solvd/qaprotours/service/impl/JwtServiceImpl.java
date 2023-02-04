@@ -9,7 +9,8 @@ import com.solvd.qaprotours.web.security.jwt.JwtUserDetails;
 import com.solvd.qaprotours.web.security.jwt.JwtUserDetailsFactory;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -21,6 +22,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
+import java.security.Key;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -34,13 +36,20 @@ public class JwtServiceImpl implements JwtService {
     private final JwtProperties jwtProperties;
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserDetailsService userDetailsService;
+    private Key key;
+
+    @PostConstruct
+    private void postConstruct() {
+        key = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes());
+    }
 
     @Override
     public JwtUserDetails parseToken(String token) {
-       Claims claims =  Jwts.parser()
-                .setSigningKey(jwtProperties.getSecret())
-                .parseClaimsJws(token)
-                .getBody();
+       Claims claims =  Jwts.parserBuilder()
+               .setSigningKey(key)
+               .build()
+               .parseClaimsJws(token)
+               .getBody();
        return JwtUserDetailsFactory.create(claims);
     }
 
@@ -63,7 +72,7 @@ public class JwtServiceImpl implements JwtService {
                 .setSubject(user.getEmail())
                 .claim("password", user.getPassword())
                 .setExpiration(Date.from(refreshExpiration))
-                .signWith(SignatureAlgorithm.HS512, jwtProperties.getSecret())
+                .signWith(key)
                 .compact();
         return new Refresh(token);
     }
@@ -76,7 +85,7 @@ public class JwtServiceImpl implements JwtService {
                 .claim("role", user.getRole())
                 .claim("id", user.getId())
                 .setExpiration(Date.from(accessExpiration))
-                .signWith(SignatureAlgorithm.HS512, jwtProperties.getSecret())
+                .signWith(key)
                 .compact();
         return new JwtAccess(token, accessExpiration);
     }
