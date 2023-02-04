@@ -23,4 +23,5 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceDoesNotExistException("user with email " + email + " does not exist"));
     }
+
 }

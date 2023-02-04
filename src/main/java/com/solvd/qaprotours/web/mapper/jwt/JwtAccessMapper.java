@@ -10,6 +10,6 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface JwtAccessMapper {
 
-    JwtAccessDto entityToDto(JwtAccess access);
+    JwtAccessDto toDto(JwtAccess access);
 
 }

@@ -1,7 +1,7 @@
 package com.solvd.qaprotours.service.impl;
 
 import com.solvd.qaprotours.domain.jwt.JwtAccess;
-import com.solvd.qaprotours.domain.jwt.Refresh;
+import com.solvd.qaprotours.domain.jwt.JwtRefresh;
 import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.service.JwtService;
 import com.solvd.qaprotours.service.property.JwtProperties;
@@ -69,7 +69,7 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public Refresh generateRefreshToken(User user) {
+    public JwtRefresh generateRefreshToken(User user) {
         final Instant refreshExpiration = Instant.now().plus(jwtProperties.getRefresh(), ChronoUnit.HOURS);
         String token = Jwts.builder()
                 .setSubject(user.getEmail())
@@ -77,7 +77,7 @@ public class JwtServiceImpl implements JwtService {
                 .setExpiration(Date.from(refreshExpiration))
                 .signWith(key)
                 .compact();
-        return new Refresh(token);
+        return new JwtRefresh(token);
     }
 
     @Override

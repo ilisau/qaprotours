@@ -1,16 +1,14 @@
 package com.solvd.qaprotours.web.dto.jwt;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
  * @author Ermakovich Kseniya
  */
-@Getter
-@Setter
+@Data
 public class JwtResponseDto {
 
-    private JwtAccessDto accessDto;
-    private RefreshDto refreshDto;
+    private JwtAccessDto access;
+    private JwtRefreshDto jwtRefresh;
 
 }

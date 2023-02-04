@@ -64,6 +64,4 @@ public class Tour {
     @OneToMany(mappedBy = "tour", orphanRemoval = true)
     private List<UserTour> userTours;
 
-    private enum TourType { HEALTH, CULTURE }
-
 }

@@ -1,17 +1,13 @@
 package com.solvd.qaprotours.web.dto.jwt;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Instant;
 
 /**
  * @author Ermakovich Kseniya
  */
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class JwtAccessDto {

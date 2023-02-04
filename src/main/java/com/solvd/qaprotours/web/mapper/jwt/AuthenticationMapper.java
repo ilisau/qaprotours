@@ -10,6 +10,6 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface AuthenticationMapper {
 
-    Authentication dtoToEntity(AuthenticationDto authenticationDto);
+    Authentication toEntity(AuthenticationDto authenticationDto);
 
 }

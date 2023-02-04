@@ -35,6 +35,4 @@ public class UserTour {
     @Column(name = "client_amount", nullable = false)
     private Integer clientsAmount;
 
-    private enum OrderTourStatus { ORDERED, CONFIRMED }
-
 }

@@ -4,7 +4,7 @@ import com.solvd.qaprotours.domain.exception.AuthException;
 import com.solvd.qaprotours.domain.jwt.Authentication;
 import com.solvd.qaprotours.domain.jwt.JwtAccess;
 import com.solvd.qaprotours.domain.jwt.JwtResponse;
-import com.solvd.qaprotours.domain.jwt.Refresh;
+import com.solvd.qaprotours.domain.jwt.JwtRefresh;
 import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.service.AuthService;
 import com.solvd.qaprotours.service.JwtService;
@@ -32,20 +32,21 @@ public class AuthServiceImpl implements AuthService {
             throw new AuthException("wrong password");
         }
         final JwtAccess access = jwtService.generateAccessToken(user);
-        final Refresh refreshToken = jwtService.generateRefreshToken(user);
-        return new JwtResponse(access, refreshToken);
+        final JwtRefresh jwtRefreshToken = jwtService.generateRefreshToken(user);
+        return new JwtResponse(access, jwtRefreshToken);
     }
 
     @Override
-    public JwtResponse refresh(Refresh refresh) {
-        String refreshToken = refresh.getToken();
+    public JwtResponse refresh(JwtRefresh jwtRefresh) {
+        String refreshToken = jwtRefresh.getToken();
         JwtUserDetails userDetails = jwtService.parseToken(refreshToken);
         final User user = userService.findByEmail(userDetails.getEmail());
         if (!user.getPassword().equals(userDetails.getPassword())) {
             throw new AuthException("wrong password");
         }
         final JwtAccess access = jwtService.generateAccessToken(user);
-        final Refresh newRefreshToken = jwtService.generateRefreshToken(user);
-        return new JwtResponse(access, newRefreshToken);
+        final JwtRefresh newJwtRefreshToken = jwtService.generateRefreshToken(user);
+        return new JwtResponse(access, newJwtRefreshToken);
     }
+
 }
