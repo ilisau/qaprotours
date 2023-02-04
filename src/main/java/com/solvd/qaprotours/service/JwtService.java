@@ -6,6 +6,9 @@ import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.web.security.jwt.JwtUserDetails;
 import org.springframework.security.core.Authentication;
 
+/**
+ * @author Ermakovich Kseniya
+ */
 public interface JwtService {
 
     JwtUserDetails parseToken(String token);

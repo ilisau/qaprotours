@@ -27,6 +27,9 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
+/**
+ * @author Ermakovich Kseniya
+ */
 @Getter
 @Setter
 @Service

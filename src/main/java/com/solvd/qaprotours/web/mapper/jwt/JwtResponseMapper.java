@@ -5,7 +5,9 @@ import com.solvd.qaprotours.web.dto.jwt.JwtResponseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-
+/**
+ * @author Ermakovich Kseniya
+ */
 @Mapper(componentModel = "spring", uses = {JwtAccessMapper.class, RefreshMapper.class})
 public interface JwtResponseMapper {
 

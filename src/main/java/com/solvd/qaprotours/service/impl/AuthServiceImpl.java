@@ -14,6 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+/**
+ * @author Ermakovich Kseniya
+ */
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {

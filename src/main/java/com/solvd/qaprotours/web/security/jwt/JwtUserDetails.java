@@ -10,6 +10,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
+/**
+ * @author Ermakovich Kseniya
+ */
 @Getter
 @Setter
 @AllArgsConstructor

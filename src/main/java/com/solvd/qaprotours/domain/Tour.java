@@ -1,6 +1,5 @@
 package com.solvd.qaprotours.domain;
 
-import com.solvd.qaprotours.domain.*;
 import com.solvd.qaprotours.domain.user.UserTour;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -9,6 +8,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * @author Ermakovich Kseniya
+ */
 @Data
 @Entity
 @Table(name = "tours")

@@ -6,6 +6,9 @@ import lombok.Data;
 
 import java.io.Serializable;
 
+/**
+ * @author Ermakovich Kseniya
+ */
 @Embeddable
 @Data
 public class UserTourId implements Serializable {

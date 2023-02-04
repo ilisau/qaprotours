@@ -21,6 +21,9 @@ import java.io.IOException;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
+/**
+ * @author Ermakovich Kseniya
+ */
 @Component
 @RequiredArgsConstructor
 public class JwtFilter extends GenericFilterBean {

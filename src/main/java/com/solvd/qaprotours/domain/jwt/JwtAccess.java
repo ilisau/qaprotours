@@ -5,7 +5,9 @@ import lombok.Data;
 
 import java.time.Instant;
 
-
+/**
+ * @author Ermakovich Kseniya
+ */
 @AllArgsConstructor
 @Data
 public class JwtAccess {

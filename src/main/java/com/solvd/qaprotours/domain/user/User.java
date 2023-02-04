@@ -3,6 +3,9 @@ package com.solvd.qaprotours.domain.user;
 import jakarta.persistence.*;
 import lombok.Data;
 
+/**
+ * @author Ermakovich Kseniya
+ */
 @Data
 @Entity
 @Table(name = "users")

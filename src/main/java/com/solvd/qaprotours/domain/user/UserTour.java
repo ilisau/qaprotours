@@ -6,6 +6,9 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+/**
+ * @author Ermakovich Kseniya
+ */
 @Data
 @Entity
 @Table(name = "user_tours")

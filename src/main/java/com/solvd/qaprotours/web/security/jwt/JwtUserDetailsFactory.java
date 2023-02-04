@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * @author Ermakovich Kseniya
+ */
 public class JwtUserDetailsFactory {
 
     public static JwtUserDetails create(User user) {

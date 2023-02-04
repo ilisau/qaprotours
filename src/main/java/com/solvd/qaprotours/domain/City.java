@@ -3,6 +3,9 @@ package com.solvd.qaprotours.domain;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * @author Ermakovich Kseniya
+ */
 @Getter
 @RequiredArgsConstructor
 public enum City {

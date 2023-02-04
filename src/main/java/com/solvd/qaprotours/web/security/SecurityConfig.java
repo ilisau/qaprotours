@@ -1,13 +1,10 @@
 package com.solvd.qaprotours.web.security;
 
 import com.solvd.qaprotours.web.security.jwt.JwtFilter;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,14 +13,14 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
-import static io.swagger.v3.oas.annotations.enums.SecuritySchemeIn.HEADER;
-import static io.swagger.v3.oas.annotations.enums.SecuritySchemeType.HTTP;
 
+/**
+ * @author Ermakovich Kseniya
+ */
 @Configuration
 @RequiredArgsConstructor
 @EnableGlobalMethodSecurity( prePostEnabled = true)
 @EnableWebSecurity
-@SecurityScheme(name = SecurityConfig.SECURITY_SCHEME_NAME, in = HEADER, type = HTTP, scheme = "bearer", bearerFormat = "JWT")
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;

@@ -3,6 +3,9 @@ package com.solvd.qaprotours.domain.user;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 
+/**
+ * @author Ermakovich Kseniya
+ */
 @RequiredArgsConstructor
 public enum Role implements GrantedAuthority {
 
