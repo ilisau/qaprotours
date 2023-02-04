@@ -5,6 +5,7 @@ import com.solvd.qaprotours.domain.jwt.JwtRefresh;
 import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.service.JwtService;
 import com.solvd.qaprotours.service.property.JwtProperties;
+import com.solvd.qaprotours.web.security.jwt.JwtTokenType;
 import com.solvd.qaprotours.web.security.jwt.JwtUserDetails;
 import com.solvd.qaprotours.web.security.jwt.JwtUserDetailsFactory;
 import io.jsonwebtoken.Claims;
@@ -26,6 +27,7 @@ import java.security.Key;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * @author Ermakovich Kseniya
@@ -65,7 +67,7 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public boolean isAccessToken(JwtUserDetails jwtUserDetails) {
-        return jwtUserDetails.getId() != null && jwtUserDetails.getPassword() == null;
+        return Objects.equals(jwtUserDetails.getType(), JwtTokenType.ACCESS.getValue());
     }
 
     @Override
@@ -73,7 +75,7 @@ public class JwtServiceImpl implements JwtService {
         final Instant refreshExpiration = Instant.now().plus(jwtProperties.getRefresh(), ChronoUnit.HOURS);
         String token = Jwts.builder()
                 .setSubject(user.getEmail())
-                .claim("password", user.getPassword())
+                .claim("type", JwtTokenType.REFRESH.getValue())
                 .setExpiration(Date.from(refreshExpiration))
                 .signWith(key)
                 .compact();
@@ -87,6 +89,7 @@ public class JwtServiceImpl implements JwtService {
                 .setSubject(user.getEmail())
                 .claim("role", user.getRole())
                 .claim("id", user.getId())
+                .claim("type", JwtTokenType.ACCESS.getValue())
                 .setExpiration(Date.from(accessExpiration))
                 .signWith(key)
                 .compact();

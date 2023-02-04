@@ -1,7 +1,7 @@
 package com.solvd.qaprotours.domain;
 
 /**
- * @author ermakovich kseniya
+ * @author Ermakovich Kseniya
  */
 public enum TourType {
 

@@ -11,6 +11,7 @@ import lombok.Data;
 @Table(name = "passports")
 public class Passport {
 
+    //todo OneToOne?
     @Id
     @ManyToOne
     @JoinColumn(name = "user_id")

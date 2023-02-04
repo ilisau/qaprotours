@@ -22,6 +22,7 @@ public class JwtUserDetailsFactory {
                 user.getPassword(),
                 user.getEmail(),
                 true,
+                null,
                 mapToGrantedAuthority(Collections.singletonList(user.getRole())));
     }
 
@@ -37,6 +38,7 @@ public class JwtUserDetailsFactory {
                 claims.get("password", String.class),
                 claims.getSubject(),
                 true,
+                claims.get("type", String.class),
                 mapToGrantedAuthority(Collections.singletonList(role)));
     }
 

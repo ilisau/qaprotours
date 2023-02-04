@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Ermakovich Kseniya
  */
 @RestController
-@RequestMapping("api/v1")
+@RequestMapping("api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
