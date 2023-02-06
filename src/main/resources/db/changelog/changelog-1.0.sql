@@ -4,14 +4,15 @@
 create schema if not exists qaprotours;
 set schema 'qaprotours';
 
+
 CREATE TABLE IF NOT EXISTS users(
-                                    id           bigserial PRIMARY KEY,
-                                    name         varchar(35)         NOT NULL,
-                                    surname      varchar(35)         NOT NULL,
-                                    email        varchar(320) UNIQUE NOT NULL,
-                                    password     varchar(200)        NOT NULL,
-                                    role         varchar(20)         NOT NULL,
-                                    is_activated boolean             NOT NULL DEFAULT false
+  id           bigserial PRIMARY KEY,
+  name         varchar(35)         NOT NULL,
+  surname      varchar(35)         NOT NULL,
+  email        varchar(320) UNIQUE NOT NULL,
+  password     varchar(200)        NOT NULL,
+  role         varchar(20)         NOT NULL,
+  is_activated boolean             NOT NULL DEFAULT false
 );
 
 CREATE TABLE IF NOT EXISTS passports (
@@ -20,13 +21,28 @@ CREATE TABLE IF NOT EXISTS passports (
     identity_number varchar(35) UNIQUE NOT NULL,
     constraint fk_user foreign key(user_id) references users(id)
 );
+CREATE TABLE IF NOT EXISTS countries (
+    id bigserial PRIMARY KEY,
+    name varchar(300) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS cities (
+    id bigserial PRIMARY KEY,
+    name varchar(300) NOT NULL,
+    latitude double precision NOT NULL,
+    longitude double precision NOT NULL,
+    country_id bigint,
+    constraint fk_country foreign key(country_id) references countries(id)
+);
 
 CREATE TABLE IF NOT EXISTS addresses (
     id bigint PRIMARY KEY,
-    country varchar(100) NOT NULL,
-    city varchar(100) NOT NULL,
-    street varchar(120) NOT NULL,
-    house_number int NOT NULL
+    country_id bigint NOT NULL,
+    city_id bigint NOT NULL,
+    street bigint NOT NULL,
+    house_number int NOT NULL,
+    constraint fk_country foreign key(country_id) references countries(id),
+    constraint fk_hotel foreign key(city_id) references cities(id)
 );
 
 CREATE TABLE IF NOT EXISTS hotels (
@@ -42,8 +58,8 @@ CREATE TABLE IF NOT EXISTS tours (
     id bigint PRIMARY KEY,
     name varchar(255),
     description varchar(1024),
-    country varchar(100),
-    city varchar(100),
+    country_id bigint,
+    city_id bigint,
     type varchar(30),
     catering_type varchar(30),
     hotel_id bigint,
@@ -51,7 +67,9 @@ CREATE TABLE IF NOT EXISTS tours (
     departure_time timestamp without time zone,
     place_amount int,
     price money,
-    constraint fk_hotel foreign key(hotel_id) references hotels(id)
+    constraint fk_hotel foreign key(hotel_id) references hotels(id),
+    constraint fk_country foreign key(country_id) references countries(id),
+    constraint fk_city foreign key(city_id) references cities(id)
 );
 
 
@@ -65,5 +83,3 @@ CREATE TABLE IF NOT EXISTS user_tours (
     constraint fk_user foreign key(user_id) references users(id),
     constraint fk_tour foreign key(tour_id) references tours(id)
 );
-
-
