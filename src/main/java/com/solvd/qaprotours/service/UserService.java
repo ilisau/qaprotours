@@ -15,6 +15,8 @@ public interface UserService {
 
     void create(User user);
 
+    void activate(String token);
+
     void delete(Long id);
 
 }

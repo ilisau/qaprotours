@@ -40,6 +40,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void activate(String token) {
+
+    }
+
+    @Override
     public void delete(Long id) {
 
     }

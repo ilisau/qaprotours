@@ -4,13 +4,14 @@
 create schema if not exists qaprotours;
 set schema 'qaprotours';
 
-CREATE TABLE IF NOT EXISTS users (
-    id bigserial PRIMARY KEY,
-    name varchar(35) NOT NULL,
-    surname varchar(35) NOT NULL,
-    email varchar(320) UNIQUE NOT NULL,
-    password varchar(200) NOT NULL,
-    role varchar(20) NOT NULL
+CREATE TABLE IF NOT EXISTS users(
+                                    id           bigserial PRIMARY KEY,
+                                    name         varchar(35)         NOT NULL,
+                                    surname      varchar(35)         NOT NULL,
+                                    email        varchar(320) UNIQUE NOT NULL,
+                                    password     varchar(200)        NOT NULL,
+                                    role         varchar(20)         NOT NULL,
+                                    is_activated boolean             NOT NULL DEFAULT false
 );
 
 CREATE TABLE IF NOT EXISTS passports (
