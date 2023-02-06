@@ -1,7 +1,9 @@
 package com.solvd.qaprotours.web.controller;
 
 import com.solvd.qaprotours.domain.exception.AuthException;
+import com.solvd.qaprotours.domain.exception.ResourceAlreadyExistsException;
 import com.solvd.qaprotours.domain.exception.ResourceDoesNotExistException;
+import com.solvd.qaprotours.domain.exception.TokenExpiredException;
 import com.solvd.qaprotours.web.dto.ErrorDto;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -24,6 +26,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceDoesNotExistException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorDto handleResourceDoesNotExistException(ResourceDoesNotExistException ex) {
+        return new ErrorDto(ex.getMessage());
+    }
+
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDto handleResourceAlreadyExistsException(ResourceAlreadyExistsException ex) {
+        return new ErrorDto(ex.getMessage());
+    }
+
+    @ExceptionHandler(TokenExpiredException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDto handleTokenExpiredException(TokenExpiredException ex) {
         return new ErrorDto(ex.getMessage());
     }
 

@@ -9,6 +9,8 @@ import com.solvd.qaprotours.web.security.jwt.JwtTokenType;
 import com.solvd.qaprotours.web.security.jwt.JwtUserDetails;
 import com.solvd.qaprotours.web.security.jwt.JwtUserDetailsFactory;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -58,6 +60,15 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
+    public Claims parse(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    @Override
     public Authentication getAuthentication(String token) {
         JwtUserDetails jwtUserDetails = parseToken(token);
         UserDetails userDetails = userDetailsService.loadUserByUsername(jwtUserDetails.getEmail());
@@ -95,4 +106,48 @@ public class JwtServiceImpl implements JwtService {
         return new JwtAccess(token, accessExpiration);
     }
 
+    @Override
+    public String generateActivationToken(User user) {
+        final Instant accessExpiration = Instant.now().plus(jwtProperties.getActivation(), ChronoUnit.HOURS);
+        return Jwts.builder()
+                .setSubject(user.getEmail())
+                .claim("id", user.getId())
+                .claim("type", JwtTokenType.ACTIVATION.getValue())
+                .setExpiration(Date.from(accessExpiration))
+                .signWith(key)
+                .compact();
+    }
+
+    @Override
+    public String generateResetToken(User user) {
+        final Instant accessExpiration = Instant.now().plus(jwtProperties.getReset(), ChronoUnit.HOURS);
+        return Jwts.builder()
+                .setSubject(user.getEmail())
+                .claim("id", user.getId())
+                .claim("type", JwtTokenType.RESET.getValue())
+                .setExpiration(Date.from(accessExpiration))
+                .signWith(key)
+                .compact();
+    }
+
+    @Override
+    public boolean validateToken(String token) {
+        try {
+            Jws<Claims> claims = Jwts
+                    .parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token);
+            return !claims.getBody().getExpiration().before(new Date());
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public Long retrieveUserId(String token) {
+        return Long.valueOf(parse(token)
+                .get("id")
+                .toString());
+    }
 }
