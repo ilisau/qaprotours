@@ -10,8 +10,8 @@ import com.solvd.qaprotours.web.dto.jwt.JwtResponseDto;
 import com.solvd.qaprotours.web.mapper.jwt.AuthenticationMapper;
 import com.solvd.qaprotours.web.mapper.jwt.JwtResponseMapper;
 import com.solvd.qaprotours.web.mapper.jwt.RefreshMapper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("api/v1/auth")
 @RequiredArgsConstructor
-@Validated
 public class AuthController {
 
     private final AuthService authService;
@@ -29,14 +28,14 @@ public class AuthController {
     private final AuthenticationMapper authenticationMapper;
 
     @PostMapping("/login")
-    public JwtResponseDto login(@Validated @RequestBody AuthenticationDto authenticationDto) {
+    public JwtResponseDto login(@Valid @RequestBody AuthenticationDto authenticationDto) {
         Authentication authentication = authenticationMapper.toEntity(authenticationDto);
         JwtResponse response = authService.login(authentication);
         return jwtResponseMapper.toDto(response);
     }
 
     @PostMapping("/refresh")
-    public JwtResponseDto refresh(@Validated @RequestBody JwtRefreshDto jwtRefreshDto) {
+    public JwtResponseDto refresh(@Valid @RequestBody JwtRefreshDto jwtRefreshDto) {
         JwtRefresh jwtRefresh = refreshMapper.toEntity(jwtRefreshDto);
         JwtResponse response = authService.refresh(jwtRefresh);
         return jwtResponseMapper.toDto(response);

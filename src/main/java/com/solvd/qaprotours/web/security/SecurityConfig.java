@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -52,7 +53,7 @@ public class SecurityConfig {
 
     private AuthenticationEntryPoint authenticationEntryPoint() {
         return (HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) -> {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
             PrintWriter writer = response.getWriter();
             writer.println("Unauthorized");
         };
@@ -60,7 +61,7 @@ public class SecurityConfig {
 
     private AccessDeniedHandler accessDeniedHandler() {
         return (HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) -> {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setStatus(HttpStatus.FORBIDDEN.value());
             PrintWriter writer = response.getWriter();
             writer.println("access denied");
         };

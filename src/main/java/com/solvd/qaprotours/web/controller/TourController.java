@@ -6,6 +6,7 @@ import com.solvd.qaprotours.web.dto.TourDto;
 import com.solvd.qaprotours.web.dto.validation.OnCreate;
 import com.solvd.qaprotours.web.mapper.TourMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +18,6 @@ import java.util.List;
 @RestController
 @RequestMapping("api/v1/tours")
 @RequiredArgsConstructor
-@Validated
 public class TourController {
 
     private final TourService tourService;
@@ -32,13 +32,13 @@ public class TourController {
     @PostMapping
     public void saveDraft(@RequestBody TourDto tourDto) {
         Tour tour = tourMapper.toEntity(tourDto);
-        tourService.saveDraft(tour);
+        tourService.save(tour);
     }
 
     @PostMapping("/publish")
     public void publish(@Validated(OnCreate.class) @RequestBody TourDto tourDto) {
         Tour tour = tourMapper.toEntity(tourDto);
-        tourService.publish(tour);
+        tourService.save(tour);
     }
 
     @GetMapping("/{tourId}")
@@ -48,6 +48,7 @@ public class TourController {
     }
 
     @DeleteMapping("/{tourId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long tourId) {
         tourService.delete(tourId);
     }

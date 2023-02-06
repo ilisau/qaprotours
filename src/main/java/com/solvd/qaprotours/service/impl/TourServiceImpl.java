@@ -15,12 +15,7 @@ public class TourServiceImpl implements TourService {
     }
 
     @Override
-    public void saveDraft(Tour tour) {
-
-    }
-
-    @Override
-    public void publish(Tour tour) {
+    public void save(Tour tour) {
 
     }
 

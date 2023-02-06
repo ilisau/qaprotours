@@ -28,14 +28,6 @@ CREATE TABLE IF NOT EXISTS addresses (
     house_number int NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS airports (
-    id bigserial PRIMARY KEY,
-    name varchar(300) NOT NULL,
-    code varchar(30) UNIQUE,
-    country varchar(100) NOT NULL,
-    city varchar(100) NOT NULL
-);
-
 CREATE TABLE IF NOT EXISTS hotels (
     id bigserial PRIMARY KEY,
     name varchar(300) NOT NULL,
@@ -47,10 +39,10 @@ CREATE TABLE IF NOT EXISTS hotels (
 
 CREATE TABLE IF NOT EXISTS tours (
     id bigint PRIMARY KEY,
+    name varchar(255),
+    description varchar(1024),
     country varchar(100),
     city varchar(100),
-    airport_from_id bigint,
-    airport_to_id bigint,
     type varchar(30),
     catering_type varchar(30),
     hotel_id bigint,
@@ -58,8 +50,6 @@ CREATE TABLE IF NOT EXISTS tours (
     departure_time timestamp without time zone,
     place_amount int,
     price money,
-    constraint fk_airport_from foreign key(airport_from_id) references airports(id),
-    constraint fk_airport_to foreign key(airport_to_id) references airports(id),
     constraint fk_hotel foreign key(hotel_id) references hotels(id)
 );
 

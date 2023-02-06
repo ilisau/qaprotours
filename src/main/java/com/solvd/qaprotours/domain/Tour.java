@@ -33,14 +33,6 @@ public class Tour {
     @Column(name = "city")
     private City city;
 
-    @ManyToOne
-    @JoinColumn(name = "airport_from_id")
-    private Airport airportFrom;
-
-    @ManyToOne
-    @JoinColumn(name = "airport_to_id")
-    private Airport airportTo;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
     private TourType type;

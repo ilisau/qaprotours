@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("api/v1/employees")
 @RequiredArgsConstructor
-@Validated
 public class EmployeeController {
 
     private final UserService userService;

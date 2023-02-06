@@ -11,9 +11,7 @@ public interface TourService {
 
     List<Tour> getAll();
 
-    void saveDraft(Tour tour);
-
-    void publish(Tour tour);
+    void save(Tour tour);
 
     Tour getById(Long tourId);
 

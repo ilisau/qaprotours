@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
+
 /**
  * @author Ermakovich Kseniya
  */
@@ -13,5 +15,11 @@ import lombok.NoArgsConstructor;
 public class ErrorDto {
 
     private String message;
+
+    private Map<String, String> details;
+
+    public ErrorDto(String message) {
+        this.message = message;
+    }
 
 }

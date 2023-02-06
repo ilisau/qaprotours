@@ -36,12 +36,6 @@ public class TourDto {
     @NotNull(message = "city cannot be null", groups = {OnCreate.class})
     private City city;
 
-    @NotNull(message = "departure airport cannot be null", groups = {OnCreate.class})
-    private AirportDto airportFrom;
-
-    @NotNull(message = "arrival airport cannot be null", groups = {OnCreate.class})
-    private AirportDto airportTo;
-
     @NotNull(message = "type cannot be null", groups = {OnCreate.class})
     private TourType type;
 
