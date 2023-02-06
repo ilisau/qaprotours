@@ -16,7 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
- * @author Ermakovich Kseniya
+ * @author Ermakovich Kseniya, Lisov Ilya
  */
 @Service
 @RequiredArgsConstructor
@@ -28,7 +28,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public JwtResponse login(Authentication authentication) {
-        User user = userService.findByEmail(authentication.getEmail());
+        User user = userService.getByEmail(authentication.getEmail());
         if (!passwordEncoder.matches(authentication.getPassword(), user.getPassword())) {
             throw new AuthException("wrong password");
         }
@@ -44,10 +44,24 @@ public class AuthServiceImpl implements AuthService {
         if (!JwtTokenType.REFRESH.getValue().equals(userDetails.getType())) {
             throw new AuthException("invalid refresh token");
         }
-        final User user = userService.findByEmail(userDetails.getEmail());
+        final User user = userService.getByEmail(userDetails.getEmail());
         final JwtAccess access = jwtService.generateAccessToken(user);
         final JwtRefresh newJwtRefreshToken = jwtService.generateRefreshToken(user);
         return new JwtResponse(access, newJwtRefreshToken);
     }
 
+    @Override
+    public void sendRestoreToken(String email) {
+        //TODO send email with restore token
+    }
+
+    @Override
+    public void validateRestoreToken(String token) {
+        //TODO validate restore token
+    }
+
+    @Override
+    public void restoreUserPassword(String token, String password) {
+        //TODO validate restore token and restore password
+    }
 }

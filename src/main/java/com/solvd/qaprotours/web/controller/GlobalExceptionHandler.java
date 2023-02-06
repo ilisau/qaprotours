@@ -1,14 +1,22 @@
 package com.solvd.qaprotours.web.controller;
 
+import com.solvd.qaprotours.domain.exception.AuthException;
 import com.solvd.qaprotours.domain.exception.ResourceDoesNotExistException;
 import com.solvd.qaprotours.web.dto.ErrorDto;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
- * @author Ermakovich Kseniya
+ * @author Ermakovich Kseniya, Lisov Ilya
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -17,6 +25,31 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorDto handleResourceDoesNotExistException(ResourceDoesNotExistException ex) {
         return new ErrorDto(ex.getMessage());
+    }
+
+    @ExceptionHandler(AuthException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorDto handleAuthException(AuthException ex) {
+        return new ErrorDto(ex.getMessage());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDto handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        ErrorDto exceptionBody = new ErrorDto("Validation failed");
+        List<FieldError> errors = e.getBindingResult().getFieldErrors();
+        exceptionBody.setDetails(errors.stream()
+                .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage)));
+        return exceptionBody;
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDto handleConstraintViolationException(ConstraintViolationException e) {
+        ErrorDto exceptionBody = new ErrorDto("Validation failed");
+        exceptionBody.setDetails(e.getConstraintViolations().stream()
+                .collect(Collectors.toMap(v -> v.getPropertyPath().toString(), ConstraintViolation::getMessage)));
+        return exceptionBody;
     }
 
 }

@@ -7,6 +7,16 @@ import com.solvd.qaprotours.domain.user.User;
  */
 public interface UserService {
 
-    User findByEmail(String email);
+    User getById(Long id);
+
+    User getByEmail(String email);
+
+    void update(User user);
+
+    void create(User user);
+
+    void activate(String token);
+
+    void delete(Long id);
 
 }

@@ -18,10 +18,35 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
+    public User getById(Long id) {
+        return null;
+    }
+
+    @Override
     @Transactional(readOnly = true)
-    public User findByEmail(String email) {
+    public User getByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceDoesNotExistException("user with email " + email + " does not exist"));
+    }
+
+    @Override
+    public void update(User user) {
+
+    }
+
+    @Override
+    public void create(User user) {
+
+    }
+
+    @Override
+    public void activate(String token) {
+
+    }
+
+    @Override
+    public void delete(Long id) {
+
     }
 
 }
