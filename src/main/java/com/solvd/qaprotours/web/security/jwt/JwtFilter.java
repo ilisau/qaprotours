@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
-
 import java.io.IOException;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;

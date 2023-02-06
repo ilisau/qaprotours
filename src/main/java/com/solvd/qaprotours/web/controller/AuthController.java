@@ -1,12 +1,12 @@
 package com.solvd.qaprotours.web.controller;
 
 import com.solvd.qaprotours.domain.jwt.Authentication;
-import com.solvd.qaprotours.domain.jwt.JwtResponse;
 import com.solvd.qaprotours.domain.jwt.JwtRefresh;
+import com.solvd.qaprotours.domain.jwt.JwtResponse;
 import com.solvd.qaprotours.service.AuthService;
 import com.solvd.qaprotours.web.dto.jwt.AuthenticationDto;
-import com.solvd.qaprotours.web.dto.jwt.JwtResponseDto;
 import com.solvd.qaprotours.web.dto.jwt.JwtRefreshDto;
+import com.solvd.qaprotours.web.dto.jwt.JwtResponseDto;
 import com.solvd.qaprotours.web.mapper.jwt.AuthenticationMapper;
 import com.solvd.qaprotours.web.mapper.jwt.JwtResponseMapper;
 import com.solvd.qaprotours.web.mapper.jwt.RefreshMapper;

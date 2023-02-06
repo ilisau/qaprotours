@@ -29,5 +29,4 @@ public class Hotel {
     @JoinColumn(name = "address_id", nullable = false)
     private Address address;
 
-
 }

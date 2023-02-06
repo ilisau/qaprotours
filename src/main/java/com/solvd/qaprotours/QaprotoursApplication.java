@@ -8,8 +8,8 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 @ConfigurationPropertiesScan
 public class QaprotoursApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(QaprotoursApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(QaprotoursApplication.class, args);
+    }
 
 }

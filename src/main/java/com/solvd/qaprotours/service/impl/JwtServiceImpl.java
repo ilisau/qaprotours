@@ -22,7 +22,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-
 import java.security.Key;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -50,12 +49,12 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public JwtUserDetails parseToken(String token) {
-       Claims claims =  Jwts.parserBuilder()
-               .setSigningKey(key)
-               .build()
-               .parseClaimsJws(token)
-               .getBody();
-       return JwtUserDetailsFactory.create(claims);
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return JwtUserDetailsFactory.create(claims);
     }
 
     @Override
