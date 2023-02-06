@@ -11,17 +11,16 @@ import com.solvd.qaprotours.web.mapper.jwt.AuthenticationMapper;
 import com.solvd.qaprotours.web.mapper.jwt.JwtResponseMapper;
 import com.solvd.qaprotours.web.mapper.jwt.RefreshMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 /**
- * @author Ermakovich Kseniya
+ * @author Ermakovich Kseniya, Lisov Ilya
  */
 @RestController
 @RequestMapping("api/v1/auth")
 @RequiredArgsConstructor
+@Validated
 public class AuthController {
 
     private final AuthService authService;
@@ -30,17 +29,32 @@ public class AuthController {
     private final AuthenticationMapper authenticationMapper;
 
     @PostMapping("/login")
-    public JwtResponseDto login(@RequestBody AuthenticationDto authenticationDto) {
+    public JwtResponseDto login(@Validated @RequestBody AuthenticationDto authenticationDto) {
         Authentication authentication = authenticationMapper.toEntity(authenticationDto);
         JwtResponse response = authService.login(authentication);
         return jwtResponseMapper.toDto(response);
     }
 
     @PostMapping("/refresh")
-    public JwtResponseDto refresh(@RequestBody JwtRefreshDto jwtRefreshDto) {
+    public JwtResponseDto refresh(@Validated @RequestBody JwtRefreshDto jwtRefreshDto) {
         JwtRefresh jwtRefresh = refreshMapper.toEntity(jwtRefreshDto);
         JwtResponse response = authService.refresh(jwtRefresh);
         return jwtResponseMapper.toDto(response);
+    }
+
+    @PostMapping("/forget")
+    public void forget(@RequestBody String email) {
+        authService.sendRestoreToken(email);
+    }
+
+    @GetMapping("/password/restore")
+    public void restore(@RequestParam String token) {
+        authService.validateRestoreToken(token);
+    }
+
+    @PostMapping("/password/restore")
+    public void restore(@RequestParam String token, @RequestBody String password) {
+        authService.restoreUserPassword(token, password);
     }
 
 }

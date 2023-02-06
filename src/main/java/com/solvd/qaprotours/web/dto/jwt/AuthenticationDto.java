@@ -1,6 +1,6 @@
 package com.solvd.qaprotours.web.dto.jwt;
 
-import com.solvd.qaprotours.web.dto.OnCreate;
+import com.solvd.qaprotours.web.dto.validation.OnCreate;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;

@@ -1,5 +1,6 @@
 package com.solvd.qaprotours.web.dto.jwt;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
@@ -8,6 +9,7 @@ import lombok.Data;
 @Data
 public class JwtRefreshDto {
 
+    @NotNull(message = "token is required")
     private String token;
 
 }

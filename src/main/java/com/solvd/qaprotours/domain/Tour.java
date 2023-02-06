@@ -21,6 +21,10 @@ public class Tour {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    private String name;
+
+    private String description;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "country")
     private Country country;

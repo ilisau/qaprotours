@@ -1,4 +1,4 @@
-package com.solvd.qaprotours.web.dto;
+package com.solvd.qaprotours.web.dto.validation;
 
 /**
  * @author Ermakovich Kseniya
