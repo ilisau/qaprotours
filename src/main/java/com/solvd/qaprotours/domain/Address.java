@@ -13,15 +13,14 @@ public class Address {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "country", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "country_id")
     private Country country;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "city", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "city_id")
     private City city;
 
     @Column(name = "street", nullable = false)

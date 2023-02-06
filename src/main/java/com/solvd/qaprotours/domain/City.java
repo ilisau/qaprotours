@@ -1,20 +1,24 @@
 package com.solvd.qaprotours.domain;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import jakarta.persistence.*;
+import lombok.Data;
 
 /**
  * @author Ermakovich Kseniya
  */
-@Getter
-@RequiredArgsConstructor
-public enum City {
+@Data
+@Entity
+@Table(name = "cities")
+public class City {
 
-    GRODNO(53.6688, 23.8223),
-    KAIR(30.0444, 31.2357),
-    ALEXANDRIA(31.2001, 29.9187);
+    @Id
+    private Long id;
+    private String name;
+    private double latitude;
+    private double longitude;
 
-    private final double latitude;
-    private final double longitude;
+    @ManyToOne
+    @JoinColumn(name = "country_id")
+    private Country country;
 
 }

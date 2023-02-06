@@ -1,11 +1,20 @@
 package com.solvd.qaprotours.domain;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.Data;
+
 /**
  * @author Ermakovich Kseniya
  */
-public enum Country {
+@Data
+@Entity
+@Table(name = "countries")
+public class Country {
 
-    BELARUS,
-    EGYPT
+    @Id
+    private Long id;
+    private String name;
 
 }

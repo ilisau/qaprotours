@@ -15,11 +15,7 @@ public class Hotel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
-
-    @Column(name = "name", nullable = false)
     private String name;
-
-    @Column(name = "coastline")
     private Integer coastline;
 
     @Column(name = "stars_amount")

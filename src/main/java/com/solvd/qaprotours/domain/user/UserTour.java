@@ -29,7 +29,6 @@ public class UserTour {
     private LocalDateTime orderTime;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
     private OrderTourStatus status;
 
     @Column(name = "client_amount", nullable = false)

@@ -18,23 +18,20 @@ public class Tour {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
     private Long id;
 
     private String name;
-
     private String description;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "country")
+    @ManyToOne
+    @JoinColumn(name = "country_id")
     private Country country;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "city")
+    @ManyToOne
+    @JoinColumn(name = "city_id")
     private City city;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "type")
     private TourType type;
 
     @Enumerated(EnumType.STRING)
@@ -54,7 +51,6 @@ public class Tour {
     @Column(name = "place_amount")
     private Integer placesAmount;
 
-    @Column(name = "price")
     private BigDecimal price;
 
     @OneToMany(mappedBy = "tour", orphanRemoval = true)
