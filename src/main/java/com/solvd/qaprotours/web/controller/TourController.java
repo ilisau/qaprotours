@@ -1,9 +1,12 @@
 package com.solvd.qaprotours.web.controller;
 
 import com.solvd.qaprotours.domain.Tour;
+import com.solvd.qaprotours.domain.TourCriteria;
 import com.solvd.qaprotours.service.TourService;
+import com.solvd.qaprotours.web.dto.TourCriteriaDto;
 import com.solvd.qaprotours.web.dto.TourDto;
 import com.solvd.qaprotours.web.dto.validation.OnCreate;
+import com.solvd.qaprotours.web.mapper.TourCriteriaMapper;
 import com.solvd.qaprotours.web.mapper.TourMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,10 +25,12 @@ public class TourController {
 
     private final TourService tourService;
     private final TourMapper tourMapper;
+    private final TourCriteriaMapper tourCriteriaMapper;
 
     @GetMapping
-    public List<TourDto> getAll() {
-        List<Tour> tours = tourService.getAll();
+    public List<TourDto> getAll(TourCriteriaDto tourCriteriaDto) {
+        TourCriteria tourCriteria = tourCriteriaMapper.toEntity(tourCriteriaDto);
+        List<Tour> tours = tourService.getAll(tourCriteria, null);
         return tourMapper.toDto(tours);
     }
 

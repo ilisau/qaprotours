@@ -66,6 +66,7 @@ CREATE TABLE IF NOT EXISTS tours (
     arrival_time timestamp without time zone,
     departure_time timestamp without time zone,
     place_amount int,
+    date_amount int,
     price money,
     constraint fk_hotel foreign key(hotel_id) references hotels(id),
     constraint fk_country foreign key(country_id) references countries(id),

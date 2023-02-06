@@ -51,6 +51,9 @@ public class Tour {
     @Column(name = "place_amount")
     private Integer placesAmount;
 
+    @Column(name = "date_amount")
+    private Integer datesAmount;
+
     private BigDecimal price;
 
     @OneToMany(mappedBy = "tour", orphanRemoval = true)
