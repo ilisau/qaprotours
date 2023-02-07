@@ -1,15 +1,18 @@
 package com.solvd.qaprotours.service;
 
 import com.solvd.qaprotours.domain.tour.Tour;
+import com.solvd.qaprotours.domain.tour.TourCriteria;
 
 import java.util.List;
 
 /**
- * @author Lisov Ilya
+ * @author Varya Petrova
  */
 public interface TourService {
 
-    List<Tour> getAll();
+    List<Tour> findAll(int currentPage, int pageSize, TourCriteria tourCriteria);
+
+    List<Tour> findAllByCriteria(TourCriteria tourCriteria);
 
     void save(Tour tour);
 
