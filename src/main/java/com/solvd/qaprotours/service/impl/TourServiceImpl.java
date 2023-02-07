@@ -1,6 +1,6 @@
 package com.solvd.qaprotours.service.impl;
 
-import com.solvd.qaprotours.domain.Tour;
+import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.service.TourService;
 import org.springframework.stereotype.Service;
 

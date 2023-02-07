@@ -23,31 +23,13 @@ CREATE TABLE IF NOT EXISTS passports
     constraint fk_user foreign key (user_id) references users (id)
 );
 
-CREATE TABLE IF NOT EXISTS countries
-(
-    id   bigserial PRIMARY KEY,
-    name varchar(300) NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS cities
-(
-    id         bigserial PRIMARY KEY,
-    name       varchar(300)     NOT NULL,
-    latitude   double precision NOT NULL,
-    longitude  double precision NOT NULL,
-    country_id bigint,
-    constraint fk_country foreign key (country_id) references countries (id)
-);
-
 CREATE TABLE IF NOT EXISTS addresses
 (
     id           bigint PRIMARY KEY,
-    country_id   bigint NOT NULL,
-    city_id      bigint NOT NULL,
+    country      varchar(40) NOT NULL,
+    city         varchar(40) NOT NULL,
     street       bigint NOT NULL,
-    house_number int    NOT NULL,
-    constraint fk_country foreign key (country_id) references countries (id),
-    constraint fk_hotel foreign key (city_id) references cities (id)
+    house_number int    NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS hotels
@@ -65,8 +47,8 @@ CREATE TABLE IF NOT EXISTS tours
     id             bigint PRIMARY KEY,
     name           varchar(255),
     description    varchar(1024),
-    country_id     bigint,
-    city_id        bigint,
+    country        varchar(40),
+    city           varchar(40),
     type           varchar(30),
     catering_type  varchar(30),
     hotel_id       bigint,
@@ -74,9 +56,9 @@ CREATE TABLE IF NOT EXISTS tours
     departure_time timestamp without time zone,
     place_amount   int,
     price          money,
-    constraint fk_hotel foreign key (hotel_id) references hotels (id),
-    constraint fk_country foreign key (country_id) references countries (id),
-    constraint fk_city foreign key (city_id) references cities (id)
+    latitude   double precision,
+    longitude  double precision,
+    constraint fk_hotel foreign key (hotel_id) references hotels (id)
 );
 
 CREATE TABLE IF NOT EXISTS tickets

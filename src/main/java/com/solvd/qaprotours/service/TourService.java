@@ -1,6 +1,6 @@
 package com.solvd.qaprotours.service;
 
-import com.solvd.qaprotours.domain.Tour;
+import com.solvd.qaprotours.domain.tour.Tour;
 
 import java.util.List;
 

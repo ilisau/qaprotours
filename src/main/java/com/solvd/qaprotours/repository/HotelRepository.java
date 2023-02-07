@@ -1,6 +1,6 @@
 package com.solvd.qaprotours.repository;
 
-import com.solvd.qaprotours.domain.Hotel;
+import com.solvd.qaprotours.domain.hotel.Hotel;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

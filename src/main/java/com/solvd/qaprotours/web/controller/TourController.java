@@ -1,6 +1,6 @@
 package com.solvd.qaprotours.web.controller;
 
-import com.solvd.qaprotours.domain.Tour;
+import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.service.TourService;
 import com.solvd.qaprotours.web.dto.TourDto;
 import com.solvd.qaprotours.web.dto.validation.OnCreate;

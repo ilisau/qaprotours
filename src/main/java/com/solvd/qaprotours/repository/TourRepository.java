@@ -1,6 +1,6 @@
 package com.solvd.qaprotours.repository;
 
-import com.solvd.qaprotours.domain.Tour;
+import com.solvd.qaprotours.domain.tour.Tour;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

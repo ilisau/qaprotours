@@ -1,4 +1,4 @@
-package com.solvd.qaprotours.domain;
+package com.solvd.qaprotours.domain.tour;
 
 import lombok.Data;
 
@@ -7,6 +7,5 @@ import lombok.Data;
  */
 @Data
 public class TourCriteria {
-
 
 }
