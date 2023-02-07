@@ -11,25 +11,26 @@ import java.time.LocalDateTime;
  */
 @Data
 @Entity
-@Table(name = "user_tours")
-public class UserTour {
+@Table(name = "tickets")
+public class Ticket {
 
-    @EmbeddedId
-    private UserTourId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("userId")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("tourId")
+    @JoinColumn(name = "tour_id")
     private Tour tour;
 
     @Column(name = "order_time", nullable = false)
     private LocalDateTime orderTime;
 
     @Enumerated(EnumType.STRING)
-    private OrderTourStatus status;
+    private Status status;
 
     @Column(name = "client_amount", nullable = false)
     private Integer clientsAmount;

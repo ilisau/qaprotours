@@ -75,7 +75,8 @@ public class AuthController {
     }
 
     @PostMapping("/password/restore")
-    public void restore(@RequestParam String token, @RequestBody String password) {
+    public void restore(@RequestParam String token,
+                        @RequestBody String password) {
         authService.restoreUserPassword(token, password);
     }
 
