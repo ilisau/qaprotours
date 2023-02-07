@@ -15,5 +15,7 @@ security:
     secret: c651749e8354adb09452a8ad14d4beadb7d57064d6cfb5c0e812bc30724458d187f43e58c22c30486303bbfc655391860952e92add87b5ce9e2ac7cdc612ad73=
     access: 5
     refresh: 336
+    activation: 24
+    reset: 24
 springdoc:
   override-with-generic-response: false

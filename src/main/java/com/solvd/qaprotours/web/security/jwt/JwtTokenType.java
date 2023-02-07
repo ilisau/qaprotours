@@ -4,14 +4,16 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * @author Ermakovich Kseniya
+ * @author Ermakovich Kseniya, Lisov Ilya
  */
 @Getter
 @RequiredArgsConstructor
 public enum JwtTokenType {
 
     ACCESS("access"),
-    REFRESH("refresh");
+    REFRESH("refresh"),
+    ACTIVATION("activation"),
+    RESET("reset");
 
     private final String value;
 

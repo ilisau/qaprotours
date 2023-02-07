@@ -1,5 +1,6 @@
 package com.solvd.qaprotours.web.controller;
 
+import com.solvd.qaprotours.domain.user.Role;
 import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.service.UserService;
 import com.solvd.qaprotours.web.dto.user.UserDto;
@@ -26,6 +27,7 @@ public class EmployeeController {
     @PostMapping
     public void create(@Validated(OnCreate.class) @RequestBody UserDto userDto) {
         User user = userMapper.toEntity(userDto);
+        user.setRole(Role.EMPLOYEE);
         userService.create(user);
     }
 
