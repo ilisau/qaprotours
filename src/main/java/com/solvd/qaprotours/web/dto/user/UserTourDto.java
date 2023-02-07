@@ -5,6 +5,7 @@ import com.solvd.qaprotours.domain.user.OrderTourStatus;
 import com.solvd.qaprotours.domain.user.UserTourId;
 import com.solvd.qaprotours.web.dto.TourDto;
 import com.solvd.qaprotours.web.dto.validation.OnCreate;
+import com.solvd.qaprotours.web.dto.validation.OnUpdate;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -17,7 +18,7 @@ import java.time.LocalDateTime;
 @Data
 public class UserTourDto {
 
-    @NotNull(message = "id must not be null", groups = {OnCreate.class})
+    @NotNull(message = "id must not be null", groups = {OnUpdate.class})
     private UserTourId id;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

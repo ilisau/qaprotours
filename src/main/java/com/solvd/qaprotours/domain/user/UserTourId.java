@@ -2,7 +2,9 @@ package com.solvd.qaprotours.domain.user;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -11,6 +13,8 @@ import java.io.Serializable;
  */
 @Embeddable
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserTourId implements Serializable {
 
     @Column(name = "user_id")

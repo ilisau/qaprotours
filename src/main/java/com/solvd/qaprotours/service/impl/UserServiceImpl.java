@@ -23,6 +23,7 @@ public class UserServiceImpl implements UserService {
     private final JwtService jwtService;
 
     @Override
+    @Transactional(readOnly = true)
     public User getById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceDoesNotExistException("user with id " + id + " does not exist"));
@@ -36,11 +37,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void update(User user) {
         userRepository.save(user);
     }
 
     @Override
+    @Transactional
     public void create(User user) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new ResourceAlreadyExistsException("user with email " + user.getEmail() + " already exists");
@@ -50,6 +53,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void activate(String token) {
         if (!jwtService.validateToken(token)) {
             throw new TokenExpiredException("token is expired");
@@ -61,6 +65,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void delete(Long id) {
         userRepository.deleteById(id);
     }

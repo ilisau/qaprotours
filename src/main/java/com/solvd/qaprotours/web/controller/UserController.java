@@ -53,12 +53,21 @@ public class UserController {
     }
 
     @PostMapping("/{userId}/tours/{tourId}")
-    public void addTour(@PathVariable Long userId, @PathVariable Long tourId) {
-        userTourService.addTour(userId, tourId);
+    public void addTour(@PathVariable Long userId,
+                        @PathVariable Long tourId,
+                        @RequestParam Integer peopleAmount) {
+        userTourService.addTour(userId, tourId, peopleAmount);
+    }
+
+    @DeleteMapping("/{userId}/tours/{tourId}")
+    public void deleteTour(@PathVariable Long userId,
+                           @PathVariable Long tourId) {
+        userTourService.deleteTour(userId, tourId);
     }
 
     @PostMapping("/{userId}/tours/{tourId}/confirm")
-    public void confirmTour(@PathVariable Long userId, @PathVariable Long tourId) {
+    public void confirmTour(@PathVariable Long userId,
+                            @PathVariable Long tourId) {
         userTourService.confirmTour(userId, tourId);
     }
 

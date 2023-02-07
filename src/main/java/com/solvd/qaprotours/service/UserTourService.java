@@ -11,7 +11,9 @@ public interface UserTourService {
 
     List<UserTour> getTours(Long userId);
 
-    void addTour(Long userId, Long tourId);
+    void addTour(Long userId, Long tourId, Integer peopleAmount);
+
+    void deleteTour(Long userId, Long tourId);
 
     void confirmTour(Long userId, Long tourId);
 
