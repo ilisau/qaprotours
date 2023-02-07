@@ -1,6 +1,6 @@
 package com.solvd.qaprotours.domain.user;
 
-import com.solvd.qaprotours.domain.Tour;
+import com.solvd.qaprotours.domain.tour.Tour;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -34,5 +34,12 @@ public class Ticket {
 
     @Column(name = "client_amount", nullable = false)
     private Integer clientsAmount;
+
+    public enum Status {
+
+        ORDERED,
+        CONFIRMED
+
+    }
 
 }

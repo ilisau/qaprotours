@@ -1,6 +1,5 @@
 package com.solvd.qaprotours.web.security.jwt;
 
-import com.solvd.qaprotours.domain.user.Role;
 import com.solvd.qaprotours.domain.user.User;
 import io.jsonwebtoken.Claims;
 import org.springframework.security.core.GrantedAuthority;
@@ -28,10 +27,10 @@ public class JwtUserDetailsFactory {
     }
 
     public static JwtUserDetails create(Claims claims) {
-        Role role = null;
+        User.Role role = null;
         String roleClaim = claims.get("role", String.class);
         if (roleClaim != null) {
-            role = Role.valueOf(roleClaim);
+            role = User.Role.valueOf(roleClaim);
         }
 
         return new JwtUserDetails(
@@ -44,7 +43,7 @@ public class JwtUserDetailsFactory {
     }
 
 
-    private static List<GrantedAuthority> mapToGrantedAuthority(List<Role> userRoles) {
+    private static List<GrantedAuthority> mapToGrantedAuthority(List<User.Role> userRoles) {
         return userRoles.stream()
                 .filter(Objects::nonNull)
                 .map(userRole -> new SimpleGrantedAuthority("ROLE_" + userRole.name()))

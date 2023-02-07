@@ -1,6 +1,6 @@
 package com.solvd.qaprotours.web.mapper;
 
-import com.solvd.qaprotours.domain.TourCriteria;
+import com.solvd.qaprotours.domain.tour.TourCriteria;
 import com.solvd.qaprotours.web.dto.TourCriteriaDto;
 import org.mapstruct.Mapper;
 
