@@ -30,7 +30,7 @@ public class Ticket {
     private LocalDateTime orderTime;
 
     @Enumerated(EnumType.STRING)
-    private TicketOrderStatus status;
+    private Status status;
 
     @Column(name = "client_amount", nullable = false)
     private Integer clientsAmount;

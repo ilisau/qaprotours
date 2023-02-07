@@ -3,7 +3,7 @@ package com.solvd.qaprotours.domain.user;
 /**
  * @author Ermakovich Kseniya
  */
-public enum TicketOrderStatus {
+public enum Status {
 
     ORDERED,
     CONFIRMED
