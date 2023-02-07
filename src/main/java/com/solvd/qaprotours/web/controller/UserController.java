@@ -1,13 +1,13 @@
 package com.solvd.qaprotours.web.controller;
 
+import com.solvd.qaprotours.domain.user.Ticket;
 import com.solvd.qaprotours.domain.user.User;
-import com.solvd.qaprotours.domain.user.UserTour;
+import com.solvd.qaprotours.service.TicketService;
 import com.solvd.qaprotours.service.UserService;
-import com.solvd.qaprotours.service.UserTourService;
+import com.solvd.qaprotours.web.dto.user.TicketDto;
 import com.solvd.qaprotours.web.dto.user.UserDto;
-import com.solvd.qaprotours.web.dto.user.UserTourDto;
+import com.solvd.qaprotours.web.mapper.TicketMapper;
 import com.solvd.qaprotours.web.mapper.UserMapper;
-import com.solvd.qaprotours.web.mapper.UserTourMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -24,9 +24,9 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final UserTourService userTourService;
+    private final TicketService ticketService;
     private final UserMapper userMapper;
-    private final UserTourMapper userTourMapper;
+    private final TicketMapper ticketMapper;
 
     @PutMapping
     public void update(@Validated @RequestBody UserDto userDto) {
@@ -47,28 +47,35 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/tours")
-    public List<UserTourDto> getTours(@PathVariable Long userId) {
-        List<UserTour> tours = userTourService.getTours(userId);
-        return userTourMapper.toDto(tours);
+    public List<TicketDto> getTickets(@PathVariable Long userId) {
+        List<Ticket> tours = ticketService.getTickets(userId);
+        return ticketMapper.toDto(tours);
+    }
+
+    @GetMapping("/{userId}/tours/{ticketId}")
+    public TicketDto getTicket(@PathVariable Long userId,
+                               @PathVariable Long ticketId) {
+        Ticket ticket = ticketService.getById(ticketId);
+        return ticketMapper.toDto(ticket);
     }
 
     @PostMapping("/{userId}/tours/{tourId}")
-    public void addTour(@PathVariable Long userId,
-                        @PathVariable Long tourId,
-                        @RequestParam Integer peopleAmount) {
-        userTourService.addTour(userId, tourId, peopleAmount);
+    public void addTicket(@PathVariable Long userId,
+                          @PathVariable Long tourId,
+                          @RequestParam Integer peopleAmount) {
+        ticketService.addTicket(userId, tourId, peopleAmount);
     }
 
     @DeleteMapping("/{userId}/tours/{tourId}")
-    public void deleteTour(@PathVariable Long userId,
-                           @PathVariable Long tourId) {
-        userTourService.deleteTour(userId, tourId);
+    public void deleteTicket(@PathVariable Long userId,
+                             @PathVariable Long tourId) {
+        ticketService.deleteTicket(userId, tourId);
     }
 
     @PostMapping("/{userId}/tours/{tourId}/confirm")
-    public void confirmTour(@PathVariable Long userId,
-                            @PathVariable Long tourId) {
-        userTourService.confirmTour(userId, tourId);
+    public void confirmTicket(@PathVariable Long userId,
+                              @PathVariable Long tourId) {
+        ticketService.confirmTicket(userId, tourId);
     }
 
 }

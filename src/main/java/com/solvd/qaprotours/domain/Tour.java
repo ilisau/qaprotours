@@ -1,6 +1,6 @@
 package com.solvd.qaprotours.domain;
 
-import com.solvd.qaprotours.domain.user.UserTour;
+import com.solvd.qaprotours.domain.user.Ticket;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -54,6 +54,6 @@ public class Tour {
     private BigDecimal price;
 
     @OneToMany(mappedBy = "tour", orphanRemoval = true)
-    private List<UserTour> userTours;
+    private List<Ticket> tickets;
 
 }
