@@ -1,4 +1,4 @@
-package com.solvd.qaprotours.domain;
+package com.solvd.qaprotours.domain.hotel;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -15,13 +15,8 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "country_id")
-    private Country country;
-
-    @ManyToOne
-    @JoinColumn(name = "city_id")
-    private City city;
+    private String country;
+    private String city;
 
     @Column(name = "street", nullable = false)
     private String streetName;

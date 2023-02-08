@@ -1,4 +1,4 @@
-package com.solvd.qaprotours.domain;
+package com.solvd.qaprotours.domain.hotel;
 
 import jakarta.persistence.*;
 import lombok.Data;

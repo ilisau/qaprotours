@@ -1,7 +1,6 @@
-package com.solvd.qaprotours.web.dto;
+package com.solvd.qaprotours.domain.tour;
 
 import com.solvd.qaprotours.domain.hotel.Point;
-import com.solvd.qaprotours.domain.tour.Tour;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -12,7 +11,7 @@ import java.util.List;
  * @author Varya Petrova
  */
 @Data
-public class TourCriteriaDto {
+public class TourCriteria {
 
     private Point userLocation;
     private List<String> countries;

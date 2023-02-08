@@ -3,7 +3,6 @@ package com.solvd.qaprotours.web.controller;
 import com.solvd.qaprotours.domain.jwt.Authentication;
 import com.solvd.qaprotours.domain.jwt.JwtRefresh;
 import com.solvd.qaprotours.domain.jwt.JwtResponse;
-import com.solvd.qaprotours.domain.user.Role;
 import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.service.AuthService;
 import com.solvd.qaprotours.service.UserService;
@@ -48,7 +47,7 @@ public class AuthController {
     @ResponseStatus(HttpStatus.CREATED)
     public void register(@Validated(OnCreate.class) @RequestBody UserDto userDto) {
         User user = userMapper.toEntity(userDto);
-        user.setRole(Role.CLIENT);
+        user.setRole(User.Role.CLIENT);
         userService.create(user);
     }
 

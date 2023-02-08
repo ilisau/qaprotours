@@ -1,5 +1,7 @@
-package com.solvd.qaprotours.domain;
+package com.solvd.qaprotours.domain.tour;
 
+import com.solvd.qaprotours.domain.hotel.Hotel;
+import com.solvd.qaprotours.domain.hotel.Point;
 import com.solvd.qaprotours.domain.user.Ticket;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -9,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * @author Ermakovich Kseniya
+ * @author Varya Petrova
  */
 @Data
 @Entity
@@ -23,13 +25,9 @@ public class Tour {
     private String name;
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "country_id")
-    private Country country;
+    private String country;
 
-    @ManyToOne
-    @JoinColumn(name = "city_id")
-    private City city;
+    private String city;
 
     @Enumerated(EnumType.STRING)
     private TourType type;
@@ -53,7 +51,33 @@ public class Tour {
 
     private BigDecimal price;
 
+    private BigDecimal rating;
+
+    @Column(name = "day_duration")
+    private Integer dayDuration;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "latitude", column = @Column(name = "latitude")),
+            @AttributeOverride(name = "longitude", column = @Column(name = "longitude"))
+    })
+    private Point coordinates;
+
     @OneToMany(mappedBy = "tour", orphanRemoval = true)
     private List<Ticket> tickets;
+
+    public enum CateringType {
+
+        BREAKFAST,
+        ALL_INCLUSIVE
+
+    }
+
+    public enum TourType {
+
+        HEALTH,
+        CULTURE
+
+    }
 
 }

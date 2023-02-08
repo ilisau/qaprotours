@@ -1,7 +1,7 @@
 package com.solvd.qaprotours.web.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.solvd.qaprotours.domain.user.Role;
+import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.web.dto.validation.OnCreate;
 import com.solvd.qaprotours.web.dto.validation.OnUpdate;
 import jakarta.validation.constraints.Email;
@@ -37,6 +37,6 @@ public class UserDto {
     private String password;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Role role;
+    private User.Role role;
 
 }

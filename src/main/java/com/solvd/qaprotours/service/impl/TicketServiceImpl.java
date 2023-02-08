@@ -1,7 +1,6 @@
 package com.solvd.qaprotours.service.impl;
 
 import com.solvd.qaprotours.domain.exception.ResourceDoesNotExistException;
-import com.solvd.qaprotours.domain.user.Status;
 import com.solvd.qaprotours.domain.user.Ticket;
 import com.solvd.qaprotours.repository.TicketRepository;
 import com.solvd.qaprotours.service.TicketService;
@@ -46,7 +45,7 @@ public class TicketServiceImpl implements TicketService {
         ticket.setUser(userService.getById(userId));
         ticket.setTour(tourService.getById(tourId));
         ticket.setOrderTime(LocalDateTime.now());
-        ticket.setStatus(Status.ORDERED);
+        ticket.setStatus(Ticket.Status.ORDERED);
         ticket.setClientsAmount(peopleAmount);
         ticketRepository.save(ticket);
     }
@@ -62,7 +61,7 @@ public class TicketServiceImpl implements TicketService {
     public void confirmTicket(Long userId, Long tourId) {
         Ticket ticket = ticketRepository.findByUserIdAndTourId(userId, tourId)
                 .orElseThrow(() -> new ResourceDoesNotExistException("ticket not found"));
-        ticket.setStatus(Status.CONFIRMED);
+        ticket.setStatus(Ticket.Status.CONFIRMED);
         ticketRepository.save(ticket);
     }
 
