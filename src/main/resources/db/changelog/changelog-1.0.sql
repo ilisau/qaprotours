@@ -7,35 +7,35 @@ set schema 'qaprotours';
 CREATE TABLE IF NOT EXISTS users
 (
     id           bigserial PRIMARY KEY,
-    name         varchar(35)         NOT NULL,
-    surname      varchar(35)         NOT NULL,
-    email        varchar(320) UNIQUE NOT NULL,
-    password     varchar(200)        NOT NULL,
-    role         varchar(20)         NOT NULL,
+    name         varchar(255)        NOT NULL,
+    surname      varchar(255)        NOT NULL,
+    email        varchar(255) UNIQUE NOT NULL,
+    password     varchar(255)        NOT NULL,
+    role         varchar(255)        NOT NULL,
     is_activated boolean             NOT NULL DEFAULT false
 );
 
 CREATE TABLE IF NOT EXISTS passports
 (
     user_id         bigint PRIMARY KEY,
-    serial_number   varchar(20) UNIQUE NOT NULL,
-    identity_number varchar(35) UNIQUE NOT NULL,
+    serial_number   varchar(255) UNIQUE NOT NULL,
+    identity_number varchar(255) UNIQUE NOT NULL,
     constraint fk_user foreign key (user_id) references users (id)
 );
 
 CREATE TABLE IF NOT EXISTS addresses
 (
     id           bigint PRIMARY KEY,
-    country      varchar(40) NOT NULL,
-    city         varchar(40) NOT NULL,
-    street       bigint NOT NULL,
-    house_number int    NOT NULL
+    country      varchar(255) NOT NULL,
+    city         varchar(255) NOT NULL,
+    street       varchar(255) NOT NULL,
+    house_number int          NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS hotels
 (
     id           bigserial PRIMARY KEY,
-    name         varchar(300) NOT NULL,
+    name         varchar(255) NOT NULL,
     coastline    int,
     stars_amount int,
     address_id   bigint       NOT NULL,
@@ -47,10 +47,10 @@ CREATE TABLE IF NOT EXISTS tours
     id             bigint PRIMARY KEY,
     name           varchar(255),
     description    varchar(1024),
-    country        varchar(40),
-    city           varchar(40),
-    type           varchar(30),
-    catering_type  varchar(30),
+    country        varchar(255),
+    city           varchar(255),
+    type           varchar(255),
+    catering_type  varchar(255),
     hotel_id       bigint,
     arrival_time   timestamp without time zone,
     departure_time timestamp without time zone,
@@ -58,8 +58,8 @@ CREATE TABLE IF NOT EXISTS tours
     price          real,
     rating         real,
     day_duration   int,
-    latitude   double precision,
-    longitude  double precision,
+    latitude       double precision,
+    longitude      double precision,
     constraint fk_hotel foreign key (hotel_id) references hotels (id)
 );
 
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS tickets
     user_id       bigint,
     tour_id       bigint,
     order_time    timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    status        varchar(50)                 NOT NULL DEFAULT 'ORDERED',
+    status        varchar(255)                NOT NULL DEFAULT 'ORDERED',
     client_amount int                         NOT NULL,
     constraint fk_user foreign key (user_id) references users (id),
     constraint fk_tour foreign key (tour_id) references tours (id)

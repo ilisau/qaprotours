@@ -39,6 +39,8 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void update(User user) {
+        //TODO check if password valid
+        //TODO check if email already exists
         userRepository.save(user);
     }
 

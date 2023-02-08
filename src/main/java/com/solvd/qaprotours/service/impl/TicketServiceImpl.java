@@ -40,6 +40,7 @@ public class TicketServiceImpl implements TicketService {
     @Override
     @Transactional
     public void addTicket(Long userId, Long tourId, Integer peopleAmount) {
+        //TODO check if not enough place in tour
         Ticket ticket = new Ticket();
         ticket.setUser(userService.getById(userId));
         ticket.setTour(tourService.getById(tourId));
