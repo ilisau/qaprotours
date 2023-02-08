@@ -56,6 +56,8 @@ public class Tour {
     @Column(name = "day_duration")
     private Integer dayDuration;
 
+    private boolean isDraft;
+
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "latitude", column = @Column(name = "latitude")),
@@ -63,7 +65,7 @@ public class Tour {
     })
     private Point coordinates;
 
-    @OneToMany(mappedBy = "tour", orphanRemoval = true)
+    @OneToMany(mappedBy = "tour")
     private List<Ticket> tickets;
 
     public enum CateringType {
