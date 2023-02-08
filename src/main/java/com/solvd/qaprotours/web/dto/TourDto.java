@@ -2,9 +2,7 @@ package com.solvd.qaprotours.web.dto;
 
 import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.web.dto.validation.OnCreate;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -28,11 +26,11 @@ public class TourDto {
     private String description;
 
     @NotNull(message = "country cannot be null", groups = {OnCreate.class})
-    @Size(min=3, max = 40, message = "Country should be from 3 to 40 symbols")
+    @Size(min = 3, max = 40, message = "Country should be from 3 to 40 symbols")
     private String country;
 
     @NotNull(message = "city cannot be null", groups = {OnCreate.class})
-    @Size(min=3, max = 40, message = "City should be from 3 to 40 symbols")
+    @Size(min = 3, max = 40, message = "City should be from 3 to 40 symbols")
     private String city;
 
     @NotNull(message = "type cannot be null", groups = {OnCreate.class})
@@ -43,6 +41,16 @@ public class TourDto {
 
     @NotNull(message = "hotel cannot be null", groups = {OnCreate.class})
     private HotelDto hotel;
+
+    @DecimalMin(value = "0.0", message = "Rating should be 0.0 or more")
+    @DecimalMax(value = "5.0", message = "Rating should be 5.0 or less")
+    @Digits(integer = 1, fraction = 1, message = "Format : 5.0")
+    @NotNull(message = "Rating cant be null")
+    private BigDecimal rating;
+
+    @Min(value = 1, message = "Tour duration must be 1 or more days")
+    @Max(value = 50, message = "Tour duration must be less than 50 days")
+    private Integer dayDuration;
 
     @NotNull(message = "arrival time cannot be null", groups = {OnCreate.class})
     private LocalDateTime arrivalTime;
