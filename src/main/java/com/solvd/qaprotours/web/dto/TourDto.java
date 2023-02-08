@@ -1,5 +1,6 @@
 package com.solvd.qaprotours.web.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.web.dto.validation.OnCreate;
 import jakarta.validation.constraints.*;
@@ -57,6 +58,9 @@ public class TourDto {
 
     @NotNull(message = "departure time cannot be null", groups = {OnCreate.class})
     private LocalDateTime departureTime;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private boolean isDraft;
 
     @NotNull(message = "places amount cannot be null", groups = {OnCreate.class})
     @Min(value = 0, message = "places amount cannot be less than 0", groups = {OnCreate.class})

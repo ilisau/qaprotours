@@ -1,5 +1,6 @@
 package com.solvd.qaprotours.service.impl;
 
+import com.solvd.qaprotours.domain.exception.ResourceDoesNotExistException;
 import com.solvd.qaprotours.domain.hotel.Point;
 import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.domain.tour.TourCriteria;
@@ -142,18 +143,27 @@ public class TourServiceImpl implements TourService {
     }
 
     @Override
-    public void save(Tour tour) {
+    public Tour save(Tour tour) {
+        tourRepository.save(tour);
+        return tour;
+    }
 
+    @Override
+    public Tour publish(Tour tour) {
+        tour.setDraft(false);
+        tourRepository.save(tour);
+        return tour;
     }
 
     @Override
     public Tour getById(Long tourId) {
-        return null;
+        return tourRepository.findById(tourId)
+                .orElseThrow(() -> new ResourceDoesNotExistException("tour with id " + tourId + " does not exist"));
     }
 
     @Override
     public void delete(Long tourId) {
-
+        tourRepository.deleteById(tourId);
     }
 
     private Double getDistanceBetweenPoints(Point userLocation, Point tourLocation) {

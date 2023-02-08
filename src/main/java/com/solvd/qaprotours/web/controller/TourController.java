@@ -36,15 +36,17 @@ public class TourController {
     }
 
     @PostMapping
-    public void saveDraft(@RequestBody TourDto tourDto) {
+    public TourDto saveDraft(@RequestBody TourDto tourDto) {
         Tour tour = tourMapper.toEntity(tourDto);
-        tourService.save(tour);
+        tour = tourService.save(tour);
+        return tourMapper.toDto(tour);
     }
 
     @PostMapping("/publish")
-    public void publish(@Validated(OnCreate.class) @RequestBody TourDto tourDto) {
+    public TourDto publish(@Validated(OnCreate.class) @RequestBody TourDto tourDto) {
         Tour tour = tourMapper.toEntity(tourDto);
-        tourService.save(tour);
+        tour = tourService.publish(tour);
+        return tourMapper.toDto(tour);
     }
 
     @GetMapping("/{tourId}")

@@ -15,8 +15,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     List<Ticket> findAllByUserId(Long userId);
 
-    List<Ticket> findAllByTourId(Long tourId);
-
     void deleteByUserIdAndTourId(Long userId, Long tourId);
 
 }

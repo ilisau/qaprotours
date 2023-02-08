@@ -14,7 +14,9 @@ public interface TourService {
 
     List<Tour> getAllByCriteria(TourCriteria tourCriteria);
 
-    void save(Tour tour);
+    Tour save(Tour tour);
+
+    Tour publish(Tour tour);
 
     Tour getById(Long tourId);
 
