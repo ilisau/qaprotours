@@ -23,11 +23,11 @@ public class TourDto {
     private Long id;
 
     @NotNull(message = "name cannot be null", groups = {OnCreate.class})
-    @Size(min = 1, max = 255, message = "name length must be between 1 and 255", groups = {OnCreate.class})
+    @Size(min = 1, max = 255, message = "name length must be between {min} and {max}", groups = {OnCreate.class})
     private String name;
 
     @NotNull(message = "description cannot be null", groups = {OnCreate.class})
-    @Size(min = 1, max = 1024, message = "description length must be between 1 and 1024", groups = {OnCreate.class})
+    @Size(min = 1, max = 1024, message = "description length must be between {min} and {max}", groups = {OnCreate.class})
     private String description;
 
     @NotNull(message = "country cannot be null", groups = {OnCreate.class})

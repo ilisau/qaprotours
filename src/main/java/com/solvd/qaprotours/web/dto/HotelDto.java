@@ -17,15 +17,15 @@ public class HotelDto {
     private Long id;
 
     @NotNull(message = "name cannot be null", groups = {OnUpdate.class, OnCreate.class})
-    @Size(min = 1, max = 300, message = "name must be between 1 and 255 characters", groups = {OnUpdate.class, OnCreate.class})
+    @Size(min = 1, max = 255, message = "name must be between {min} and {max} characters", groups = {OnUpdate.class, OnCreate.class})
     private String name;
 
     @NotNull(message = "coastline cannot be null", groups = {OnUpdate.class, OnCreate.class})
-    @Size(min = 1, max = 10, message = "coastline must be between 1 and 10", groups = {OnUpdate.class, OnCreate.class})
+    @Size(min = 1, max = 10, message = "coastline must be between {min} and {max}", groups = {OnUpdate.class, OnCreate.class})
     private Integer coastline;
 
     @NotNull(message = "stars amount cannot be null", groups = {OnUpdate.class, OnCreate.class})
-    @Size(min = 1, max = 5, message = "stars amount must be between 1 and 5", groups = {OnUpdate.class, OnCreate.class})
+    @Size(min = 1, max = 5, message = "stars amount must be between {min} and {max}", groups = {OnUpdate.class, OnCreate.class})
     private Integer starsAmount;
 
     @NotNull(message = "address cannot be null", groups = {OnUpdate.class, OnCreate.class})

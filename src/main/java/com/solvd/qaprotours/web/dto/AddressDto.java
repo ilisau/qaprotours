@@ -24,7 +24,7 @@ public class AddressDto {
     private City city;
 
     @NotNull(message = "street name cannot be null", groups = {OnCreate.class, OnUpdate.class})
-    @Size(min = 1, max = 120, message = "street name must be between 1 and 120 characters", groups = {OnCreate.class, OnUpdate.class})
+    @Size(min = 1, max = 255, message = "street name must be between {min} and {max} characters", groups = {OnCreate.class, OnUpdate.class})
     private String streetName;
 
     @NotNull(message = "house number cannot be null", groups = {OnCreate.class, OnUpdate.class})

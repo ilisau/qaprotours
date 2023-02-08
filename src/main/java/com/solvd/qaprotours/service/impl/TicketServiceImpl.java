@@ -1,8 +1,8 @@
 package com.solvd.qaprotours.service.impl;
 
 import com.solvd.qaprotours.domain.exception.ResourceDoesNotExistException;
-import com.solvd.qaprotours.domain.user.Ticket;
 import com.solvd.qaprotours.domain.user.Status;
+import com.solvd.qaprotours.domain.user.Ticket;
 import com.solvd.qaprotours.repository.TicketRepository;
 import com.solvd.qaprotours.service.TicketService;
 import com.solvd.qaprotours.service.TourService;
@@ -41,6 +41,7 @@ public class TicketServiceImpl implements TicketService {
     @Override
     @Transactional
     public void addTicket(Long userId, Long tourId, Integer peopleAmount) {
+        //TODO check if not enough place in tour
         Ticket ticket = new Ticket();
         ticket.setUser(userService.getById(userId));
         ticket.setTour(tourService.getById(tourId));
