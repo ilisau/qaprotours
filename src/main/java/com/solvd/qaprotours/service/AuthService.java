@@ -15,8 +15,6 @@ public interface AuthService {
 
     void sendRestoreToken(String email);
 
-    void validateRestoreToken(String token);
-
     void restoreUserPassword(String token, String password);
 
 }

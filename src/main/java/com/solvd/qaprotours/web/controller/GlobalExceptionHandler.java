@@ -1,9 +1,6 @@
 package com.solvd.qaprotours.web.controller;
 
-import com.solvd.qaprotours.domain.exception.AuthException;
-import com.solvd.qaprotours.domain.exception.ResourceAlreadyExistsException;
-import com.solvd.qaprotours.domain.exception.ResourceDoesNotExistException;
-import com.solvd.qaprotours.domain.exception.TokenExpiredException;
+import com.solvd.qaprotours.domain.exception.*;
 import com.solvd.qaprotours.web.dto.ErrorDto;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -35,9 +32,21 @@ public class GlobalExceptionHandler {
         return new ErrorDto(ex.getMessage());
     }
 
-    @ExceptionHandler(TokenExpiredException.class)
+    @ExceptionHandler(PasswordMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorDto handleTokenExpiredException(TokenExpiredException ex) {
+    public ErrorDto handlePasswordMismatchException(PasswordMismatchException ex) {
+        return new ErrorDto(ex.getMessage());
+    }
+
+    @ExceptionHandler(NoFreePlacesException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDto handleNoFreePlacesException(NoFreePlacesException ex) {
+        return new ErrorDto(ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDto handleTokenExpiredException(InvalidTokenException ex) {
         return new ErrorDto(ex.getMessage());
     }
 

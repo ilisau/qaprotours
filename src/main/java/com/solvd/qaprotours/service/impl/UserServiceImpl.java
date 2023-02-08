@@ -1,16 +1,20 @@
 package com.solvd.qaprotours.service.impl;
 
+import com.solvd.qaprotours.domain.exception.InvalidTokenException;
+import com.solvd.qaprotours.domain.exception.PasswordMismatchException;
 import com.solvd.qaprotours.domain.exception.ResourceAlreadyExistsException;
 import com.solvd.qaprotours.domain.exception.ResourceDoesNotExistException;
-import com.solvd.qaprotours.domain.exception.TokenExpiredException;
 import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.repository.UserRepository;
 import com.solvd.qaprotours.service.JwtService;
 import com.solvd.qaprotours.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Objects;
 
 /**
  * @author Ermakovich Kseniya, Lisov Ilya
@@ -21,6 +25,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional(readOnly = true)
@@ -39,8 +44,30 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void update(User user) {
-        //TODO check if password valid
-        //TODO check if email already exists
+        User oldUser = getById(user.getId());
+        if (!Objects.equals(getByEmail(user.getEmail()).getId(), user.getId())) {
+            throw new ResourceAlreadyExistsException("user with email " + user.getEmail() + " already exists");
+        }
+        oldUser.setEmail(user.getEmail());
+        oldUser.setName(user.getName());
+        oldUser.setSurname(user.getSurname());
+        userRepository.save(user);
+    }
+
+    @Override
+    public void updatePassword(Long userId, String newPassword) {
+        User user = getById(userId);
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
+    @Override
+    public void updatePassword(Long userId, String oldPassword, String newPassword) {
+        User user = getById(userId);
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new PasswordMismatchException("old password is incorrect");
+        }
+        user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
 
@@ -52,13 +79,15 @@ public class UserServiceImpl implements UserService {
         }
         user.setActivated(false);
         userRepository.save(user);
+        String token = jwtService.generateActivationToken(user);
+        //TODO send email with activation token
     }
 
     @Override
     @Transactional
     public void activate(String token) {
         if (!jwtService.validateToken(token)) {
-            throw new TokenExpiredException("token is expired");
+            throw new InvalidTokenException("token is expired");
         }
         Long id = jwtService.retrieveUserId(token);
         User user = getById(id);

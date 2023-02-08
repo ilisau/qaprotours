@@ -1,6 +1,8 @@
 package com.solvd.qaprotours.service.impl;
 
+import com.solvd.qaprotours.domain.exception.NoFreePlacesException;
 import com.solvd.qaprotours.domain.exception.ResourceDoesNotExistException;
+import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.domain.user.Ticket;
 import com.solvd.qaprotours.repository.TicketRepository;
 import com.solvd.qaprotours.service.TicketService;
@@ -40,7 +42,11 @@ public class TicketServiceImpl implements TicketService {
     @Override
     @Transactional
     public void addTicket(Long userId, Long tourId, Integer peopleAmount) {
-        //TODO check if not enough place in tour
+        Tour tour = tourService.getById(tourId);
+        if (tour.getPlacesAmount() < peopleAmount) {
+            throw new NoFreePlacesException("not enough places in tour");
+        }
+
         Ticket ticket = new Ticket();
         ticket.setUser(userService.getById(userId));
         ticket.setTour(tourService.getById(tourId));
@@ -48,6 +54,9 @@ public class TicketServiceImpl implements TicketService {
         ticket.setStatus(Ticket.Status.ORDERED);
         ticket.setClientsAmount(peopleAmount);
         ticketRepository.save(ticket);
+
+        tour.setPlacesAmount(tour.getPlacesAmount() - peopleAmount);
+        tourService.save(tour);
     }
 
     @Override
