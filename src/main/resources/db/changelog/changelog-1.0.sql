@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS passports
     serial_number   varchar(255) UNIQUE NOT NULL,
     identity_number varchar(255) UNIQUE NOT NULL,
     constraint fk_user foreign key (user_id) references users (id),
-    constraint "passport_pkey" PRIMARY KEY ("id")
+    constraint "passport_pkey" PRIMARY KEY ("user_id")
 );
 
 CREATE TABLE IF NOT EXISTS addresses
