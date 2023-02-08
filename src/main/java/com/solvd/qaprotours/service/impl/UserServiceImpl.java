@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void update(User user) {
         User oldUser = getById(user.getId());
-        if (!Objects.equals(getByEmail(user.getEmail()).getId(), user.getId())) {
+        if (!Objects.equals(oldUser.getId(), user.getId())) {
             throw new ResourceAlreadyExistsException("user with email " + user.getEmail() + " already exists");
         }
         oldUser.setEmail(user.getEmail());
