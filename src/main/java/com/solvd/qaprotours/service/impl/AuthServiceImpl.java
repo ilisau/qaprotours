@@ -1,6 +1,7 @@
 package com.solvd.qaprotours.service.impl;
 
 import com.solvd.qaprotours.domain.exception.AuthException;
+import com.solvd.qaprotours.domain.exception.InvalidTokenException;
 import com.solvd.qaprotours.domain.jwt.Authentication;
 import com.solvd.qaprotours.domain.jwt.JwtAccess;
 import com.solvd.qaprotours.domain.jwt.JwtRefresh;
@@ -11,6 +12,7 @@ import com.solvd.qaprotours.service.JwtService;
 import com.solvd.qaprotours.service.UserService;
 import com.solvd.qaprotours.web.security.jwt.JwtTokenType;
 import com.solvd.qaprotours.web.security.jwt.JwtUserDetails;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -52,16 +54,22 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void sendRestoreToken(String email) {
+        User user = userService.getByEmail(email);
+        String token = jwtService.generateResetToken(user);
         //TODO send email with restore token
     }
 
     @Override
-    public void validateRestoreToken(String token) {
-        //TODO validate restore token
+    public void restoreUserPassword(String token, String password) {
+        if (!jwtService.validateToken(token)) {
+            throw new InvalidTokenException("token is expired");
+        }
+        Claims claims = jwtService.parse(token);
+        if (!JwtTokenType.RESET.getValue().equals(claims.get("type"))) {
+            throw new InvalidTokenException("invalid reset token");
+        }
+        JwtUserDetails userDetails = jwtService.parseToken(token);
+        userService.updatePassword(userDetails.getId(), password);
     }
 
-    @Override
-    public void restoreUserPassword(String token, String password) {
-        //TODO validate restore token and restore password
-    }
 }

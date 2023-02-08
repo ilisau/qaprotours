@@ -68,11 +68,6 @@ public class AuthController {
         authService.sendRestoreToken(email);
     }
 
-    @GetMapping("/password/restore")
-    public void restore(@RequestParam String token) {
-        authService.validateRestoreToken(token);
-    }
-
     @PostMapping("/password/restore")
     public void restore(@RequestParam String token,
                         @RequestBody String password) {
