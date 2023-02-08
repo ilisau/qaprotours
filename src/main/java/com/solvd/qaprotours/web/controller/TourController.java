@@ -27,7 +27,7 @@ public class TourController {
     private final TourMapper tourMapper;
     private final TourCriteriaMapper tourCriteriaMapper;
 
-    @GetMapping("/all")
+    @GetMapping
     public List<TourDto> getAll(@RequestParam("currentPage") int currentPage, @RequestParam("pageSize") int pageSize,
                                 @RequestBody(required = false) TourCriteriaDto tourCriteriaDto) {
         TourCriteria tourCriteria = tourCriteriaMapper.toEntity(tourCriteriaDto);
