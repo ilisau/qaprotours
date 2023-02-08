@@ -16,11 +16,11 @@ public class AddressDto {
     private Long id;
 
     @NotNull(message = "country cannot be null", groups = {OnCreate.class, OnUpdate.class})
-    @Size(min=3, max = 40, message = "Country should be from 3 to 40 symbols")
+    @Size(min = 3, max = 40, message = "Country should be from 3 to 40 symbols")
     private String country;
 
     @NotNull(message = "city cannot be null", groups = {OnCreate.class, OnUpdate.class})
-    @Size(min=3, max = 40, message = "City should be from 3 to 40 symbols")
+    @Size(min = 3, max = 40, message = "City should be from 3 to 40 symbols")
     private String city;
 
     @NotNull(message = "street name cannot be null", groups = {OnCreate.class, OnUpdate.class})

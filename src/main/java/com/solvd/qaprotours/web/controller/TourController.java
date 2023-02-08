@@ -31,7 +31,7 @@ public class TourController {
     public List<TourDto> getAll(@RequestParam("currentPage") int currentPage, @RequestParam("pageSize") int pageSize,
                                 @RequestBody(required = false) TourCriteriaDto tourCriteriaDto) {
         TourCriteria tourCriteria = tourCriteriaMapper.toEntity(tourCriteriaDto);
-        List<Tour> tours = tourService.findAll(currentPage, pageSize, tourCriteria);
+        List<Tour> tours = tourService.getAll(currentPage, pageSize, tourCriteria);
         return tourMapper.toDto(tours);
     }
 

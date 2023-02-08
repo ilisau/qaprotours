@@ -26,11 +26,11 @@ public class TourDto {
     private String description;
 
     @NotNull(message = "country cannot be null", groups = {OnCreate.class})
-    @Size(min=3, max = 40, message = "Country should be from 3 to 40 symbols")
+    @Size(min = 3, max = 40, message = "Country should be from 3 to 40 symbols")
     private String country;
 
     @NotNull(message = "city cannot be null", groups = {OnCreate.class})
-    @Size(min=3, max = 40, message = "City should be from 3 to 40 symbols")
+    @Size(min = 3, max = 40, message = "City should be from 3 to 40 symbols")
     private String city;
 
     @NotNull(message = "type cannot be null", groups = {OnCreate.class})
@@ -44,7 +44,7 @@ public class TourDto {
 
     @DecimalMin(value = "0.0", message = "Rating should be 0.0 or more")
     @DecimalMax(value = "5.0", message = "Rating should be 5.0 or less")
-    @Digits(integer=1, fraction=1, message = "Format : 5.0")
+    @Digits(integer = 1, fraction = 1, message = "Format : 5.0")
     @NotNull(message = "Rating cant be null")
     private BigDecimal rating;
 

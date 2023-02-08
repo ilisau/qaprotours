@@ -10,9 +10,9 @@ import java.util.List;
  */
 public interface TourService {
 
-    List<Tour> findAll(int currentPage, int pageSize, TourCriteria tourCriteria);
+    List<Tour> getAll(int currentPage, int pageSize, TourCriteria tourCriteria);
 
-    List<Tour> findAllByCriteria(TourCriteria tourCriteria);
+    List<Tour> getAllByCriteria(TourCriteria tourCriteria);
 
     void save(Tour tour);
 

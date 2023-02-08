@@ -36,21 +36,21 @@ public class TourServiceImpl implements TourService {
     private final TourRepository tourRepository;
 
     @Override
-    public List<Tour> findAll(int currentPage, int pageSize, TourCriteria tourCriteria) {
+    public List<Tour> getAll(int currentPage, int pageSize, TourCriteria tourCriteria) {
         Sort ratingSort = Sort.by("rating").descending();
         Sort arrivalTimeSort = Sort.by("arrivalTime");
         Sort multipleSort = ratingSort.and(arrivalTimeSort);
         Pageable paging = PageRequest.of(currentPage, pageSize, multipleSort);
         Page<Tour> toursPage = tourRepository.findAll(paging);
         List<Tour> tours = toursPage.getContent();
-        if (tourCriteria != null){
-            tours = findAllByCriteria(tourCriteria);
+        if (tourCriteria != null) {
+            tours = getAllByCriteria(tourCriteria);
         }
         return tours;
     }
 
     @Override
-    public List<Tour> findAllByCriteria(TourCriteria tourCriteria) {
+    public List<Tour> getAllByCriteria(TourCriteria tourCriteria) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tour> criteriaQuery = criteriaBuilder.createQuery(Tour.class);
         Root<Tour> tourRoot = criteriaQuery.from(Tour.class);
@@ -58,21 +58,22 @@ public class TourServiceImpl implements TourService {
 
         List<String> countries = tourCriteria.getCountries();
         List<Predicate> countryPredicates = new ArrayList<>();
-        if(countries != null && !countries.isEmpty()){
-            for(String country: countries){
+        if (countries != null && !countries.isEmpty()) {
+            for (String country : countries) {
                 countryPredicates.add(criteriaBuilder.equal(tourRoot.get("country"), country));
             }
             Predicate countriesFinalPredicate = criteriaBuilder.or(countryPredicates.toArray(new Predicate[0]));
             predicates.add(countriesFinalPredicate);
         }
 
+        // TODO add maxRadius to criteriaBuilder
 //        Double maxRadius = tourCriteria.getMaxRadius();
 //        if(maxRadius != null){}
 
         List<Tour.TourType> tourTypes = tourCriteria.getTourTypes();
         List<Predicate> tourTypePredicates = new ArrayList<>();
-        if(tourTypes != null && !tourTypes.isEmpty()){
-            for(Tour.TourType type: tourTypes){
+        if (tourTypes != null && !tourTypes.isEmpty()) {
+            for (Tour.TourType type : tourTypes) {
                 tourTypePredicates.add(criteriaBuilder.equal(tourRoot.get("type"), type));
             }
             Predicate tourTypesFinalPredicate = criteriaBuilder.or(tourTypePredicates.toArray(new Predicate[0]));
@@ -80,15 +81,15 @@ public class TourServiceImpl implements TourService {
         }
 
         Integer stars = tourCriteria.getStars();
-        if(stars != null){
+        if (stars != null) {
             Predicate starsPredicate = criteriaBuilder.equal(tourRoot.get("hotel").<Integer>get("starsAmount"), stars);
             predicates.add(starsPredicate);
         }
 
         List<Tour.CateringType> cateringTypes = tourCriteria.getCateringTypes();
         List<Predicate> cateringTypesPredicates = new ArrayList<>();
-        if(cateringTypes != null && !cateringTypes.isEmpty()){
-            for(Tour.CateringType type: cateringTypes){
+        if (cateringTypes != null && !cateringTypes.isEmpty()) {
+            for (Tour.CateringType type : cateringTypes) {
                 cateringTypesPredicates.add(criteriaBuilder.equal(tourRoot.get("cateringType"), type));
             }
             Predicate cateringTypesFinalPredicate = criteriaBuilder.or(cateringTypesPredicates.toArray(new Predicate[0]));
@@ -97,8 +98,8 @@ public class TourServiceImpl implements TourService {
 
         List<Integer> coastLines = tourCriteria.getCoastLines();
         List<Predicate> coastLinePredicates = new ArrayList<>();
-        if(coastLines != null && !coastLines.isEmpty()){
-            for(Integer coastLine: coastLines){
+        if (coastLines != null && !coastLines.isEmpty()) {
+            for (Integer coastLine : coastLines) {
                 coastLinePredicates.add(criteriaBuilder.equal(tourRoot.get("hotel").<Integer>get("coastline"), coastLine));
             }
             Predicate coastLineFinalPredicate = criteriaBuilder.or(coastLinePredicates.toArray(new Predicate[0]));
@@ -106,31 +107,31 @@ public class TourServiceImpl implements TourService {
         }
 
         Integer dayDuration = tourCriteria.getDayDuration();
-        if(dayDuration != null){
+        if (dayDuration != null) {
             Predicate dayDurationPredicate = criteriaBuilder.equal(tourRoot.get("dayDuration"), dayDuration);
             predicates.add(dayDurationPredicate);
         }
 
         LocalDateTime arrivedAt = tourCriteria.getArrivedAt();
-        if(arrivedAt != null){
+        if (arrivedAt != null) {
             Predicate arrivedAtPredicate = criteriaBuilder.greaterThanOrEqualTo(tourRoot.get("arrivalTime"), arrivedAt);
             predicates.add(arrivedAtPredicate);
         }
 
         LocalDateTime leavedAt = tourCriteria.getLeavedAt();
-        if(leavedAt != null){
+        if (leavedAt != null) {
             Predicate leavedAtPredicate = criteriaBuilder.lessThanOrEqualTo(tourRoot.get("departureTime"), leavedAt);
             predicates.add(leavedAtPredicate);
         }
 
         BigDecimal minCost = tourCriteria.getMinCost();
-        if(minCost != null){
+        if (minCost != null) {
             Predicate minCostPredicate = criteriaBuilder.greaterThanOrEqualTo(tourRoot.get("price"), minCost);
             predicates.add(minCostPredicate);
         }
 
         BigDecimal maxCost = tourCriteria.getMaxCost();
-        if(maxCost != null){
+        if (maxCost != null) {
             Predicate maxCostPredicate = criteriaBuilder.lessThanOrEqualTo(tourRoot.get("price"), maxCost);
             predicates.add(maxCostPredicate);
         }
