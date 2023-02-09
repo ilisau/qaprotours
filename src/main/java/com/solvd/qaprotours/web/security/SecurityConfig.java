@@ -1,14 +1,18 @@
 package com.solvd.qaprotours.web.security;
 
+import com.solvd.qaprotours.web.security.expressions.CustomSecurityExpressionHandler;
 import com.solvd.qaprotours.web.security.jwt.JwtFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -31,6 +35,15 @@ import java.io.PrintWriter;
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
+    private final ApplicationContext applicationContext;
+
+    @Bean
+    public MethodSecurityExpressionHandler expressionHandler() {
+        DefaultMethodSecurityExpressionHandler expressionHandler
+                = new CustomSecurityExpressionHandler();
+        expressionHandler.setApplicationContext(applicationContext);
+        return expressionHandler;
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -44,7 +57,10 @@ public class SecurityConfig {
                 .accessDeniedHandler(accessDeniedHandler())
                 .and()
                 .authorizeHttpRequests()
-                .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
+                .requestMatchers("/api/v1/auth/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/v1/employees").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/tours").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/tours/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterAfter(jwtFilter, ExceptionTranslationFilter.class)

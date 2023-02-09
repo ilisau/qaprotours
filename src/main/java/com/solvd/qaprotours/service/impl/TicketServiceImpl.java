@@ -61,14 +61,20 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @Transactional
-    public void deleteTicket(Long userId, Long tourId) {
-        ticketRepository.deleteByUserIdAndTourId(userId, tourId);
+    public void deleteTicket(Long ticketId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new ResourceDoesNotExistException("ticket not found"));
+        int peopleAmount = ticket.getClientsAmount();
+        Tour tour = tourService.getById(ticket.getTour().getId());
+        tour.setPlacesAmount(tour.getPlacesAmount() + peopleAmount);
+        tourService.save(tour);
+        ticketRepository.deleteById(ticketId);
     }
 
     @Override
     @Transactional
-    public void confirmTicket(Long userId, Long tourId) {
-        Ticket ticket = ticketRepository.findByUserIdAndTourId(userId, tourId)
+    public void confirmTicket(Long ticketId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new ResourceDoesNotExistException("ticket not found"));
         ticket.setStatus(Ticket.Status.CONFIRMED);
         ticketRepository.save(ticket);

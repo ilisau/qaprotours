@@ -10,6 +10,7 @@ import com.solvd.qaprotours.web.mapper.TourCriteriaMapper;
 import com.solvd.qaprotours.web.mapper.TourMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +37,7 @@ public class TourController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('EMPLOYEE')")
     public TourDto saveDraft(@RequestBody TourDto tourDto) {
         Tour tour = tourMapper.toEntity(tourDto);
         tour = tourService.save(tour);
@@ -43,6 +45,7 @@ public class TourController {
     }
 
     @PostMapping("/publish")
+    @PreAuthorize("hasRole('EMPLOYEE')")
     public TourDto publish(@Validated(OnCreate.class) @RequestBody TourDto tourDto) {
         Tour tour = tourMapper.toEntity(tourDto);
         tour = tourService.publish(tour);
@@ -57,6 +60,7 @@ public class TourController {
 
     @DeleteMapping("/{tourId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('EMPLOYEE')")
     public void delete(@PathVariable Long tourId) {
         tourService.delete(tourId);
     }

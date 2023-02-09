@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
         oldUser.setEmail(user.getEmail());
         oldUser.setName(user.getName());
         oldUser.setSurname(user.getSurname());
-        userRepository.save(user);
+        userRepository.save(oldUser);
     }
 
     @Override
@@ -77,6 +77,7 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new ResourceAlreadyExistsException("user with email " + user.getEmail() + " already exists");
         }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setActivated(false);
         userRepository.save(user);
         String token = jwtService.generateActivationToken(user);

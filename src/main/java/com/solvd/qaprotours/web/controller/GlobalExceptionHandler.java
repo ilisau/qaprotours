@@ -5,6 +5,7 @@ import com.solvd.qaprotours.web.dto.ErrorDto;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -74,5 +75,21 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.toMap(v -> v.getPropertyPath().toString(), ConstraintViolation::getMessage)));
         return exceptionBody;
     }
+
+    @ExceptionHandler(BindException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDto handleBindException(BindException e) {
+        ErrorDto exceptionBody = new ErrorDto("Validation failed");
+        List<FieldError> errors = e.getBindingResult().getFieldErrors();
+        exceptionBody.setDetails(errors.stream()
+                .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage)));
+        return exceptionBody;
+    }
+
+//    @ExceptionHandler
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//    public ErrorDto handleException(Exception e) {
+//        return new ErrorDto("Internal server error");
+//    }
 
 }

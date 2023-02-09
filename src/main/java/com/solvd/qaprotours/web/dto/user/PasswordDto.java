@@ -1,6 +1,6 @@
 package com.solvd.qaprotours.web.dto.user;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -10,12 +10,10 @@ import lombok.Data;
 @Data
 public class PasswordDto {
 
-    @NotNull(message = "old password cannot be null")
-    @Size(min = 8, message = "old password must be more than {min} characters")
+    @NotEmpty(message = "old password must be not empty")
     private String oldPassword;
 
-    @NotNull(message = "old password cannot be null")
-    @Size(min = 8, message = "old password must be more than {min} characters")
+    @Size(min = 8, message = "new password must be longer than {min} characters")
     private String newPassword;
 
 }

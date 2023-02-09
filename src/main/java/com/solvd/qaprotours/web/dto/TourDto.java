@@ -3,6 +3,7 @@ package com.solvd.qaprotours.web.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.web.dto.validation.OnCreate;
+import com.solvd.qaprotours.web.dto.validation.OnUpdate;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 @Data
 public class TourDto {
 
-    @NotNull(message = "id cannot be null", groups = {OnCreate.class})
+    @NotNull(message = "id cannot be null", groups = {OnUpdate.class})
     private Long id;
 
     @NotNull(message = "name cannot be null", groups = {OnCreate.class})
