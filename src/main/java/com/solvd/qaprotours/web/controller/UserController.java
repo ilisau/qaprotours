@@ -12,6 +12,7 @@ import com.solvd.qaprotours.web.mapper.TicketMapper;
 import com.solvd.qaprotours.web.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,12 +32,14 @@ public class UserController {
     private final TicketMapper ticketMapper;
 
     @PutMapping
+    @PreAuthorize("canAccessUser(#userDto.getId())")
     public void update(@Validated(OnUpdate.class) @RequestBody UserDto userDto) {
         User user = userMapper.toEntity(userDto);
         userService.update(user);
     }
 
     @GetMapping("/{userId}")
+    @PreAuthorize("canAccessUser(#userId)")
     public UserDto getById(@PathVariable Long userId) {
         User user = userService.getById(userId);
         return userMapper.toDto(user);
@@ -44,46 +47,31 @@ public class UserController {
 
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("canAccessUser(#userId)")
     public void delete(@PathVariable Long userId) {
         userService.delete(userId);
     }
 
     @PutMapping("/{userId}/password")
+    @PreAuthorize("canAccessUser(#userId)")
     public void updatePassword(@PathVariable Long userId,
-                               @Validated PasswordDto passwordDto) {
+                               @Validated @RequestBody PasswordDto passwordDto) {
         userService.updatePassword(userId, passwordDto.getOldPassword(), passwordDto.getNewPassword());
     }
 
-    @GetMapping("/{userId}/tours")
+    @GetMapping("/{userId}/tickets")
+    @PreAuthorize("canAccessUser(#userId)")
     public List<TicketDto> getTickets(@PathVariable Long userId) {
-        List<Ticket> tours = ticketService.getTickets(userId);
-        return ticketMapper.toDto(tours);
+        List<Ticket> tickets = ticketService.getTickets(userId);
+        return ticketMapper.toDto(tickets);
     }
 
-    @GetMapping("/{userId}/tours/{ticketId}")
-    public TicketDto getTicket(@PathVariable Long userId,
-                               @PathVariable Long ticketId) {
-        Ticket ticket = ticketService.getById(ticketId);
-        return ticketMapper.toDto(ticket);
-    }
-
-    @PostMapping("/{userId}/tours/{tourId}")
+    @PostMapping("/{userId}/tickets/{tourId}")
+    @PreAuthorize("canAccessUser(#userId)")
     public void addTicket(@PathVariable Long userId,
                           @PathVariable Long tourId,
                           @RequestParam Integer peopleAmount) {
         ticketService.addTicket(userId, tourId, peopleAmount);
-    }
-
-    @DeleteMapping("/{userId}/tours/{tourId}")
-    public void deleteTicket(@PathVariable Long userId,
-                             @PathVariable Long tourId) {
-        ticketService.deleteTicket(userId, tourId);
-    }
-
-    @PostMapping("/{userId}/tours/{tourId}/confirm")
-    public void confirmTicket(@PathVariable Long userId,
-                              @PathVariable Long tourId) {
-        ticketService.confirmTicket(userId, tourId);
     }
 
 }

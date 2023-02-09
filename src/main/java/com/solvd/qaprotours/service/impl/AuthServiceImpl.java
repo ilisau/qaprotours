@@ -34,6 +34,9 @@ public class AuthServiceImpl implements AuthService {
         if (!passwordEncoder.matches(authentication.getPassword(), user.getPassword())) {
             throw new AuthException("wrong password");
         }
+        if (!user.isActivated()) {
+            throw new AuthException("user is not activated");
+        }
         final JwtAccess access = jwtService.generateAccessToken(user);
         final JwtRefresh jwtRefreshToken = jwtService.generateRefreshToken(user);
         return new JwtResponse(access, jwtRefreshToken);

@@ -31,8 +31,8 @@ public class UserDto {
     @Size(min = 1, max = 255, message = "email must be between {min} and {max} characters", groups = {OnCreate.class, OnUpdate.class})
     private String email;
 
-    @NotNull(message = "password cannot be null", groups = {OnCreate.class, OnUpdate.class})
-    @Size(min = 8, message = "password must be more than {min} characters", groups = {OnCreate.class, OnUpdate.class})
+    @NotNull(message = "password cannot be null", groups = {OnCreate.class})
+    @Size(min = 8, message = "password must be more than {min} characters", groups = {OnCreate.class})
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 

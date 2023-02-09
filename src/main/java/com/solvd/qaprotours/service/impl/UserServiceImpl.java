@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author Ermakovich Kseniya, Lisov Ilya
@@ -44,14 +45,15 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void update(User user) {
-        User oldUser = getById(user.getId());
-        if (!Objects.equals(oldUser.getId(), user.getId())) {
+        Optional<User> userWithSameEmail = userRepository.findByEmail(user.getEmail());
+        if (userWithSameEmail.isPresent() && !Objects.equals(userWithSameEmail.get().getId(), user.getId())) {
             throw new ResourceAlreadyExistsException("user with email " + user.getEmail() + " already exists");
         }
+        User oldUser = getById(user.getId());
         oldUser.setEmail(user.getEmail());
         oldUser.setName(user.getName());
         oldUser.setSurname(user.getSurname());
-        userRepository.save(user);
+        userRepository.save(oldUser);
     }
 
     @Override
@@ -77,6 +79,7 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new ResourceAlreadyExistsException("user with email " + user.getEmail() + " already exists");
         }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setActivated(false);
         userRepository.save(user);
         String token = jwtService.generateActivationToken(user);

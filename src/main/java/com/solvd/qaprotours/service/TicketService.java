@@ -15,8 +15,8 @@ public interface TicketService {
 
     void addTicket(Long userId, Long tourId, Integer peopleAmount);
 
-    void deleteTicket(Long userId, Long tourId);
+    void deleteTicket(Long ticketId);
 
-    void confirmTicket(Long userId, Long tourId);
+    void confirmTicket(Long ticketId);
 
 }

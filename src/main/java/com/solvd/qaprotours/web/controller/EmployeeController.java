@@ -6,11 +6,10 @@ import com.solvd.qaprotours.web.dto.user.UserDto;
 import com.solvd.qaprotours.web.dto.validation.OnCreate;
 import com.solvd.qaprotours.web.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author Lisov Ilya
@@ -24,6 +23,8 @@ public class EmployeeController {
     private final UserMapper userMapper;
 
     @PostMapping
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    @ResponseStatus(HttpStatus.CREATED)
     public void create(@Validated(OnCreate.class) @RequestBody UserDto userDto) {
         User user = userMapper.toEntity(userDto);
         user.setRole(User.Role.EMPLOYEE);
