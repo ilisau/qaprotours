@@ -23,7 +23,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Varya Petrova
@@ -151,13 +150,6 @@ public class TourServiceImpl implements TourService {
 
     @Override
     public Tour publish(Tour tour) {
-        Optional<Tour> draftTour;
-        if (tour.getId() != null) {
-            draftTour = tourRepository.findById(tour.getId());
-            if (draftTour.isPresent() && draftTour.get().isDraft()) {
-                tourRepository.delete(draftTour.get());
-            }
-        }
         tour.setDraft(false);
         tourRepository.save(tour);
         return tour;

@@ -57,6 +57,12 @@ public class GlobalExceptionHandler {
         return new ErrorDto(ex.getMessage());
     }
 
+    @ExceptionHandler(TourAlreadyStartedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDto handleTourAlreadyStartedException(TourAlreadyStartedException ex) {
+        return new ErrorDto(ex.getMessage());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDto handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
@@ -86,10 +92,10 @@ public class GlobalExceptionHandler {
         return exceptionBody;
     }
 
-//    @ExceptionHandler
-//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-//    public ErrorDto handleException(Exception e) {
-//        return new ErrorDto("Internal server error");
-//    }
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorDto handleException(Exception e) {
+        return new ErrorDto("Internal server error");
+    }
 
 }

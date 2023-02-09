@@ -2,6 +2,7 @@ package com.solvd.qaprotours.service.impl;
 
 import com.solvd.qaprotours.domain.exception.NoFreePlacesException;
 import com.solvd.qaprotours.domain.exception.ResourceDoesNotExistException;
+import com.solvd.qaprotours.domain.exception.TourAlreadyStartedException;
 import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.domain.user.Ticket;
 import com.solvd.qaprotours.repository.TicketRepository;
@@ -46,6 +47,9 @@ public class TicketServiceImpl implements TicketService {
         if (tour.getPlacesAmount() < peopleAmount) {
             throw new NoFreePlacesException("not enough places in tour");
         }
+        if (tour.getArrivalTime().isBefore(LocalDateTime.now())) {
+            throw new TourAlreadyStartedException("tour already started");
+        }
 
         Ticket ticket = new Ticket();
         ticket.setUser(userService.getById(userId));
@@ -66,7 +70,9 @@ public class TicketServiceImpl implements TicketService {
                 .orElseThrow(() -> new ResourceDoesNotExistException("ticket not found"));
         int peopleAmount = ticket.getClientsAmount();
         Tour tour = tourService.getById(ticket.getTour().getId());
-        tour.setPlacesAmount(tour.getPlacesAmount() + peopleAmount);
+        if (tour.getArrivalTime().isAfter(LocalDateTime.now())) {
+            tour.setPlacesAmount(tour.getPlacesAmount() + peopleAmount);
+        }
         tourService.save(tour);
         ticketRepository.deleteById(ticketId);
     }
