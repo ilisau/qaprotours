@@ -1,5 +1,5 @@
 --liquibase formatted sql
---changeset lisov:2
+--changeset lisov:3
 
 INSERT INTO users (id, name, surname, email, password, role, is_activated)
 VALUES (1, 'Mark', 'Ivanov', 'mark.ivanov@gmail.com', '$2a$10$wnXXYMX2IUTMtC7ajTIeM.dMLEZcpMjorqfdvAFhdOeYiJW3WXewG',
