@@ -36,5 +36,4 @@ public class CustomSecurityExpressionHandler extends DefaultMethodSecurityExpres
         this.applicationContext = applicationContext;
     }
 
-
 }

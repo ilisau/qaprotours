@@ -62,7 +62,7 @@ public class UserController {
     @GetMapping("/{userId}/tickets")
     @PreAuthorize("canAccessUser(#userId)")
     public List<TicketDto> getTickets(@PathVariable Long userId) {
-        List<Ticket> tickets = ticketService.getTickets(userId);
+        List<Ticket> tickets = ticketService.getAllByUserId(userId);
         return ticketMapper.toDto(tickets);
     }
 
@@ -71,7 +71,7 @@ public class UserController {
     public void addTicket(@PathVariable Long userId,
                           @PathVariable Long tourId,
                           @RequestParam Integer peopleAmount) {
-        ticketService.addTicket(userId, tourId, peopleAmount);
+        ticketService.add(userId, tourId, peopleAmount);
     }
 
 }

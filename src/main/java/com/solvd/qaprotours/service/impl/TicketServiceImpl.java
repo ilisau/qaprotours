@@ -36,13 +36,13 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @Transactional
-    public List<Ticket> getTickets(Long userId) {
+    public List<Ticket> getAllByUserId(Long userId) {
         return ticketRepository.findAllByUserId(userId);
     }
 
     @Override
     @Transactional
-    public void addTicket(Long userId, Long tourId, Integer peopleAmount) {
+    public void add(Long userId, Long tourId, Integer peopleAmount) {
         Tour tour = tourService.getById(tourId);
         if (tour.getPlacesAmount() < peopleAmount) {
             throw new NoFreePlacesException("not enough places in tour");
@@ -65,7 +65,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @Transactional
-    public void deleteTicket(Long ticketId) {
+    public void delete(Long ticketId) {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new ResourceDoesNotExistException("ticket not found"));
         int peopleAmount = ticket.getClientsAmount();
@@ -79,7 +79,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @Transactional
-    public void confirmTicket(Long ticketId) {
+    public void confirm(Long ticketId) {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new ResourceDoesNotExistException("ticket not found"));
         ticket.setStatus(Ticket.Status.CONFIRMED);
