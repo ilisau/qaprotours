@@ -1,17 +1,13 @@
 package com.solvd.qaprotours.service.impl;
 
 import com.solvd.qaprotours.domain.exception.ResourceDoesNotExistException;
-import com.solvd.qaprotours.domain.hotel.Point;
 import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.domain.tour.TourCriteria;
 import com.solvd.qaprotours.repository.TourRepository;
 import com.solvd.qaprotours.service.TourService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Varya Petrova
+ * @author Varya Petrova, Lisov Ilya
  */
 @Service
 @RequiredArgsConstructor
@@ -67,9 +63,16 @@ public class TourServiceImpl implements TourService {
             predicates.add(countriesFinalPredicate);
         }
 
-        // TODO add maxRadius to criteriaBuilder
-//        Double maxRadius = tourCriteria.getMaxRadius();
-//        if(maxRadius != null){}
+        if (userLocationAndMaxRadiusNotNull(tourCriteria)) {
+            Expression<Double> distance = criteriaBuilder.function("calculate_distance", Double.class,
+                    tourRoot.get("coordinates").get("latitude"),
+                    tourRoot.get("coordinates").get("longitude"),
+                    criteriaBuilder.literal(tourCriteria.getUserLocation().getLatitude()),
+                    criteriaBuilder.literal(tourCriteria.getUserLocation().getLongitude())
+            );
+            Predicate userLocationPredicate = criteriaBuilder.lessThanOrEqualTo(distance, tourCriteria.getMaxRadius());
+            predicates.add(userLocationPredicate);
+        }
 
         List<Tour.TourType> tourTypes = tourCriteria.getTourTypes();
         List<Predicate> tourTypePredicates = new ArrayList<>();
@@ -142,6 +145,10 @@ public class TourServiceImpl implements TourService {
         return entityManager.createQuery(criteriaQuery).getResultList();
     }
 
+    private boolean userLocationAndMaxRadiusNotNull(TourCriteria tourCriteria) {
+        return tourCriteria.getUserLocation() != null && tourCriteria.getUserLocation().getLatitude() != null && tourCriteria.getUserLocation().getLongitude() != null && tourCriteria.getMaxRadius() != null;
+    }
+
     @Override
     public Tour save(Tour tour) {
         tourRepository.save(tour);
@@ -164,22 +171,6 @@ public class TourServiceImpl implements TourService {
     @Override
     public void delete(Long tourId) {
         tourRepository.deleteById(tourId);
-    }
-
-    private Double getDistanceBetweenPoints(Point userLocation, Point tourLocation) {
-        int earthRadiusKm = 6371;
-        double latitudeDiff = degreeToRadian(tourLocation.getLatitude() - userLocation.getLatitude());
-        double longitudeDiff = degreeToRadian(tourLocation.getLongitude() - userLocation.getLongitude());
-        double a = Math.sin(latitudeDiff / 2) * Math.sin(latitudeDiff / 2) +
-                Math.cos(degreeToRadian(userLocation.getLatitude())) *
-                        Math.cos(degreeToRadian(tourLocation.getLatitude())) *
-                        Math.sin(longitudeDiff / 2) * Math.sin(longitudeDiff / 2);
-        var distance = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return earthRadiusKm * distance;
-    }
-
-    private Double degreeToRadian(Double degree) {
-        return degree * (Math.PI / 180);
     }
 
 }
