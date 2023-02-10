@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: .
+    container_name: qaprotours
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=${DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=${DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${DATASOURCE_PASSWORD}
+    ports:
+      - '8080:8080'
+
+  db:
+    image: 'postgres:15.1-alpine'
+    container_name: qaprotours-db
+    volumes:
+      - ./target/classes/db:/docker-entrypoint-initdb.d
+    environment:
+      - POSTGRES_USER=${DATASOURCE_USERNAME}
+      - POSTGRES_PASSWORD=${DATASOURCE_PASSWORD}
+      - POSTGRES_DB=${DATASOURCE_DB}
