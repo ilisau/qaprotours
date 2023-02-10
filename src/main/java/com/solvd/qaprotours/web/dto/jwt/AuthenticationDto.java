@@ -1,6 +1,5 @@
 package com.solvd.qaprotours.web.dto.jwt;
 
-import com.solvd.qaprotours.web.dto.validation.OnCreate;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -10,10 +9,10 @@ import lombok.Data;
 @Data
 public class AuthenticationDto {
 
-    @NotBlank(groups = OnCreate.class, message = "email can`t be empty")
+    @NotBlank(message = "email can`t be empty")
     private String email;
 
-    @NotBlank(groups = OnCreate.class, message = "password can`t be empty")
+    @NotBlank(message = "password can`t be empty")
     private String password;
 
 }

@@ -46,7 +46,7 @@ public class AuthServiceImpl implements AuthService {
     public JwtResponse refresh(JwtRefresh jwtRefresh) {
         String refreshToken = jwtRefresh.getToken();
         JwtUserDetails userDetails = jwtService.parseToken(refreshToken);
-        if (!JwtTokenType.REFRESH.getValue().equals(userDetails.getType())) {
+        if (!JwtTokenType.REFRESH.name().equals(userDetails.getType())) {
             throw new AuthException("invalid refresh token");
         }
         final User user = userService.getByEmail(userDetails.getEmail());
@@ -68,7 +68,7 @@ public class AuthServiceImpl implements AuthService {
             throw new InvalidTokenException("token is expired");
         }
         Claims claims = jwtService.parse(token);
-        if (!JwtTokenType.RESET.getValue().equals(claims.get("type"))) {
+        if (!JwtTokenType.RESET.name().equals(claims.get("type"))) {
             throw new InvalidTokenException("invalid reset token");
         }
         JwtUserDetails userDetails = jwtService.parseToken(token);

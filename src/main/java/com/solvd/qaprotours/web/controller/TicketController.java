@@ -31,13 +31,13 @@ public class TicketController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("canAccessTicket(#ticketId)")
     public void deleteTicket(@PathVariable Long ticketId) {
-        ticketService.deleteTicket(ticketId);
+        ticketService.delete(ticketId);
     }
 
     @PostMapping("/{ticketId}/confirm")
     @PreAuthorize("canConfirmTicket()")
     public void confirmTicket(@PathVariable Long ticketId) {
-        ticketService.confirmTicket(ticketId);
+        ticketService.confirm(ticketId);
     }
 
 }

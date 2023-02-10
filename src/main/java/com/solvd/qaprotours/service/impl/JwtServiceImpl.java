@@ -77,7 +77,7 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public boolean isAccessToken(JwtUserDetails jwtUserDetails) {
-        return Objects.equals(jwtUserDetails.getType(), JwtTokenType.ACCESS.getValue());
+        return Objects.equals(jwtUserDetails.getType(), JwtTokenType.ACCESS.name());
     }
 
     @Override
@@ -85,7 +85,7 @@ public class JwtServiceImpl implements JwtService {
         final Instant refreshExpiration = Instant.now().plus(jwtProperties.getRefresh(), ChronoUnit.HOURS);
         String token = Jwts.builder()
                 .setSubject(user.getEmail())
-                .claim("type", JwtTokenType.REFRESH.getValue())
+                .claim("type", JwtTokenType.REFRESH.name())
                 .setExpiration(Date.from(refreshExpiration))
                 .signWith(key)
                 .compact();
@@ -99,7 +99,7 @@ public class JwtServiceImpl implements JwtService {
                 .setSubject(user.getEmail())
                 .claim("role", user.getRole())
                 .claim("id", user.getId())
-                .claim("type", JwtTokenType.ACCESS.getValue())
+                .claim("type", JwtTokenType.ACCESS.name())
                 .setExpiration(Date.from(accessExpiration))
                 .signWith(key)
                 .compact();
@@ -112,7 +112,7 @@ public class JwtServiceImpl implements JwtService {
         return Jwts.builder()
                 .setSubject(user.getEmail())
                 .claim("id", user.getId())
-                .claim("type", JwtTokenType.ACTIVATION.getValue())
+                .claim("type", JwtTokenType.ACTIVATION.name())
                 .setExpiration(Date.from(accessExpiration))
                 .signWith(key)
                 .compact();
@@ -124,7 +124,7 @@ public class JwtServiceImpl implements JwtService {
         return Jwts.builder()
                 .setSubject(user.getEmail())
                 .claim("id", user.getId())
-                .claim("type", JwtTokenType.RESET.getValue())
+                .claim("type", JwtTokenType.RESET.name())
                 .setExpiration(Date.from(accessExpiration))
                 .signWith(key)
                 .compact();

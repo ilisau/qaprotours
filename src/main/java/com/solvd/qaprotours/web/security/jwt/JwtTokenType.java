@@ -10,11 +10,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum JwtTokenType {
 
-    ACCESS("access"),
-    REFRESH("refresh"),
-    ACTIVATION("activation"),
-    RESET("reset");
-
-    private final String value;
+    ACCESS,
+    REFRESH,
+    ACTIVATION,
+    RESET
 
 }

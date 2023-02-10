@@ -11,12 +11,12 @@ public interface TicketService {
 
     Ticket getById(Long id);
 
-    List<Ticket> getTickets(Long userId);
+    List<Ticket> getAllByUserId(Long userId);
 
-    void addTicket(Long userId, Long tourId, Integer peopleAmount);
+    void add(Long userId, Long tourId, Integer peopleAmount);
 
-    void deleteTicket(Long ticketId);
+    void delete(Long ticketId);
 
-    void confirmTicket(Long ticketId);
+    void confirm(Long ticketId);
 
 }

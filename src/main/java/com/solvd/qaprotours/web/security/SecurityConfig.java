@@ -26,7 +26,7 @@ import org.springframework.security.web.access.ExceptionTranslationFilter;
 import java.io.PrintWriter;
 
 /**
- * @author Ermakovich Kseniya
+ * @author Ermakovich Kseniya, Lisov Ilya
  */
 @Configuration
 @RequiredArgsConstructor
