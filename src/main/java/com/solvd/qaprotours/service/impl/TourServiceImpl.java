@@ -9,15 +9,13 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -34,16 +32,26 @@ public class TourServiceImpl implements TourService {
 
     @Override
     public List<Tour> getAll(int currentPage, int pageSize, TourCriteria tourCriteria) {
+        List<Tour> tours;
+        List<Tour> toursPaged;
+        if (tourCriteria != null) {
+            tours = getAllByCriteria(tourCriteria);
+        } else {
+            tours = tourRepository.findAll();
+        }
         Sort ratingSort = Sort.by("rating").descending();
         Sort arrivalTimeSort = Sort.by("arrivalTime");
         Sort multipleSort = ratingSort.and(arrivalTimeSort);
-        Pageable paging = PageRequest.of(currentPage, pageSize, multipleSort);
-        Page<Tour> toursPage = tourRepository.findAll(paging);
-        List<Tour> tours = toursPage.getContent();
-        if (tourCriteria != null) {
-            tours = getAllByCriteria(tourCriteria);
+        int startItem = currentPage * pageSize;
+        if (tours.size() < startItem) {
+            toursPaged = Collections.emptyList();
+        } else {
+            int toIndex = Math.min(startItem + pageSize, tours.size());
+            toursPaged = tours.subList(startItem, toIndex);
         }
-        return tours;
+        Pageable paging = PageRequest.of(currentPage, pageSize, multipleSort);
+        Page<Tour> tourPage = new PageImpl<>(toursPaged, paging, tours.size());
+        return tourPage.getContent();
     }
 
     @Override
