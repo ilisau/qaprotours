@@ -2,6 +2,7 @@ package com.solvd.qaprotours.web.controller;
 
 import com.solvd.qaprotours.domain.exception.*;
 import com.solvd.qaprotours.web.dto.ErrorDto;
+import jakarta.mail.SendFailedException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -92,9 +93,15 @@ public class GlobalExceptionHandler {
         return exceptionBody;
     }
 
+    @ExceptionHandler(SendFailedException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorDto handleSendFailedException(SendFailedException e) {
+        return new ErrorDto("Error while sending email: " + e.getMessage());
+    }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorDto handleException(Exception e) {
+    public ErrorDto handleException() {
         return new ErrorDto("Internal server error");
     }
 
