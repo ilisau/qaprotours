@@ -1,5 +1,6 @@
 package com.solvd.qaprotours.service.impl;
 
+import com.solvd.qaprotours.domain.MailType;
 import com.solvd.qaprotours.domain.exception.AuthException;
 import com.solvd.qaprotours.domain.exception.InvalidTokenException;
 import com.solvd.qaprotours.domain.jwt.Authentication;
@@ -8,6 +9,7 @@ import com.solvd.qaprotours.domain.jwt.JwtToken;
 import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.service.AuthService;
 import com.solvd.qaprotours.service.JwtService;
+import com.solvd.qaprotours.service.MailService;
 import com.solvd.qaprotours.service.UserService;
 import com.solvd.qaprotours.web.security.jwt.JwtTokenType;
 import com.solvd.qaprotours.web.security.jwt.JwtUserDetails;
@@ -16,6 +18,9 @@ import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Ermakovich Kseniya, Lisov Ilya
@@ -27,6 +32,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserService userService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final MailService mailService;
 
     @Override
     public JwtResponse login(Authentication authentication) {
@@ -58,8 +64,10 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void sendRestoreToken(String email) {
         User user = userService.getByEmail(email);
-        String token = jwtService.generateToken(JwtTokenType.RESET, user);
-        //TODO send email with restore token
+        Map<String, Object> params = new HashMap<>();
+        String token = jwtService.generateToken(JwtTokenType.ACTIVATION, user);
+        params.put("token", token);
+        mailService.sendMail(user, MailType.PASSWORD_RESET, params);
     }
 
     @Override

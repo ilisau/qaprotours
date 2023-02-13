@@ -1,5 +1,6 @@
 package com.solvd.qaprotours.service.impl;
 
+import com.solvd.qaprotours.domain.MailType;
 import com.solvd.qaprotours.domain.exception.InvalidTokenException;
 import com.solvd.qaprotours.domain.exception.PasswordMismatchException;
 import com.solvd.qaprotours.domain.exception.ResourceAlreadyExistsException;
@@ -8,6 +9,7 @@ import com.solvd.qaprotours.domain.jwt.JwtToken;
 import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.repository.UserRepository;
 import com.solvd.qaprotours.service.JwtService;
+import com.solvd.qaprotours.service.MailService;
 import com.solvd.qaprotours.service.UserService;
 import com.solvd.qaprotours.web.security.jwt.JwtTokenType;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -28,6 +32,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final JwtService jwtService;
+    private final MailService mailService;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -84,8 +89,10 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setActivated(false);
         userRepository.save(user);
-        String token = jwtService.generateToken(JwtTokenType.ACTIVATION, user);
-        //TODO send email with activation token
+        Map<String, Object> params = new HashMap<>();
+        String token = jwtService.generateToken(JwtTokenType.RESET, user);
+        params.put("token", token);
+        mailService.sendMail(user, MailType.ACTIVATION, params);
     }
 
     @Override
