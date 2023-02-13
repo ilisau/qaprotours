@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class JwtResponseDto {
 
-    private JwtAccessDto access;
-    private JwtRefreshDto jwtRefresh;
+    private String accessToken;
+    private String refreshToken;
 
 }
