@@ -15,7 +15,6 @@ import com.solvd.qaprotours.web.mapper.UserMapper;
 import com.solvd.qaprotours.web.mapper.jwt.AuthenticationMapper;
 import com.solvd.qaprotours.web.mapper.jwt.JwtResponseMapper;
 import com.solvd.qaprotours.web.mapper.jwt.JwtTokenMapper;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -37,7 +36,7 @@ public class AuthController {
     private final AuthenticationMapper authenticationMapper;
 
     @PostMapping("/login")
-    public JwtResponseDto login(@Valid @RequestBody AuthenticationDto authenticationDto) {
+    public JwtResponseDto login(@Validated @RequestBody AuthenticationDto authenticationDto) {
         Authentication authentication = authenticationMapper.toEntity(authenticationDto);
         JwtResponse response = authService.login(authentication);
         return jwtResponseMapper.toDto(response);
@@ -52,12 +51,13 @@ public class AuthController {
     }
 
     @PostMapping("/register/confirm")
-    public void confirm(@RequestBody String token) {
+    public void confirm(@Validated @RequestBody JwtTokenDto jwtTokenDto) {
+        JwtToken token = jwtTokenMapper.toEntity(jwtTokenDto);
         userService.activate(token);
     }
 
     @PostMapping("/refresh")
-    public JwtResponseDto refresh(@Valid @RequestBody JwtTokenDto jwtTokenDto) {
+    public JwtResponseDto refresh(@Validated @RequestBody JwtTokenDto jwtTokenDto) {
         JwtToken jwtToken = jwtTokenMapper.toEntity(jwtTokenDto);
         JwtResponse response = authService.refresh(jwtToken);
         return jwtResponseMapper.toDto(response);

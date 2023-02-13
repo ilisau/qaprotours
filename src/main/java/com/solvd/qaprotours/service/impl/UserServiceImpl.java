@@ -4,6 +4,7 @@ import com.solvd.qaprotours.domain.exception.InvalidTokenException;
 import com.solvd.qaprotours.domain.exception.PasswordMismatchException;
 import com.solvd.qaprotours.domain.exception.ResourceAlreadyExistsException;
 import com.solvd.qaprotours.domain.exception.ResourceDoesNotExistException;
+import com.solvd.qaprotours.domain.jwt.JwtToken;
 import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.repository.UserRepository;
 import com.solvd.qaprotours.service.JwtService;
@@ -89,11 +90,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void activate(String token) {
-        if (!jwtService.validateToken(token)) {
+    public void activate(JwtToken token) {
+        if (!jwtService.validateToken(token.getToken())) {
             throw new InvalidTokenException("token is expired");
         }
-        Long id = jwtService.retrieveUserId(token);
+        Long id = jwtService.retrieveUserId(token.getToken());
         User user = getById(id);
         user.setActivated(true);
         userRepository.save(user);
