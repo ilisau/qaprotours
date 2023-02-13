@@ -11,11 +11,6 @@ VALUES (1, 'Mark', 'Ivanov', 'mark.ivanov@gmail.com', '$2a$10$wnXXYMX2IUTMtC7ajT
        (4, 'Ivan', 'Petrov', 'ivan.petrov@gmail.com', '$2a$10$wnXXYMX2IUTMtC7ajTIeM.dMLEZcpMjorqfdvAFhdOeYiJW3WXewG',
         'EMPLOYEE', true);
 
-INSERT INTO passports (user_id, serial_number, identity_number)
-VALUES (1, 'AB1234567', '1234567890'),
-       (2, 'AB1234568', '1234567891'),
-       (3, 'AB1234569', '1234567892');
-
 INSERT INTO addresses (id, country, city, street, house_number)
 VALUES (1, 'Belarus', 'Minsk', 'Mogilevskaya', 1),
        (2, 'Egypt', 'Cairo', 'Tahrir st', 12),
