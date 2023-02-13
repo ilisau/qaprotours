@@ -63,6 +63,9 @@ public class TourDto {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private boolean isDraft;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private String imageUrl;
+
     @NotNull(message = "places amount cannot be null", groups = {OnCreate.class})
     @Min(value = 0, message = "places amount cannot be less than 0", groups = {OnCreate.class})
     private Integer placesAmount;

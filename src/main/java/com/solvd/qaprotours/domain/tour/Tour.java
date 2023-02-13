@@ -58,6 +58,9 @@ public class Tour {
 
     private boolean isDraft;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "latitude", column = @Column(name = "latitude")),

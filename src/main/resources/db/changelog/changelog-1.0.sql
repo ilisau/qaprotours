@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS tours
     place_amount   int,
     price          real,
     is_draft       boolean default true,
+    image_url      varchar(255),
     rating         real,
     day_duration   int,
     latitude       double precision,

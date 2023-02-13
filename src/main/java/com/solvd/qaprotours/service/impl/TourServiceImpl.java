@@ -188,4 +188,10 @@ public class TourServiceImpl implements TourService {
         tourRepository.deleteById(tourId);
     }
 
+    @Override
+    public void setImage(Long tourId, String fileName) {
+        Tour tour = getById(tourId);
+        tour.setImageUrl(fileName);
+        tourRepository.save(tour);
+    }
 }

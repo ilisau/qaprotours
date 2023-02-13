@@ -22,4 +22,6 @@ public interface TourService {
 
     void delete(Long tourId);
 
+    void setImage(Long tourId, String fileName);
+
 }
