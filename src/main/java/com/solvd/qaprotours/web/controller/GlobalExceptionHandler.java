@@ -6,6 +6,7 @@ import jakarta.mail.SendFailedException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -99,9 +100,15 @@ public class GlobalExceptionHandler {
         return new ErrorDto("Error while sending email: " + e.getMessage());
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorDto handleAccessDeniedException(AccessDeniedException e) {
+        return new ErrorDto("Access denied");
+    }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorDto handleException() {
+    public ErrorDto handleException(Exception e) {
         return new ErrorDto("Internal server error");
     }
 

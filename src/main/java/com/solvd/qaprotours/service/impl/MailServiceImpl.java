@@ -2,9 +2,7 @@ package com.solvd.qaprotours.service.impl;
 
 import com.solvd.qaprotours.domain.MailType;
 import com.solvd.qaprotours.domain.user.User;
-import com.solvd.qaprotours.service.JwtService;
 import com.solvd.qaprotours.service.MailService;
-import com.solvd.qaprotours.web.security.jwt.JwtTokenType;
 import freemarker.template.Configuration;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -26,46 +24,69 @@ public class MailServiceImpl implements MailService {
 
     private final Configuration configuration;
     private final JavaMailSender mailSender;
-    private final JwtService jwtService;
 
     @Override
     @SneakyThrows
-    public void sendMail(User user, MailType mailType) {
+    public void sendMail(User user, MailType mailType, Map<String, Object> params) {
         switch (mailType) {
-            case ACTIVATION -> sendActivationMail(user);
-            case PASSWORD_RESET -> sendPasswordResetMail(user);
+            case ACTIVATION -> sendActivationMail(user, params);
+            case PASSWORD_RESET -> sendPasswordResetMail(user, params);
+            case BOOKED_TOUR -> sendBookedTourMail(user, params);
+            case TICKET_CANCELED -> sendTicketCanceledMail(user, params);
         }
     }
 
     @SneakyThrows
-    private void sendActivationMail(User user) {
+    private void sendActivationMail(User user, Map<String, Object> params) {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
         helper.setSubject("Welcome to QaproTours");
         helper.setTo(user.getEmail());
-        String emailContent = getActivationEmailContent(user);
+        String emailContent = getActivationEmailContent(user, params);
         helper.setText(emailContent, true);
         mailSender.send(mimeMessage);
     }
 
     @SneakyThrows
-    private void sendPasswordResetMail(User user) {
+    private void sendPasswordResetMail(User user, Map<String, Object> params) {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
         helper.setSubject("Restore password");
         helper.setTo(user.getEmail());
-        String emailContent = getRestoreEmailContent(user);
+        String emailContent = getRestoreEmailContent(user, params);
         helper.setText(emailContent, true);
         mailSender.send(mimeMessage);
     }
 
     @SneakyThrows
-    private String getActivationEmailContent(User user) {
+    private void sendBookedTourMail(User user, Map<String, Object> params) {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
+        helper.setSubject("Soon tours");
+        helper.setTo(user.getEmail());
+        String emailContent = getBookedTourMail(user, params);
+        helper.setText(emailContent, true);
+        mailSender.send(mimeMessage);
+    }
+
+    @SneakyThrows
+    private void sendTicketCanceledMail(User user, Map<String, Object> params) {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
+        helper.setSubject("Ticket canceled");
+        helper.setTo(user.getEmail());
+        String emailContent = getTicketCanceledMail(user, params);
+        helper.setText(emailContent, true);
+        mailSender.send(mimeMessage);
+    }
+
+    @SneakyThrows
+    private String getActivationEmailContent(User user, Map<String, Object> params) {
         StringWriter stringWriter = new StringWriter();
-        String token = jwtService.generateToken(JwtTokenType.ACTIVATION, user);
+
         Map<String, Object> model = new HashMap<>();
         model.put("name", user.getName() + " " + user.getSurname());
-        model.put("link", "http://localhost:8080/api/v1/auth/register/confirm?token=" + token);
+        model.put("link", "http://localhost:8080/api/v1/auth/register/confirm?token=" + params.get("token"));
         configuration.getTemplate("activation.ftlh")
                 .process(model, stringWriter);
         return stringWriter.getBuffer()
@@ -73,13 +94,36 @@ public class MailServiceImpl implements MailService {
     }
 
     @SneakyThrows
-    private String getRestoreEmailContent(User user) {
+    private String getRestoreEmailContent(User user, Map<String, Object> params) {
         StringWriter stringWriter = new StringWriter();
-        String token = jwtService.generateToken(JwtTokenType.RESET, user);
         Map<String, Object> model = new HashMap<>();
         model.put("name", user.getName() + " " + user.getSurname());
-        model.put("link", "http://localhost:8080/api/v1/auth/password/restore?token=" + token);
+        model.put("link", "http://localhost:8080/api/v1/auth/password/restore?token=" + params.get("token"));
         configuration.getTemplate("restore.ftlh")
+                .process(model, stringWriter);
+        return stringWriter.getBuffer()
+                .toString();
+    }
+
+    @SneakyThrows
+    private String getBookedTourMail(User user, Map<String, Object> params) {
+        StringWriter stringWriter = new StringWriter();
+        Map<String, Object> model = new HashMap<>();
+        model.put("name", user.getName() + " " + user.getSurname());
+        model.put("ticket", params.get("ticket"));
+        configuration.getTemplate("booked.ftlh")
+                .process(model, stringWriter);
+        return stringWriter.getBuffer()
+                .toString();
+    }
+
+    @SneakyThrows
+    private String getTicketCanceledMail(User user, Map<String, Object> params) {
+        StringWriter stringWriter = new StringWriter();
+        Map<String, Object> model = new HashMap<>();
+        model.put("name", user.getName() + " " + user.getSurname());
+        model.put("ticket", params.get("ticket"));
+        configuration.getTemplate("canceled.ftlh")
                 .process(model, stringWriter);
         return stringWriter.getBuffer()
                 .toString();

@@ -11,6 +11,7 @@ import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -31,6 +32,7 @@ public class TourServiceImpl implements TourService {
     private final TourRepository tourRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public List<Tour> getAll(int currentPage, int pageSize, TourCriteria tourCriteria) {
         List<Tour> tours;
         List<Tour> toursPaged;
@@ -55,6 +57,7 @@ public class TourServiceImpl implements TourService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Tour> getAllByCriteria(TourCriteria tourCriteria) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tour> criteriaQuery = criteriaBuilder.createQuery(Tour.class);
@@ -158,12 +161,14 @@ public class TourServiceImpl implements TourService {
     }
 
     @Override
+    @Transactional
     public Tour save(Tour tour) {
         tourRepository.save(tour);
         return tour;
     }
 
     @Override
+    @Transactional
     public Tour publish(Tour tour) {
         tour.setDraft(false);
         tourRepository.save(tour);
@@ -171,12 +176,14 @@ public class TourServiceImpl implements TourService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Tour getById(Long tourId) {
         return tourRepository.findById(tourId)
                 .orElseThrow(() -> new ResourceDoesNotExistException("tour with id " + tourId + " does not exist"));
     }
 
     @Override
+    @Transactional
     public void delete(Long tourId) {
         tourRepository.deleteById(tourId);
     }

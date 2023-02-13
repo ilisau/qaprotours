@@ -13,7 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 /**
@@ -28,16 +30,37 @@ public class TicketServiceImpl implements TicketService {
     private final TourService tourService;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Ticket getById(Long id) {
         return ticketRepository.findById(id)
                 .orElseThrow(() -> new ResourceDoesNotExistException("ticket not found"));
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Ticket> getAllByUserId(Long userId) {
         return ticketRepository.findAllByUserId(userId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Ticket> findAllSoonTickets() {
+        LocalDateTime startTime = LocalDateTime.of(
+                LocalDate.now().plusDays(1),
+                LocalTime.MIDNIGHT);
+        LocalDateTime endTime = LocalDateTime.of(
+                LocalDate.now().plusDays(2),
+                LocalTime.MIDNIGHT);
+        return ticketRepository.findAllByTourArrivalTimeIsAfterAndTourArrivalTimeIsBeforeAndStatus(startTime, endTime, Ticket.Status.CONFIRMED);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Ticket> findAllSoonNotConfirmedTickets() {
+        LocalDateTime time = LocalDateTime.of(
+                LocalDate.now().plusDays(4),
+                LocalTime.MIDNIGHT);
+        return ticketRepository.findAllByTourArrivalTimeIsBeforeAndStatus(time, Ticket.Status.ORDERED);
     }
 
     @Override
@@ -83,6 +106,21 @@ public class TicketServiceImpl implements TicketService {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new ResourceDoesNotExistException("ticket not found"));
         ticket.setStatus(Ticket.Status.CONFIRMED);
+        ticketRepository.save(ticket);
+    }
+
+    @Override
+    @Transactional
+    public void cancel(Long ticketId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new ResourceDoesNotExistException("ticket not found"));
+        int peopleAmount = ticket.getClientsAmount();
+        Tour tour = tourService.getById(ticket.getTour().getId());
+        if (tour.getArrivalTime().isAfter(LocalDateTime.now())) {
+            tour.setPlacesAmount(tour.getPlacesAmount() + peopleAmount);
+        }
+        tourService.save(tour);
+        ticket.setStatus(Ticket.Status.CANCELED);
         ticketRepository.save(ticket);
     }
 

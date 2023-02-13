@@ -11,12 +11,15 @@ import com.solvd.qaprotours.repository.UserRepository;
 import com.solvd.qaprotours.service.JwtService;
 import com.solvd.qaprotours.service.MailService;
 import com.solvd.qaprotours.service.UserService;
+import com.solvd.qaprotours.web.security.jwt.JwtTokenType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -86,7 +89,10 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setActivated(false);
         userRepository.save(user);
-        mailService.sendMail(user, MailType.ACTIVATION);
+        Map<String, Object> params = new HashMap<>();
+        String token = jwtService.generateToken(JwtTokenType.RESET, user);
+        params.put("token", token);
+        mailService.sendMail(user, MailType.ACTIVATION, params);
     }
 
     @Override

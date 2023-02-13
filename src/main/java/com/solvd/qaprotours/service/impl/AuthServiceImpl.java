@@ -19,6 +19,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author Ermakovich Kseniya, Lisov Ilya
  */
@@ -61,7 +64,10 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void sendRestoreToken(String email) {
         User user = userService.getByEmail(email);
-        mailService.sendMail(user, MailType.PASSWORD_RESET);
+        Map<String, Object> params = new HashMap<>();
+        String token = jwtService.generateToken(JwtTokenType.ACTIVATION, user);
+        params.put("token", token);
+        mailService.sendMail(user, MailType.PASSWORD_RESET, params);
     }
 
     @Override
