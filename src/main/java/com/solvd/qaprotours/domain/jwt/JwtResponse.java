@@ -7,12 +7,12 @@ import lombok.NoArgsConstructor;
 /**
  * @author Ermakovich Kseniya
  */
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 public class JwtResponse {
 
-    private JwtAccess access;
-    private JwtRefresh jwtRefresh;
+    private String accessToken;
+    private String refreshToken;
 
 }

@@ -7,7 +7,7 @@ import lombok.Data;
  * @author Ermakovich Kseniya
  */
 @Data
-public class JwtRefreshDto {
+public class JwtTokenDto {
 
     @NotNull(message = "token is required")
     private String token;
