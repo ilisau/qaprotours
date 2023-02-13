@@ -97,7 +97,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SendFailedException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorDto handleSendFailedException(SendFailedException e) {
-        return new ErrorDto("Error while sending email: " + e.getMessage());
+        return new ErrorDto("Error while sending email");
     }
 
     @ExceptionHandler(AccessDeniedException.class)

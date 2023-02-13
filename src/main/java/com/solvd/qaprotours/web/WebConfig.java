@@ -11,7 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.util.Properties;
 
 /**
- * @author Ermakovich Kseniya
+ * @author Ermakovich Kseniya, Lisov Ilya
  */
 @Configuration
 @RequiredArgsConstructor
