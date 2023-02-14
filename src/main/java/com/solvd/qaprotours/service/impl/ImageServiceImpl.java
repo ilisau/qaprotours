@@ -4,13 +4,13 @@ import com.solvd.qaprotours.domain.exception.ImageUploadException;
 import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.service.ImageService;
 import com.solvd.qaprotours.service.TourService;
+import com.solvd.qaprotours.service.property.MinioProperties;
 import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,11 +30,9 @@ import java.util.List;
 public class ImageServiceImpl implements ImageService {
 
     private final MinioClient minioClient;
+    private final MinioProperties minioProperties;
     private final TourService tourService;
     private final List<String> imageExtensions = List.of("jpg", "jpeg", "png", "svg", "webp");
-
-    @Value("${minio.bucket}")
-    private String defaultBucket;
 
     @Override
     public void uploadImage(Long tourId, MultipartFile file) {
@@ -49,15 +47,15 @@ public class ImageServiceImpl implements ImageService {
             InputStream inputStream = file.getInputStream();
             saveImage(inputStream, fileName);
 
-            String fileName200 = generateThumbnailName(tour, file, 400);
-            InputStream is200 = getThumbnailInputStream(file, 400);
-            saveImage(is200, fileName200);
+            String fileName400 = generateThumbnailName(tour, file, 400);
+            InputStream is400 = getThumbnailInputStream(file, 400);
+            saveImage(is400, fileName400);
 
             String fileName100 = generateThumbnailName(tour, file, 100);
             InputStream is100 = getThumbnailInputStream(file, 100);
             saveImage(is100, fileName100);
 
-            tourService.setImage(tourId, fileName);
+            tourService.addImage(tourId, fileName);
         } catch (Exception e) {
             throw new ImageUploadException("Image upload failed: " + e.getMessage());
         }
@@ -67,11 +65,11 @@ public class ImageServiceImpl implements ImageService {
     private void createBucket() {
         boolean found =
                 minioClient.bucketExists(BucketExistsArgs.builder()
-                        .bucket(defaultBucket)
+                        .bucket(minioProperties.getBucket())
                         .build());
         if (!found) {
             minioClient.makeBucket(MakeBucketArgs.builder()
-                    .bucket(defaultBucket)
+                    .bucket(minioProperties.getBucket())
                     .build());
         }
     }
@@ -81,7 +79,7 @@ public class ImageServiceImpl implements ImageService {
             throw new ImageUploadException("Image must have name");
         }
         String extension = getExtension(file);
-        if(tour.getImageUrls().size() > 1) {
+        if (tour.getImageUrls().size() > 0) {
             return "tour_" + tour.getId() + "_full_" + (tour.getImageUrls().size()) + "." + extension;
         }
         return "tour_" + tour.getId() + "_full" + "." + extension;
@@ -92,7 +90,7 @@ public class ImageServiceImpl implements ImageService {
             throw new ImageUploadException("Image must have name");
         }
         String extension = getExtension(file);
-        if(tour.getImageUrls().size() > 1) {
+        if (tour.getImageUrls().size() > 0) {
             return "tour_" + tour.getId() + "_thumb_" + height + "_" + (tour.getImageUrls().size()) + "." + extension;
         }
         return "tour_" + tour.getId() + "_thumb" + height + "." + extension;
@@ -111,7 +109,7 @@ public class ImageServiceImpl implements ImageService {
         minioClient.putObject(
                 PutObjectArgs.builder()
                         .stream(inputStream, inputStream.available(), -1)
-                        .bucket(defaultBucket)
+                        .bucket(minioProperties.getBucket())
                         .object(fileName)
                         .build()
         );
