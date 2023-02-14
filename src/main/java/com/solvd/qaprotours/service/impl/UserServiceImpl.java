@@ -12,6 +12,7 @@ import com.solvd.qaprotours.service.JwtService;
 import com.solvd.qaprotours.service.MailService;
 import com.solvd.qaprotours.service.UserService;
 import com.solvd.qaprotours.web.security.jwt.JwtTokenType;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -100,6 +101,10 @@ public class UserServiceImpl implements UserService {
     public void activate(JwtToken token) {
         if (!jwtService.validateToken(token.getToken())) {
             throw new InvalidTokenException("token is expired");
+        }
+        Claims claims = jwtService.parse(token.getToken());
+        if (!JwtTokenType.ACTIVATION.name().equals(claims.get("type"))) {
+            throw new InvalidTokenException("invalid reset token");
         }
         Long id = jwtService.retrieveUserId(token.getToken());
         User user = getById(id);
