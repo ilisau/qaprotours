@@ -2,6 +2,7 @@ package com.solvd.qaprotours.web.controller;
 
 import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.domain.tour.TourCriteria;
+import com.solvd.qaprotours.service.ImageService;
 import com.solvd.qaprotours.service.TourService;
 import com.solvd.qaprotours.web.dto.TourCriteriaDto;
 import com.solvd.qaprotours.web.dto.TourDto;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -25,6 +27,7 @@ import java.util.List;
 public class TourController {
 
     private final TourService tourService;
+    private final ImageService imageService;
     private final TourMapper tourMapper;
     private final TourCriteriaMapper tourCriteriaMapper;
 
@@ -63,6 +66,12 @@ public class TourController {
     @PreAuthorize("hasRole('EMPLOYEE')")
     public void delete(@PathVariable Long tourId) {
         tourService.delete(tourId);
+    }
+
+    @PostMapping("/{tourId}/photo")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public void uploadImage(@PathVariable Long tourId, @RequestParam MultipartFile file) {
+        imageService.uploadImage(tourId, file);
     }
 
 }

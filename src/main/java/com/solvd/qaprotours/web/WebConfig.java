@@ -1,6 +1,8 @@
 package com.solvd.qaprotours.web;
 
 import com.solvd.qaprotours.service.property.MailProperties;
+import com.solvd.qaprotours.service.property.MinioProperties;
+import io.minio.MinioClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +20,7 @@ import java.util.Properties;
 public class WebConfig {
 
     private final MailProperties mailProperties;
+    private final MinioProperties minioProperties;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -40,6 +43,14 @@ public class WebConfig {
         props.put("mail.debug", mailProperties.getProperties().getProperty("mail.debug"));
 
         return mailSender;
+    }
+
+    @Bean
+    public MinioClient minioClient() {
+        return MinioClient.builder()
+                .endpoint(minioProperties.getUrl())
+                .credentials(minioProperties.getAccessKey(), minioProperties.getSecretKey())
+                .build();
     }
 
 }

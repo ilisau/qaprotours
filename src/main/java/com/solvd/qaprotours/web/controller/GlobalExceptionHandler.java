@@ -106,6 +106,12 @@ public class GlobalExceptionHandler {
         return new ErrorDto("Access denied");
     }
 
+    @ExceptionHandler(ImageUploadException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorDto handleImageUploadException(ImageUploadException e) {
+        return new ErrorDto(e.getMessage());
+    }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorDto handleException(Exception e) {
