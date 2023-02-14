@@ -1,19 +1,26 @@
 package com.solvd.qaprotours.service.impl;
 
+import com.solvd.qaprotours.domain.MailType;
 import com.solvd.qaprotours.domain.exception.InvalidTokenException;
 import com.solvd.qaprotours.domain.exception.PasswordMismatchException;
 import com.solvd.qaprotours.domain.exception.ResourceAlreadyExistsException;
 import com.solvd.qaprotours.domain.exception.ResourceDoesNotExistException;
+import com.solvd.qaprotours.domain.jwt.JwtToken;
 import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.repository.UserRepository;
 import com.solvd.qaprotours.service.JwtService;
+import com.solvd.qaprotours.service.MailService;
 import com.solvd.qaprotours.service.UserService;
+import com.solvd.qaprotours.web.security.jwt.JwtTokenType;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -26,6 +33,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final JwtService jwtService;
+    private final MailService mailService;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -82,17 +90,23 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setActivated(false);
         userRepository.save(user);
-        String token = jwtService.generateActivationToken(user);
-        //TODO send email with activation token
+        Map<String, Object> params = new HashMap<>();
+        String token = jwtService.generateToken(JwtTokenType.RESET, user);
+        params.put("token", token);
+        mailService.sendMail(user, MailType.ACTIVATION, params);
     }
 
     @Override
     @Transactional
-    public void activate(String token) {
-        if (!jwtService.validateToken(token)) {
+    public void activate(JwtToken token) {
+        if (!jwtService.validateToken(token.getToken())) {
             throw new InvalidTokenException("token is expired");
         }
-        Long id = jwtService.retrieveUserId(token);
+        Claims claims = jwtService.parse(token.getToken());
+        if (!JwtTokenType.ACTIVATION.name().equals(claims.get("type"))) {
+            throw new InvalidTokenException("invalid reset token");
+        }
+        Long id = jwtService.retrieveUserId(token.getToken());
         User user = getById(id);
         user.setActivated(true);
         userRepository.save(user);

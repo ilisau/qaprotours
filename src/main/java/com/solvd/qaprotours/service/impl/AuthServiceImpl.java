@@ -1,21 +1,26 @@
 package com.solvd.qaprotours.service.impl;
 
+import com.solvd.qaprotours.domain.MailType;
 import com.solvd.qaprotours.domain.exception.AuthException;
 import com.solvd.qaprotours.domain.exception.InvalidTokenException;
 import com.solvd.qaprotours.domain.jwt.Authentication;
-import com.solvd.qaprotours.domain.jwt.JwtAccess;
-import com.solvd.qaprotours.domain.jwt.JwtRefresh;
 import com.solvd.qaprotours.domain.jwt.JwtResponse;
+import com.solvd.qaprotours.domain.jwt.JwtToken;
 import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.service.AuthService;
 import com.solvd.qaprotours.service.JwtService;
+import com.solvd.qaprotours.service.MailService;
 import com.solvd.qaprotours.service.UserService;
 import com.solvd.qaprotours.web.security.jwt.JwtTokenType;
 import com.solvd.qaprotours.web.security.jwt.JwtUserDetails;
+import com.solvd.qaprotours.web.security.jwt.JwtUserDetailsFactory;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Ermakovich Kseniya, Lisov Ilya
@@ -27,6 +32,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserService userService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final MailService mailService;
 
     @Override
     public JwtResponse login(Authentication authentication) {
@@ -37,29 +43,31 @@ public class AuthServiceImpl implements AuthService {
         if (!user.isActivated()) {
             throw new AuthException("user is not activated");
         }
-        final JwtAccess access = jwtService.generateAccessToken(user);
-        final JwtRefresh jwtRefreshToken = jwtService.generateRefreshToken(user);
-        return new JwtResponse(access, jwtRefreshToken);
+        String accessToken = jwtService.generateToken(JwtTokenType.ACCESS, user);
+        String refreshToken = jwtService.generateToken(JwtTokenType.REFRESH, user);
+        return new JwtResponse(accessToken, refreshToken);
     }
 
     @Override
-    public JwtResponse refresh(JwtRefresh jwtRefresh) {
-        String refreshToken = jwtRefresh.getToken();
-        JwtUserDetails userDetails = jwtService.parseToken(refreshToken);
+    public JwtResponse refresh(JwtToken jwtToken) {
+        Claims claims = jwtService.parse(jwtToken.getToken());
+        JwtUserDetails userDetails = JwtUserDetailsFactory.create(claims);
         if (!JwtTokenType.REFRESH.name().equals(userDetails.getType())) {
             throw new AuthException("invalid refresh token");
         }
-        final User user = userService.getByEmail(userDetails.getEmail());
-        final JwtAccess access = jwtService.generateAccessToken(user);
-        final JwtRefresh newJwtRefreshToken = jwtService.generateRefreshToken(user);
-        return new JwtResponse(access, newJwtRefreshToken);
+        User user = userService.getByEmail(userDetails.getEmail());
+        String accessToken = jwtService.generateToken(JwtTokenType.ACCESS, user);
+        String refreshToken = jwtService.generateToken(JwtTokenType.REFRESH, user);
+        return new JwtResponse(accessToken, refreshToken);
     }
 
     @Override
     public void sendRestoreToken(String email) {
         User user = userService.getByEmail(email);
-        String token = jwtService.generateResetToken(user);
-        //TODO send email with restore token
+        Map<String, Object> params = new HashMap<>();
+        String token = jwtService.generateToken(JwtTokenType.ACTIVATION, user);
+        params.put("token", token);
+        mailService.sendMail(user, MailType.PASSWORD_RESET, params);
     }
 
     @Override
@@ -71,7 +79,7 @@ public class AuthServiceImpl implements AuthService {
         if (!JwtTokenType.RESET.name().equals(claims.get("type"))) {
             throw new InvalidTokenException("invalid reset token");
         }
-        JwtUserDetails userDetails = jwtService.parseToken(token);
+        JwtUserDetails userDetails = JwtUserDetailsFactory.create(claims);
         userService.updatePassword(userDetails.getId(), password);
     }
 

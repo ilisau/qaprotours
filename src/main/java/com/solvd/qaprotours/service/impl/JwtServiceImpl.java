@@ -1,7 +1,5 @@
 package com.solvd.qaprotours.service.impl;
 
-import com.solvd.qaprotours.domain.jwt.JwtAccess;
-import com.solvd.qaprotours.domain.jwt.JwtRefresh;
 import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.service.JwtService;
 import com.solvd.qaprotours.service.property.JwtProperties;
@@ -50,16 +48,6 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public JwtUserDetails parseToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return JwtUserDetailsFactory.create(claims);
-    }
-
-    @Override
     public Claims parse(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
@@ -69,8 +57,19 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
+    public String generateToken(JwtTokenType type, User user) {
+        return switch (type) {
+            case ACCESS -> generateAccessToken(user);
+            case REFRESH -> generateRefreshToken(user);
+            case ACTIVATION -> generateActivationToken(user);
+            case RESET -> generateResetToken(user);
+        };
+    }
+
+    @Override
     public Authentication getAuthentication(String token) {
-        JwtUserDetails jwtUserDetails = parseToken(token);
+        Claims claims = parse(token);
+        JwtUserDetails jwtUserDetails = JwtUserDetailsFactory.create(claims);
         UserDetails userDetails = userDetailsService.loadUserByUsername(jwtUserDetails.getEmail());
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
@@ -80,34 +79,30 @@ public class JwtServiceImpl implements JwtService {
         return Objects.equals(jwtUserDetails.getType(), JwtTokenType.ACCESS.name());
     }
 
-    @Override
-    public JwtRefresh generateRefreshToken(User user) {
+    private String generateRefreshToken(User user) {
         final Instant refreshExpiration = Instant.now().plus(jwtProperties.getRefresh(), ChronoUnit.HOURS);
-        String token = Jwts.builder()
+        return Jwts.builder()
                 .setSubject(user.getEmail())
+                .claim("id", user.getId())
                 .claim("type", JwtTokenType.REFRESH.name())
                 .setExpiration(Date.from(refreshExpiration))
                 .signWith(key)
                 .compact();
-        return new JwtRefresh(token);
     }
 
-    @Override
-    public JwtAccess generateAccessToken(User user) {
+    private String generateAccessToken(User user) {
         final Instant accessExpiration = Instant.now().plus(jwtProperties.getAccess(), ChronoUnit.MINUTES);
-        String token = Jwts.builder()
+        return Jwts.builder()
                 .setSubject(user.getEmail())
-                .claim("role", user.getRole())
                 .claim("id", user.getId())
                 .claim("type", JwtTokenType.ACCESS.name())
+                .claim("role", user.getRole())
                 .setExpiration(Date.from(accessExpiration))
                 .signWith(key)
                 .compact();
-        return new JwtAccess(token, accessExpiration);
     }
 
-    @Override
-    public String generateActivationToken(User user) {
+    private String generateActivationToken(User user) {
         final Instant accessExpiration = Instant.now().plus(jwtProperties.getActivation(), ChronoUnit.HOURS);
         return Jwts.builder()
                 .setSubject(user.getEmail())
@@ -118,8 +113,7 @@ public class JwtServiceImpl implements JwtService {
                 .compact();
     }
 
-    @Override
-    public String generateResetToken(User user) {
+    private String generateResetToken(User user) {
         final Instant accessExpiration = Instant.now().plus(jwtProperties.getReset(), ChronoUnit.HOURS);
         return Jwts.builder()
                 .setSubject(user.getEmail())
@@ -150,4 +144,5 @@ public class JwtServiceImpl implements JwtService {
                 .get("id")
                 .toString());
     }
+
 }

@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 /**
  * @author Ermakovich Kseniya
  */
-@Mapper(componentModel = "spring", uses = {JwtAccessMapper.class, RefreshMapper.class})
+@Mapper(componentModel = "spring")
 public interface JwtResponseMapper {
 
     JwtResponseDto toDto(JwtResponse response);

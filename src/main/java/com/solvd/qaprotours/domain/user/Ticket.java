@@ -18,11 +18,11 @@ public class Ticket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "tour_id")
     private Tour tour;
 
@@ -38,7 +38,8 @@ public class Ticket {
     public enum Status {
 
         ORDERED,
-        CONFIRMED
+        CONFIRMED,
+        CANCELED
 
     }
 

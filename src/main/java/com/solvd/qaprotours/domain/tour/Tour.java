@@ -58,6 +58,11 @@ public class Tour {
 
     private boolean isDraft;
 
+    @ElementCollection
+    @CollectionTable(name = "tour_image", joinColumns = @JoinColumn(name = "tour_id"))
+    @Column(name = "image_url")
+    private List<String> imageUrls;
+
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "latitude", column = @Column(name = "latitude")),

@@ -1,5 +1,6 @@
 package com.solvd.qaprotours.service;
 
+import com.solvd.qaprotours.domain.jwt.JwtToken;
 import com.solvd.qaprotours.domain.user.User;
 
 /**
@@ -19,7 +20,7 @@ public interface UserService {
 
     void create(User user);
 
-    void activate(String token);
+    void activate(JwtToken token);
 
     void delete(Long id);
 

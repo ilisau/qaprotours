@@ -2,9 +2,11 @@ package com.solvd.qaprotours.web.controller;
 
 import com.solvd.qaprotours.domain.exception.*;
 import com.solvd.qaprotours.web.dto.ErrorDto;
+import jakarta.mail.SendFailedException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -90,6 +92,24 @@ public class GlobalExceptionHandler {
         exceptionBody.setDetails(errors.stream()
                 .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage)));
         return exceptionBody;
+    }
+
+    @ExceptionHandler(SendFailedException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorDto handleSendFailedException(SendFailedException e) {
+        return new ErrorDto("Error while sending email");
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorDto handleAccessDeniedException(AccessDeniedException e) {
+        return new ErrorDto("Access denied");
+    }
+
+    @ExceptionHandler(ImageUploadException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorDto handleImageUploadException(ImageUploadException e) {
+        return new ErrorDto(e.getMessage());
     }
 
     @ExceptionHandler
