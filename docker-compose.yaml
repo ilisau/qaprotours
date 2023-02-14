@@ -25,8 +25,6 @@ services:
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
       - MINIO_BUCKET=${MINIO_BUCKET}
       - MINIO_URL=${SPRING_MINIO_URL}
-    ports:
-      - '8080:8080'
     networks:
       - app-tier
 
@@ -50,5 +48,18 @@ services:
     ports:
       - '9000:9000'
       - '9090:9090'
+    networks:
+      - app-tier
+
+  nginx:
+    image: nginx:latest
+    container_name: qaprotours-nginx
+    volumes:
+      - ./nginx:/etc/nginx/conf.d/
+    depends_on:
+      - app
+      - minio
+    ports:
+      - '80:80'
     networks:
       - app-tier
