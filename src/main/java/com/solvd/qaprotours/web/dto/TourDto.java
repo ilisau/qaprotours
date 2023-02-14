@@ -9,6 +9,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author Lisov Ilya
@@ -64,7 +65,7 @@ public class TourDto {
     private boolean isDraft;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private String imageUrl;
+    private List<String> imageUrls;
 
     @NotNull(message = "places amount cannot be null", groups = {OnCreate.class})
     @Min(value = 0, message = "places amount cannot be less than 0", groups = {OnCreate.class})

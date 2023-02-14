@@ -191,7 +191,7 @@ public class TourServiceImpl implements TourService {
     @Override
     public void setImage(Long tourId, String fileName) {
         Tour tour = getById(tourId);
-        tour.setImageUrl(fileName);
+        tour.getImageUrls().add(fileName);
         tourRepository.save(tour);
     }
 }

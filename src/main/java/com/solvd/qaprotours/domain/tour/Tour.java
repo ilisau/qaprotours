@@ -58,8 +58,10 @@ public class Tour {
 
     private boolean isDraft;
 
+    @ElementCollection
+    @CollectionTable(name = "tour_image", joinColumns = @JoinColumn(name = "tour_id"))
     @Column(name = "image_url")
-    private String imageUrl;
+    private List<String> imageUrls;
 
     @Embedded
     @AttributeOverrides({

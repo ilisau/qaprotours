@@ -1,6 +1,7 @@
 package com.solvd.qaprotours.service.impl;
 
 import com.solvd.qaprotours.domain.exception.ImageUploadException;
+import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.service.ImageService;
 import com.solvd.qaprotours.service.TourService;
 import io.minio.BucketExistsArgs;
@@ -30,10 +31,10 @@ public class ImageServiceImpl implements ImageService {
 
     private final MinioClient minioClient;
     private final TourService tourService;
-    private final List<String> imageExtensions = List.of("jpg", "jpeg", "png", "svg");
+    private final List<String> imageExtensions = List.of("jpg", "jpeg", "png", "svg", "webp");
 
     @Value("${minio.bucket}")
-    private final String defaultBucket;
+    private String defaultBucket;
 
     @Override
     public void uploadImage(Long tourId, MultipartFile file) {
@@ -42,16 +43,17 @@ public class ImageServiceImpl implements ImageService {
                 throw new ImageUploadException("Image must have one of the following extensions: " + imageExtensions);
             }
             createBucket();
+            Tour tour = tourService.getById(tourId);
 
-            String fileName = generateFileName(tourId, file);
+            String fileName = generateFileName(tour, file);
             InputStream inputStream = file.getInputStream();
             saveImage(inputStream, fileName);
 
-            String fileName200 = generateThumbnailName(tourId, file, 200);
-            InputStream is200 = getThumbnailInputStream(file, 200);
+            String fileName200 = generateThumbnailName(tour, file, 400);
+            InputStream is200 = getThumbnailInputStream(file, 400);
             saveImage(is200, fileName200);
 
-            String fileName100 = generateThumbnailName(tourId, file, 100);
+            String fileName100 = generateThumbnailName(tour, file, 100);
             InputStream is100 = getThumbnailInputStream(file, 100);
             saveImage(is100, fileName100);
 
@@ -74,31 +76,34 @@ public class ImageServiceImpl implements ImageService {
         }
     }
 
-    private String generateFileName(Long id, MultipartFile file) {
-        if (!file.isEmpty() && file.getOriginalFilename() != null) {
-            String extension = getExtension(file);
-            return "tour_" + id + "_full" + "." + extension;
-        } else {
+    private String generateFileName(Tour tour, MultipartFile file) {
+        if (file.isEmpty() || file.getOriginalFilename() == null) {
             throw new ImageUploadException("Image must have name");
         }
+        String extension = getExtension(file);
+        if(tour.getImageUrls().size() > 1) {
+            return "tour_" + tour.getId() + "_full_" + (tour.getImageUrls().size()) + "." + extension;
+        }
+        return "tour_" + tour.getId() + "_full" + "." + extension;
     }
 
-    private String generateThumbnailName(Long id, MultipartFile file, int height) {
-        if (!file.isEmpty() && file.getOriginalFilename() != null) {
-            String extension = getExtension(file);
-            return "tour_" + id + "_thumb" + height + "." + extension;
-        } else {
+    private String generateThumbnailName(Tour tour, MultipartFile file, int height) {
+        if (file.isEmpty() || file.getOriginalFilename() == null) {
             throw new ImageUploadException("Image must have name");
         }
+        String extension = getExtension(file);
+        if(tour.getImageUrls().size() > 1) {
+            return "tour_" + tour.getId() + "_thumb_" + height + "_" + (tour.getImageUrls().size()) + "." + extension;
+        }
+        return "tour_" + tour.getId() + "_thumb" + height + "." + extension;
     }
 
     private String getExtension(MultipartFile file) {
-        if (!file.isEmpty() && file.getOriginalFilename() != null) {
-            return file.getOriginalFilename()
-                    .substring(file.getOriginalFilename().lastIndexOf(".") + 1);
-        } else {
+        if (file.isEmpty() || file.getOriginalFilename() == null) {
             throw new ImageUploadException("Image must have name");
         }
+        return file.getOriginalFilename()
+                .substring(file.getOriginalFilename().lastIndexOf(".") + 1);
     }
 
     @SneakyThrows
