@@ -1,5 +1,9 @@
 version: '3'
 
+networks:
+  app-tier:
+    driver: bridge
+
 services:
   app:
     build:
@@ -7,19 +11,55 @@ services:
     container_name: qaprotours
     depends_on:
       - db
+      - minio
     environment:
       - SPRING_DATASOURCE_URL=${DATASOURCE_URL}
       - SPRING_DATASOURCE_USERNAME=${DATASOURCE_USERNAME}
       - SPRING_DATASOURCE_PASSWORD=${DATASOURCE_PASSWORD}
-    ports:
-      - '8080:8080'
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=${DATASOURCE_DRIVER}
+      - SPRING_MAIL_HOST=${SPRING_MAIL_HOST}
+      - SPRING_MAIL_PORT=${SPRING_MAIL_PORT}
+      - SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME}
+      - SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - MINIO_BUCKET=${MINIO_BUCKET}
+      - MINIO_URL=${SPRING_MINIO_URL}
+    networks:
+      - app-tier
 
   db:
     image: 'postgres:15.1-alpine'
     container_name: qaprotours-db
-    volumes:
-      - ./target/classes/db:/docker-entrypoint-initdb.d
     environment:
       - POSTGRES_USER=${DATASOURCE_USERNAME}
       - POSTGRES_PASSWORD=${DATASOURCE_PASSWORD}
       - POSTGRES_DB=${DATASOURCE_DB}
+    networks:
+      - app-tier
+
+  minio:
+    image: minio/minio:latest
+    container_name: qaprotours-minio
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
+    command: server ~/minio --console-address :9090
+    ports:
+      - '9000:9000'
+      - '9090:9090'
+    networks:
+      - app-tier
+
+  nginx:
+    image: nginx:latest
+    container_name: qaprotours-nginx
+    volumes:
+      - ./nginx:/etc/nginx/conf.d/
+    depends_on:
+      - app
+      - minio
+    ports:
+      - '80:80'
+    networks:
+      - app-tier
