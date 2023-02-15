@@ -22,13 +22,19 @@ public class Tour {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "name")
     private String name;
+
+    @Column(name = "description")
     private String description;
 
+    @Column(name = "country")
     private String country;
 
+    @Column(name = "city")
     private String city;
 
+    @Column(name = "type")
     @Enumerated(EnumType.STRING)
     private TourType type;
 
@@ -49,18 +55,21 @@ public class Tour {
     @Column(name = "place_amount")
     private Integer placesAmount;
 
+    @Column(name = "price")
     private BigDecimal price;
 
+    @Column(name = "rating")
     private BigDecimal rating;
 
     @Column(name = "day_duration")
     private Integer dayDuration;
 
+    @Column(name = "is_draft")
     private boolean isDraft;
 
+    @Column(name = "image_url")
     @ElementCollection
     @CollectionTable(name = "tour_image", joinColumns = @JoinColumn(name = "tour_id"))
-    @Column(name = "image_url")
     private List<String> imageUrls;
 
     @Embedded

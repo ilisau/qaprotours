@@ -14,7 +14,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * Lisov Ilya
+ * @author Lisov Ilya
  */
 @Getter
 @Setter
@@ -67,27 +67,8 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
     }
 
     @Override
-    public void setFilterObject(Object filterObject) {
-        this.filterObject = filterObject;
-    }
-
-    @Override
-    public Object getFilterObject() {
-        return filterObject;
-    }
-
-    @Override
-    public void setReturnObject(Object returnObject) {
-        this.returnObject = returnObject;
-    }
-
-    @Override
-    public Object getReturnObject() {
-        return returnObject;
-    }
-
-    @Override
     public Object getThis() {
         return target;
     }
+
 }

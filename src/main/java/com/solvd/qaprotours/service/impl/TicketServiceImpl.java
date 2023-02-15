@@ -44,7 +44,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Ticket> findAllSoonTickets() {
+    public List<Ticket> getAllSoonTickets() {
         LocalDateTime startTime = LocalDateTime.of(
                 LocalDate.now().plusDays(1),
                 LocalTime.MIDNIGHT);
@@ -56,7 +56,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Ticket> findAllSoonNotConfirmedTickets() {
+    public List<Ticket> getAllSoonNotConfirmedTickets() {
         LocalDateTime time = LocalDateTime.of(
                 LocalDate.now().plusDays(4),
                 LocalTime.MIDNIGHT);
@@ -65,7 +65,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @Transactional
-    public void add(Long userId, Long tourId, Integer peopleAmount) {
+    public void create(Long userId, Long tourId, Integer peopleAmount) {
         Tour tour = tourService.getById(tourId);
         if (tour.getPlacesAmount() < peopleAmount) {
             throw new NoFreePlacesException("not enough places in tour");

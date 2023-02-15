@@ -48,6 +48,7 @@ public class TourController {
     }
 
     @PostMapping("/publish")
+    @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('EMPLOYEE')")
     public TourDto publish(@Validated(OnCreate.class) @RequestBody TourDto tourDto) {
         Tour tour = tourMapper.toEntity(tourDto);

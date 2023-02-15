@@ -20,7 +20,6 @@ public class JwtUserDetails implements UserDetails {
     private final String password;
     private final String email;
     private final boolean enabled;
-    private final String type;
     private final Collection<? extends GrantedAuthority> authorities;
 
     @JsonIgnore

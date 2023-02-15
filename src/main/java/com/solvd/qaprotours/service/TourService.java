@@ -10,6 +10,8 @@ import java.util.List;
  */
 public interface TourService {
 
+    Tour getById(Long tourId);
+
     List<Tour> getAll(int currentPage, int pageSize, TourCriteria tourCriteria);
 
     List<Tour> getAllByCriteria(TourCriteria tourCriteria);
@@ -17,8 +19,6 @@ public interface TourService {
     Tour save(Tour tour);
 
     Tour publish(Tour tour);
-
-    Tour getById(Long tourId);
 
     void delete(Long tourId);
 

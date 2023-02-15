@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 /**
  * @author Ermakovich Kseniya
  */
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 public class JwtToken {
 
     private String token;

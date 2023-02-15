@@ -12,7 +12,6 @@ import com.solvd.qaprotours.service.JwtService;
 import com.solvd.qaprotours.service.MailService;
 import com.solvd.qaprotours.service.UserService;
 import com.solvd.qaprotours.web.security.jwt.JwtTokenType;
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -91,7 +90,7 @@ public class UserServiceImpl implements UserService {
         user.setActivated(false);
         userRepository.save(user);
         Map<String, Object> params = new HashMap<>();
-        String token = jwtService.generateToken(JwtTokenType.RESET, user);
+        String token = jwtService.generateToken(JwtTokenType.ACTIVATION, user);
         params.put("token", token);
         mailService.sendMail(user, MailType.ACTIVATION, params);
     }
@@ -102,8 +101,7 @@ public class UserServiceImpl implements UserService {
         if (!jwtService.validateToken(token.getToken())) {
             throw new InvalidTokenException("token is expired");
         }
-        Claims claims = jwtService.parse(token.getToken());
-        if (!JwtTokenType.ACTIVATION.name().equals(claims.get("type"))) {
+        if (!jwtService.isTokenType(token.getToken(), JwtTokenType.ACTIVATION)) {
             throw new InvalidTokenException("invalid reset token");
         }
         Long id = jwtService.retrieveUserId(token.getToken());

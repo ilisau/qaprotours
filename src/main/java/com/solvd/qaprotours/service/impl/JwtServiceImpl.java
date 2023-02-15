@@ -75,8 +75,9 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public boolean isAccessToken(JwtUserDetails jwtUserDetails) {
-        return Objects.equals(jwtUserDetails.getType(), JwtTokenType.ACCESS.name());
+    public boolean isTokenType(String token, JwtTokenType type) {
+        Claims claims = parse(token);
+        return Objects.equals(claims.get("type"), type.name());
     }
 
     private String generateRefreshToken(User user) {
