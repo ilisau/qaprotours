@@ -29,6 +29,7 @@ public class Ticket {
     @Column(name = "order_time", nullable = false)
     private LocalDateTime orderTime;
 
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status;
 

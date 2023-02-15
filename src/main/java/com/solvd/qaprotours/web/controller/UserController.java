@@ -71,7 +71,7 @@ public class UserController {
     public void addTicket(@PathVariable Long userId,
                           @PathVariable Long tourId,
                           @RequestParam Integer peopleAmount) {
-        ticketService.add(userId, tourId, peopleAmount);
+        ticketService.create(userId, tourId, peopleAmount);
     }
 
 }

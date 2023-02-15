@@ -2,12 +2,11 @@ package com.solvd.qaprotours.service;
 
 import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.web.security.jwt.JwtTokenType;
-import com.solvd.qaprotours.web.security.jwt.JwtUserDetails;
 import io.jsonwebtoken.Claims;
 import org.springframework.security.core.Authentication;
 
 /**
- * @author Ermakovich Kseniya
+ * @author Ermakovich Kseniya, Lisov Ilya
  */
 public interface JwtService {
 
@@ -17,7 +16,7 @@ public interface JwtService {
 
     Authentication getAuthentication(String token);
 
-    boolean isAccessToken(JwtUserDetails jwtUserDetails);
+    boolean isTokenType(String token, JwtTokenType type);
 
     boolean validateToken(String token);
 

@@ -33,7 +33,7 @@ public class TicketDto {
     private Ticket.Status status;
 
     @NotNull(message = "clients amount must not be null", groups = {OnCreate.class})
-    @Size(min = 1, max = 30, message = "clients amount must be between 1 and 30", groups = {OnCreate.class})
+    @Size(min = 1, max = 30, message = "clients amount must be between {min} and {max}", groups = {OnCreate.class})
     private Integer clientsAmount;
 
 }

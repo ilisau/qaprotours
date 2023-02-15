@@ -24,7 +24,7 @@ public class Scheduler {
 
     @Scheduled(cron = "0 0 0 * * *")
     public void findBookedTickets() {
-        List<Ticket> tickets = ticketService.findAllSoonTickets();
+        List<Ticket> tickets = ticketService.getAllSoonTickets();
         tickets.forEach((ticket) -> {
             Map<String, Object> params = new HashMap<>();
             params.put("ticket", ticket);
@@ -34,7 +34,7 @@ public class Scheduler {
 
     @Scheduled(cron = "0 0 0 * * *")
     public void findNotConfirmedTickets() {
-        List<Ticket> tickets = ticketService.findAllSoonNotConfirmedTickets();
+        List<Ticket> tickets = ticketService.getAllSoonNotConfirmedTickets();
         tickets.forEach((ticket) -> {
             Map<String, Object> params = new HashMap<>();
             params.put("ticket", ticket);

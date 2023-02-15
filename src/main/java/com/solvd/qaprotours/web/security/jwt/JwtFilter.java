@@ -2,7 +2,6 @@ package com.solvd.qaprotours.web.security.jwt;
 
 import com.solvd.qaprotours.domain.exception.AuthException;
 import com.solvd.qaprotours.service.JwtService;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -35,9 +34,7 @@ public class JwtFilter extends GenericFilterBean {
         try {
             String token = getTokenFromRequest((HttpServletRequest) req);
             if (token != null) {
-                Claims claims = jwtService.parse(token);
-                JwtUserDetails jwtUserDetails = JwtUserDetailsFactory.create(claims);
-                if (!jwtService.isAccessToken(jwtUserDetails)) {
+                if (!jwtService.isTokenType(token, JwtTokenType.ACCESS)) {
                     throw new JwtException("invalid token");
                 }
                 Authentication auth = jwtService.getAuthentication(token);

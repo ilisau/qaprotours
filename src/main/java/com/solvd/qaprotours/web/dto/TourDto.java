@@ -29,11 +29,11 @@ public class TourDto {
     private String description;
 
     @NotNull(message = "country cannot be null", groups = {OnCreate.class})
-    @Size(min = 3, max = 40, message = "Country should be from 3 to 40 symbols")
+    @Size(min = 3, max = 40, message = "Country should be from {min} to {max} symbols")
     private String country;
 
     @NotNull(message = "city cannot be null", groups = {OnCreate.class})
-    @Size(min = 3, max = 40, message = "City should be from 3 to 40 symbols")
+    @Size(min = 3, max = 40, message = "City should be from {min to {max} symbols")
     private String city;
 
     @NotNull(message = "type cannot be null", groups = {OnCreate.class})

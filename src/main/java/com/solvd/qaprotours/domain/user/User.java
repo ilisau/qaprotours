@@ -17,15 +17,23 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "name", nullable = false)
     private String name;
+
+    @Column(name = "surname", nullable = false)
     private String surname;
+
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
+
+    @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Column(name = "is_activated")
+    @Column(name = "is_activated", nullable = false)
     private boolean isActivated;
 
     @RequiredArgsConstructor
@@ -40,6 +48,7 @@ public class User {
         public String getAuthority() {
             return "ROLE_" + value;
         }
+
     }
 
 }

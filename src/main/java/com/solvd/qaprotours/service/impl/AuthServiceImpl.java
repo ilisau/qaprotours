@@ -52,7 +52,7 @@ public class AuthServiceImpl implements AuthService {
     public JwtResponse refresh(JwtToken jwtToken) {
         Claims claims = jwtService.parse(jwtToken.getToken());
         JwtUserDetails userDetails = JwtUserDetailsFactory.create(claims);
-        if (!JwtTokenType.REFRESH.name().equals(userDetails.getType())) {
+        if (!jwtService.isTokenType(jwtToken.getToken(), JwtTokenType.REFRESH)) {
             throw new AuthException("invalid refresh token");
         }
         User user = userService.getByEmail(userDetails.getEmail());
@@ -65,7 +65,7 @@ public class AuthServiceImpl implements AuthService {
     public void sendRestoreToken(String email) {
         User user = userService.getByEmail(email);
         Map<String, Object> params = new HashMap<>();
-        String token = jwtService.generateToken(JwtTokenType.ACTIVATION, user);
+        String token = jwtService.generateToken(JwtTokenType.RESET, user);
         params.put("token", token);
         mailService.sendMail(user, MailType.PASSWORD_RESET, params);
     }
@@ -76,7 +76,7 @@ public class AuthServiceImpl implements AuthService {
             throw new InvalidTokenException("token is expired");
         }
         Claims claims = jwtService.parse(token);
-        if (!JwtTokenType.RESET.name().equals(claims.get("type"))) {
+        if (!jwtService.isTokenType(token, JwtTokenType.RESET)) {
             throw new InvalidTokenException("invalid reset token");
         }
         JwtUserDetails userDetails = JwtUserDetailsFactory.create(claims);
