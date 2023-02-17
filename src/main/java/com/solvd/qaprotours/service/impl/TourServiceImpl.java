@@ -9,7 +9,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,14 +35,7 @@ public class TourServiceImpl implements TourService {
     public List<Tour> getAll(Integer currentPage, Integer pageSize, TourCriteria tourCriteria) {
         List<Tour> tours;
         List<Tour> toursPaged;
-        if (tourCriteria != null) {
-            tours = getAllByCriteria(tourCriteria);
-        } else {
-            tours = tourRepository.findAllByArrivalTimeIsAfter(LocalDateTime.now());
-        }
-        Sort ratingSort = Sort.by("rating").descending();
-        Sort arrivalTimeSort = Sort.by("arrivalTime");
-        Sort multipleSort = ratingSort.and(arrivalTimeSort);
+        tours = getAllByCriteria(tourCriteria);
         if (currentPage == null || pageSize == null) {
             currentPage = 0;
             pageSize = 20;
@@ -55,9 +47,7 @@ public class TourServiceImpl implements TourService {
             int toIndex = Math.min(startItem + pageSize, tours.size());
             toursPaged = tours.subList(startItem, toIndex);
         }
-        Pageable paging = PageRequest.of(currentPage, pageSize, multipleSort);
-        Page<Tour> tourPage = new PageImpl<>(toursPaged, paging, tours.size());
-        return tourPage.getContent();
+        return toursPaged;
     }
 
     @Override
@@ -132,19 +122,17 @@ public class TourServiceImpl implements TourService {
         }
 
         LocalDateTime arrivedAt = tourCriteria.getArrivedAt();
-        if (arrivedAt != null) {
-            if(arrivedAt.isBefore(LocalDateTime.now())) {
-                arrivedAt = LocalDateTime.now();
-            }
-            Predicate arrivedAtPredicate = criteriaBuilder.greaterThanOrEqualTo(tourRoot.get("arrivalTime"), arrivedAt);
-            predicates.add(arrivedAtPredicate);
+        if (arrivedAt == null || arrivedAt.isBefore(LocalDateTime.now())) {
+            arrivedAt = LocalDateTime.now();
         }
+        Predicate arrivedAtPredicate = criteriaBuilder.greaterThanOrEqualTo(tourRoot.get("arrivalTime"), arrivedAt);
+        predicates.add(arrivedAtPredicate);
 
         LocalDateTime leavedAt = tourCriteria.getLeavedAt();
-        if (leavedAt != null) {
-            if(leavedAt.isBefore(LocalDateTime.now())) {
-                leavedAt = LocalDateTime.now();
-            }
+        if (leavedAt != null && leavedAt.isBefore(LocalDateTime.now())) {
+            leavedAt = LocalDateTime.now();
+        }
+        if(leavedAt != null) {
             Predicate leavedAtPredicate = criteriaBuilder.lessThanOrEqualTo(tourRoot.get("departureTime"), leavedAt);
             predicates.add(leavedAtPredicate);
         }
@@ -163,6 +151,11 @@ public class TourServiceImpl implements TourService {
 
         Predicate finalPredicate = criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         criteriaQuery.where(finalPredicate);
+
+        Order arrivalTimeOrder = criteriaBuilder.asc(tourRoot.get("arrivalTime"));
+        Order ratingOrder = criteriaBuilder.desc(tourRoot.get("rating"));
+
+        criteriaQuery.orderBy(arrivalTimeOrder, ratingOrder);
         return entityManager.createQuery(criteriaQuery).getResultList();
     }
 
