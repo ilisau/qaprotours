@@ -32,7 +32,8 @@ public class TourController {
     private final TourCriteriaMapper tourCriteriaMapper;
 
     @GetMapping
-    public List<TourDto> getAll(@RequestParam("currentPage") int currentPage, @RequestParam("pageSize") int pageSize,
+    public List<TourDto> getAll(@RequestParam(required = false) Integer currentPage,
+                                @RequestParam(required = false) Integer pageSize,
                                 @RequestBody(required = false) TourCriteriaDto tourCriteriaDto) {
         TourCriteria tourCriteria = tourCriteriaMapper.toEntity(tourCriteriaDto);
         List<Tour> tours = tourService.getAll(currentPage, pageSize, tourCriteria);
@@ -57,6 +58,7 @@ public class TourController {
     }
 
     @GetMapping("/{tourId}")
+    @PreAuthorize("canAccessDraftTour(tourId)")
     public TourDto getById(@PathVariable Long tourId) {
         Tour tour = tourService.getById(tourId);
         return tourMapper.toDto(tour);
@@ -71,7 +73,8 @@ public class TourController {
 
     @PostMapping("/{tourId}/photo")
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public void uploadImage(@PathVariable Long tourId, @RequestParam MultipartFile file) {
+    public void uploadImage(@PathVariable Long tourId,
+                            @RequestParam MultipartFile file) {
         imageService.uploadImage(tourId, file);
     }
 
