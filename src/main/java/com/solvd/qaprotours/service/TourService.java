@@ -12,7 +12,7 @@ public interface TourService {
 
     Tour getById(Long tourId);
 
-    List<Tour> getAll(int currentPage, int pageSize, TourCriteria tourCriteria);
+    List<Tour> getAll(Integer currentPage, Integer pageSize, TourCriteria tourCriteria);
 
     List<Tour> getAllByCriteria(TourCriteria tourCriteria);
 

@@ -1,10 +1,11 @@
 package com.solvd.qaprotours.repository;
 
 import com.solvd.qaprotours.domain.tour.Tour;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author Varya Petrova
@@ -12,6 +13,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TourRepository extends JpaRepository<Tour, Long> {
 
-    Page<Tour> findAll(Pageable pageable);
+    List<Tour> findAllByArrivalTimeIsAfter(LocalDateTime arrivalTime);
 
 }
