@@ -2,14 +2,13 @@ spring:
   config:
     import: optional:file:.env[.properties]
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
-    driver-class-name: ${SPRING_DATASOURCE_DRIVER}
+    url: jdbc:postgresql://${HOST}:5432/${POSTGRES_DB}?currentSchema=${POSTGRES_DB}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
   liquibase:
     change-log: classpath:db/db.changelog.yaml
     enabled: true
-    default-schema: qaprotours
+    default-schema: ${POSTGRES_DB}
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -28,6 +27,10 @@ spring:
           auth: true
           starttls:
             enable: true
+  servlet:
+    multipart:
+      max-file-size: 15MB
+      max-request-size: 15MB
 security:
   jwt:
     secret: c651749e8354adb09452a8ad14d4beadb7d57064d6cfb5c0e812bc30724458d187f43e58c22c30486303bbfc655391860952e92add87b5ce9e2ac7cdc612ad73=
