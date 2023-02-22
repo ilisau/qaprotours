@@ -4,39 +4,36 @@ networks:
   app-tier:
     driver: bridge
 
+volumes:
+  minio-data:
+    driver: local
+  db-data:
+    driver: local
+
 services:
   app:
     build:
       context: .
     container_name: qaprotours
     depends_on:
-      - db
+      - postgres
       - minio
-    environment:
-      - SPRING_DATASOURCE_URL=${DATASOURCE_URL}
-      - SPRING_DATASOURCE_USERNAME=${DATASOURCE_USERNAME}
-      - SPRING_DATASOURCE_PASSWORD=${DATASOURCE_PASSWORD}
-      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=${DATASOURCE_DRIVER}
-      - SPRING_MAIL_HOST=${SPRING_MAIL_HOST}
-      - SPRING_MAIL_PORT=${SPRING_MAIL_PORT}
-      - SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME}
-      - SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD}
-      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
-      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
-      - MINIO_BUCKET=${MINIO_BUCKET}
-      - MINIO_URL=${SPRING_MINIO_URL}
+    env_file:
+      - .env
     networks:
       - app-tier
 
-  db:
+  postgres:
     image: 'postgres:15.1-alpine'
     container_name: qaprotours-db
     environment:
-      - POSTGRES_USER=${DATASOURCE_USERNAME}
-      - POSTGRES_PASSWORD=${DATASOURCE_PASSWORD}
-      - POSTGRES_DB=${DATASOURCE_DB}
+      - POSTGRES_USER=${POSTGRES_USERNAME}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     networks:
       - app-tier
+    volumes:
+      - db-data:/var/lib/postgresql/data
 
   minio:
     image: minio/minio:latest
@@ -50,6 +47,8 @@ services:
       - '9090:9090'
     networks:
       - app-tier
+    volumes:
+      - minio-data:/minio
 
   nginx:
     image: nginx:latest
