@@ -43,3 +43,17 @@ minio:
   url: ${MINIO_URL}
   accessKey: ${MINIO_ACCESS_KEY}
   secretKey: ${MINIO_SECRET_KEY}
+mail:
+  links:
+    activation: http://localhost:8080/api/v1/auth/register/confirm?token=
+    restore: http://localhost:8080/api/v1/auth/password/restore?token=
+image:
+  thumbnails:
+    - 100
+    - 400
+  extensions:
+    - jpg
+    - jpeg
+    - png
+    - svg
+    - webp

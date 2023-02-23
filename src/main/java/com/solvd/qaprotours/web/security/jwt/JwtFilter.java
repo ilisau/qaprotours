@@ -9,7 +9,6 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -43,8 +42,8 @@ public class JwtFilter extends GenericFilterBean {
                 }
             }
             filterChain.doFilter(req, res);
-        } catch (JwtException | AuthException ex) {
-            throw new BadCredentialsException("bad credentials");
+        } catch (JwtException | AuthException e) {
+            throw new AuthException("Invalid token");
         }
     }
 

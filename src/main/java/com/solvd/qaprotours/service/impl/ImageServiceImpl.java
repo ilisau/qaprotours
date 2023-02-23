@@ -4,6 +4,7 @@ import com.solvd.qaprotours.domain.exception.ImageUploadException;
 import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.service.ImageService;
 import com.solvd.qaprotours.service.TourService;
+import com.solvd.qaprotours.service.property.ImageProperties;
 import com.solvd.qaprotours.service.property.MinioProperties;
 import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
@@ -20,7 +21,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.util.List;
 
 /**
  * @author Lisov Ilya
@@ -32,28 +32,28 @@ public class ImageServiceImpl implements ImageService {
     private final MinioClient minioClient;
     private final MinioProperties minioProperties;
     private final TourService tourService;
-    private final List<String> imageExtensions = List.of("jpg", "jpeg", "png", "svg", "webp");
+    private final ImageProperties imageProperties;
 
     @Override
-    public void uploadImage(Long tourId, MultipartFile file) {
+    public void uploadImage(Long tourId, com.solvd.qaprotours.domain.Image image) {
         try {
-            if (!imageExtensions.contains(getExtension(file))) {
-                throw new ImageUploadException("Image must have one of the following extensions: " + imageExtensions);
-            }
             createBucket();
             Tour tour = tourService.getById(tourId);
+
+            MultipartFile file = image.getFile();
+            if (file.isEmpty() || file.getOriginalFilename() == null) {
+                throw new ImageUploadException("Image must have name");
+            }
 
             String fileName = generateFileName(tour, file);
             InputStream inputStream = file.getInputStream();
             saveImage(inputStream, fileName);
 
-            String fileName400 = generateThumbnailName(tour, file, 400);
-            InputStream is400 = getThumbnailInputStream(file, 400);
-            saveImage(is400, fileName400);
-
-            String fileName100 = generateThumbnailName(tour, file, 100);
-            InputStream is100 = getThumbnailInputStream(file, 100);
-            saveImage(is100, fileName100);
+            imageProperties.getThumbnails().forEach((Integer size) -> {
+                String name = generateThumbnailName(tour, file, size);
+                InputStream is = getThumbnailInputStream(file, size);
+                saveImage(is, name);
+            });
 
             tourService.addImage(tourId, fileName);
         } catch (Exception e) {
@@ -75,9 +75,6 @@ public class ImageServiceImpl implements ImageService {
     }
 
     private String generateFileName(Tour tour, MultipartFile file) {
-        if (file.isEmpty() || file.getOriginalFilename() == null) {
-            throw new ImageUploadException("Image must have name");
-        }
         String extension = getExtension(file);
         if (tour.getImageUrls().size() > 0) {
             return "tour_" + tour.getId() + "_full_" + (tour.getImageUrls().size()) + "." + extension;
@@ -86,9 +83,6 @@ public class ImageServiceImpl implements ImageService {
     }
 
     private String generateThumbnailName(Tour tour, MultipartFile file, int height) {
-        if (file.isEmpty() || file.getOriginalFilename() == null) {
-            throw new ImageUploadException("Image must have name");
-        }
         String extension = getExtension(file);
         if (tour.getImageUrls().size() > 0) {
             return "tour_" + tour.getId() + "_thumb_" + height + "_" + (tour.getImageUrls().size()) + "." + extension;
@@ -97,9 +91,6 @@ public class ImageServiceImpl implements ImageService {
     }
 
     private String getExtension(MultipartFile file) {
-        if (file.isEmpty() || file.getOriginalFilename() == null) {
-            throw new ImageUploadException("Image must have name");
-        }
         return file.getOriginalFilename()
                 .substring(file.getOriginalFilename().lastIndexOf(".") + 1);
     }

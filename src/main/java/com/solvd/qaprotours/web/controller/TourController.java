@@ -1,12 +1,16 @@
 package com.solvd.qaprotours.web.controller;
 
+import com.solvd.qaprotours.domain.Image;
 import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.domain.tour.TourCriteria;
 import com.solvd.qaprotours.service.ImageService;
 import com.solvd.qaprotours.service.TourService;
+import com.solvd.qaprotours.web.dto.ImageDto;
 import com.solvd.qaprotours.web.dto.TourCriteriaDto;
 import com.solvd.qaprotours.web.dto.TourDto;
 import com.solvd.qaprotours.web.dto.validation.OnCreate;
+import com.solvd.qaprotours.web.dto.validation.ValidateExtension;
+import com.solvd.qaprotours.web.mapper.ImageMapper;
 import com.solvd.qaprotours.web.mapper.TourCriteriaMapper;
 import com.solvd.qaprotours.web.mapper.TourMapper;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -30,6 +33,7 @@ public class TourController {
     private final ImageService imageService;
     private final TourMapper tourMapper;
     private final TourCriteriaMapper tourCriteriaMapper;
+    private final ImageMapper imageMapper;
 
     @GetMapping
     public List<TourDto> getAll(@RequestParam(required = false) Integer currentPage,
@@ -58,7 +62,7 @@ public class TourController {
     }
 
     @GetMapping("/{tourId}")
-    @PreAuthorize("canAccessDraftTour(tourId)")
+    @PreAuthorize("canAccessDraftTour(#tourId)")
     public TourDto getById(@PathVariable Long tourId) {
         Tour tour = tourService.getById(tourId);
         return tourMapper.toDto(tour);
@@ -73,9 +77,11 @@ public class TourController {
 
     @PostMapping("/{tourId}/photo")
     @PreAuthorize("hasRole('EMPLOYEE')")
+    @ValidateExtension
     public void uploadImage(@PathVariable Long tourId,
-                            @RequestParam MultipartFile file) {
-        imageService.uploadImage(tourId, file);
+                            @ModelAttribute ImageDto dto) {
+        Image image = imageMapper.toEntity(dto);
+        imageService.uploadImage(tourId, image);
     }
 
 }
