@@ -7,6 +7,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -112,9 +113,17 @@ public class GlobalExceptionHandler {
         return new ErrorDto(e.getMessage());
     }
 
+    @ExceptionHandler(BadCredentialsException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorDto handleBadCredentials(BadCredentialsException e) {
+        return new ErrorDto("Bad credentials.");
+    }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorDto handleException(Exception e) {
+        System.out.println(e.getMessage());
+        e.printStackTrace();
         return new ErrorDto("Internal server error");
     }
 
