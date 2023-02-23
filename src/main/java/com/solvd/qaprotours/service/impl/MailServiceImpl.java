@@ -3,6 +3,7 @@ package com.solvd.qaprotours.service.impl;
 import com.solvd.qaprotours.domain.MailType;
 import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.service.MailService;
+import com.solvd.qaprotours.service.property.MailLinkProperties;
 import freemarker.template.Configuration;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class MailServiceImpl implements MailService {
 
     private final Configuration configuration;
     private final JavaMailSender mailSender;
+    private final MailLinkProperties mailLinkProperties;
 
     @Override
     @SneakyThrows
@@ -86,7 +88,7 @@ public class MailServiceImpl implements MailService {
 
         Map<String, Object> model = new HashMap<>();
         model.put("name", user.getName() + " " + user.getSurname());
-        model.put("link", "http://localhost:8080/api/v1/auth/register/confirm?token=" + params.get("token"));
+        model.put("link", mailLinkProperties.getActivation() + params.get("token"));
         configuration.getTemplate("activation.ftlh")
                 .process(model, stringWriter);
         return stringWriter.getBuffer()
@@ -98,7 +100,7 @@ public class MailServiceImpl implements MailService {
         StringWriter stringWriter = new StringWriter();
         Map<String, Object> model = new HashMap<>();
         model.put("name", user.getName() + " " + user.getSurname());
-        model.put("link", "http://localhost:8080/api/v1/auth/password/restore?token=" + params.get("token"));
+        model.put("link", mailLinkProperties.getRestore() + params.get("token"));
         configuration.getTemplate("restore.ftlh")
                 .process(model, stringWriter);
         return stringWriter.getBuffer()
