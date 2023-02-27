@@ -6,7 +6,7 @@ import com.solvd.qaprotours.domain.tour.TourCriteria;
 import java.util.List;
 
 /**
- * @author Varya Petrova
+ * @author Varya Petrova, Lisov Ilya
  */
 public interface TourService {
 
@@ -14,7 +14,7 @@ public interface TourService {
 
     List<Tour> getAll(Integer currentPage, Integer pageSize, TourCriteria tourCriteria);
 
-    List<Tour> getAllByCriteria(TourCriteria tourCriteria);
+    List<Tour> getAllByCriteria(TourCriteria tourCriteria, int currentPage, int pageSize);
 
     Tour save(Tour tour);
 
