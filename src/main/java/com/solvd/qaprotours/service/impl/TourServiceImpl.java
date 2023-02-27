@@ -9,13 +9,14 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -29,30 +30,37 @@ public class TourServiceImpl implements TourService {
     private EntityManager entityManager;
 
     private final TourRepository tourRepository;
+    private final int PAGE_SIZE = 20;
 
     @Override
     @Transactional(readOnly = true)
     public List<Tour> getAll(Integer currentPage, Integer pageSize, TourCriteria tourCriteria) {
         List<Tour> tours;
-        List<Tour> toursPaged;
-        tours = getAllByCriteria(tourCriteria);
         if (currentPage == null || pageSize == null) {
             currentPage = 0;
-            pageSize = 20;
+            pageSize = PAGE_SIZE;
         }
-        int startItem = currentPage * pageSize;
-        if (tours.size() < startItem) {
-            toursPaged = Collections.emptyList();
+        if (tourCriteria != null) {
+            return getAllByCriteria(tourCriteria, currentPage, pageSize);
         } else {
-            int toIndex = Math.min(startItem + pageSize, tours.size());
-            toursPaged = tours.subList(startItem, toIndex);
+            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+            CriteriaQuery<Tour> criteriaQuery = criteriaBuilder.createQuery(Tour.class);
+            Root<Tour> tourRoot = criteriaQuery.from(Tour.class);
+            Order arrivalTimeOrder = criteriaBuilder.asc(tourRoot.get("arrivalTime"));
+            Order ratingOrder = criteriaBuilder.desc(tourRoot.get("rating"));
+            criteriaQuery.orderBy(arrivalTimeOrder, ratingOrder);
+            Pageable pageable = PageRequest.of(currentPage, pageSize);
+            tours = entityManager.createQuery(criteriaQuery)
+                    .setFirstResult((int) pageable.getOffset())
+                    .setMaxResults(pageable.getPageSize())
+                    .getResultList();
         }
-        return toursPaged;
+        return tours;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Tour> getAllByCriteria(TourCriteria tourCriteria) {
+    public List<Tour> getAllByCriteria(TourCriteria tourCriteria, int currentPage, int pageSize) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tour> criteriaQuery = criteriaBuilder.createQuery(Tour.class);
         Root<Tour> tourRoot = criteriaQuery.from(Tour.class);
@@ -156,7 +164,12 @@ public class TourServiceImpl implements TourService {
         Order ratingOrder = criteriaBuilder.desc(tourRoot.get("rating"));
 
         criteriaQuery.orderBy(arrivalTimeOrder, ratingOrder);
-        return entityManager.createQuery(criteriaQuery).getResultList();
+
+        Pageable pageable = PageRequest.of(currentPage, pageSize);
+        return entityManager.createQuery(criteriaQuery)
+                .setFirstResult((int) pageable.getOffset())
+                .setMaxResults(pageable.getPageSize())
+                .getResultList();
     }
 
     private boolean userLocationAndMaxRadiusNotNull(TourCriteria tourCriteria) {
