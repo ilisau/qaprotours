@@ -120,7 +120,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ServiceNotAvailableException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     public ErrorDto handleServiceNotAvailableException(ServiceNotAvailableException e) {
         return new ErrorDto("Service is not available. Try again.");
     }
