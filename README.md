@@ -1,7 +1,11 @@
 # Qaprotours
 After starting application you need to grant readonly authority for bucket to anonymous users in Minio client.
 
-## Arguments from .env file
+This application provides:
+- Eureka Service Registry with [Eureka server](https://github.com/ilisau/eureka-server)
+- Resilience4j Circuit Breaker
+
+### Arguments from .env file
 - HOST - 'postgres' for PostreSQL
 - POSTGRES_USERNAME - PostgreSQL user
 - POSTGRES_PASSWORD - PostgreSQL password
