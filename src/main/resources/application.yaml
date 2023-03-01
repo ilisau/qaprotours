@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: qaprotours
   config:
     import: optional:file:.env[.properties]
   datasource:
@@ -31,6 +33,43 @@ spring:
     multipart:
       max-file-size: 15MB
       max-request-size: 15MB
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      default:
+        register-health-indicator: true
+        event-consumer-buffer-size: 10
+        failure-rate-threshold: 50
+        minimum-number-of-calls: 5
+        automatic-transition-from-open-to-half-open-enabled: true
+        wait-duration-in-open-state: 5s
+        permitted-number-of-calls-in-half-open-state: 3
+        sliding-window-size: 10
+        sliding-window-type: COUNT_BASED
+      imageService:
+        register-health-indicator: true
+        event-consumer-buffer-size: 10
+        failure-rate-threshold: 50
+        minimum-number-of-calls: 5
+        automatic-transition-from-open-to-half-open-enabled: true
+        wait-duration-in-open-state: 5s
+        permitted-number-of-calls-in-half-open-state: 3
+        sliding-window-size: 10
+        sliding-window-type: COUNT_BASED
+
 security:
   jwt:
     secret: c651749e8354adb09452a8ad14d4beadb7d57064d6cfb5c0e812bc30724458d187f43e58c22c30486303bbfc655391860952e92add87b5ce9e2ac7cdc612ad73=
@@ -38,15 +77,18 @@ security:
     refresh: 336
     activation: 24
     reset: 24
+
 minio:
   bucket: ${MINIO_BUCKET}
   url: ${MINIO_URL}
   accessKey: ${MINIO_ACCESS_KEY}
   secretKey: ${MINIO_SECRET_KEY}
+
 mail:
   links:
     activation: http://localhost:8080/api/v1/auth/register/confirm?token=
     restore: http://localhost:8080/api/v1/auth/password/restore?token=
+
 image:
   thumbnails:
     - 100
@@ -57,3 +99,11 @@ image:
     - png
     - svg
     - webp
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+server:
+  port: 8080

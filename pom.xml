@@ -19,6 +19,7 @@
 
     <properties>
         <java.version>17</java.version>
+        <spring-cloud.version>4.0.0</spring-cloud.version>
         <lombok.version>1.18.24</lombok.version>
         <postgresql.version>42.5.1</postgresql.version>
         <mapstruct.version>1.5.2.Final</mapstruct.version>
@@ -31,6 +32,7 @@
         <jsonwebtoken.version>0.11.5</jsonwebtoken.version>
         <springdoc.version>2.0.0</springdoc.version>
         <minio.version>8.5.1</minio.version>
+        <spring-cloud-resilience.version>3.0.0</spring-cloud-resilience.version>
     </properties>
 
     <dependencies>
@@ -69,6 +71,23 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>
+            <version>${spring-cloud-resilience.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+            <version>${spring-cloud.version}</version>
         </dependency>
 
         <dependency>

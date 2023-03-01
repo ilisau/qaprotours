@@ -119,6 +119,12 @@ public class GlobalExceptionHandler {
         return new ErrorDto("Bad credentials.");
     }
 
+    @ExceptionHandler(ServiceNotAvailableException.class)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    public ErrorDto handleServiceNotAvailableException(ServiceNotAvailableException e) {
+        return new ErrorDto("Service is not available. Try again.");
+    }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorDto handleException(Exception e) {

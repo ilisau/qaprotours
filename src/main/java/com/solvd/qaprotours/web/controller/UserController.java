@@ -1,5 +1,9 @@
 package com.solvd.qaprotours.web.controller;
 
+import com.solvd.qaprotours.domain.exception.AuthException;
+import com.solvd.qaprotours.domain.exception.NoFreePlacesException;
+import com.solvd.qaprotours.domain.exception.ServiceNotAvailableException;
+import com.solvd.qaprotours.domain.exception.TourAlreadyStartedException;
 import com.solvd.qaprotours.domain.user.Ticket;
 import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.service.TicketService;
@@ -10,12 +14,15 @@ import com.solvd.qaprotours.web.dto.user.UserDto;
 import com.solvd.qaprotours.web.dto.validation.OnUpdate;
 import com.solvd.qaprotours.web.mapper.TicketMapper;
 import com.solvd.qaprotours.web.mapper.UserMapper;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,6 +37,7 @@ public class UserController {
     private final TicketService ticketService;
     private final UserMapper userMapper;
     private final TicketMapper ticketMapper;
+    private final String TICKET_SERVICE = "ticketService";
 
     @PutMapping
     @PreAuthorize("canAccessUser(#userDto.getId())")
@@ -61,6 +69,7 @@ public class UserController {
 
     @GetMapping("/{userId}/tickets")
     @PreAuthorize("canAccessUser(#userId)")
+    @CircuitBreaker(name = TICKET_SERVICE, fallbackMethod = "getEmptyTicketList")
     public List<TicketDto> getTickets(@PathVariable Long userId) {
         List<Ticket> tickets = ticketService.getAllByUserId(userId);
         return ticketMapper.toDto(tickets);
@@ -68,10 +77,31 @@ public class UserController {
 
     @PostMapping("/{userId}/tickets/{tourId}")
     @PreAuthorize("canAccessUser(#userId)")
+    @CircuitBreaker(name = TICKET_SERVICE, fallbackMethod = "handleServiceError")
     public void addTicket(@PathVariable Long userId,
                           @PathVariable Long tourId,
                           @RequestParam Integer peopleAmount) {
         ticketService.create(userId, tourId, peopleAmount);
+    }
+
+    private List<TicketDto> getEmptyTicketList(Exception e) {
+        if (e.getClass().equals(AccessDeniedException.class)) {
+            throw new AuthException(e.getMessage());
+        }
+        return new ArrayList<>();
+    }
+
+    private void handleServiceError(Exception e) {
+        if (e.getClass().equals(AccessDeniedException.class)) {
+            throw new AuthException(e.getMessage());
+        }
+        if (e.getClass().equals(NoFreePlacesException.class)) {
+            throw new NoFreePlacesException(e.getMessage());
+        }
+        if (e.getClass().equals(TourAlreadyStartedException.class)) {
+            throw new TourAlreadyStartedException(e.getMessage());
+        }
+        throw new ServiceNotAvailableException();
     }
 
 }
