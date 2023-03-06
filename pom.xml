@@ -33,6 +33,7 @@
         <springdoc.version>2.0.0</springdoc.version>
         <minio.version>8.5.1</minio.version>
         <spring-cloud-resilience.version>3.0.0</spring-cloud-resilience.version>
+        <openfeign.version>4.0.1</openfeign.version>
     </properties>
 
     <dependencies>
@@ -88,6 +89,12 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
             <version>${spring-cloud.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+            <version>${openfeign.version}</version>
         </dependency>
 
         <dependency>

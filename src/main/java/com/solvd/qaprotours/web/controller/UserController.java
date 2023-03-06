@@ -4,6 +4,7 @@ import com.solvd.qaprotours.domain.exception.AuthException;
 import com.solvd.qaprotours.domain.exception.NoFreePlacesException;
 import com.solvd.qaprotours.domain.exception.ServiceNotAvailableException;
 import com.solvd.qaprotours.domain.exception.TourAlreadyStartedException;
+import com.solvd.qaprotours.domain.user.Password;
 import com.solvd.qaprotours.domain.user.Ticket;
 import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.service.TicketService;
@@ -12,6 +13,7 @@ import com.solvd.qaprotours.web.dto.user.PasswordDto;
 import com.solvd.qaprotours.web.dto.user.TicketDto;
 import com.solvd.qaprotours.web.dto.user.UserDto;
 import com.solvd.qaprotours.web.dto.validation.OnUpdate;
+import com.solvd.qaprotours.web.mapper.PasswordMapper;
 import com.solvd.qaprotours.web.mapper.TicketMapper;
 import com.solvd.qaprotours.web.mapper.UserMapper;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
@@ -37,6 +39,7 @@ public class UserController {
     private final TicketService ticketService;
     private final UserMapper userMapper;
     private final TicketMapper ticketMapper;
+    private final PasswordMapper passwordMapper;
     private final String TICKET_SERVICE = "ticketService";
 
     @PutMapping
@@ -64,7 +67,8 @@ public class UserController {
     @PreAuthorize("canAccessUser(#userId)")
     public void updatePassword(@PathVariable Long userId,
                                @Validated @RequestBody PasswordDto passwordDto) {
-        userService.updatePassword(userId, passwordDto.getOldPassword(), passwordDto.getNewPassword());
+        Password password = passwordMapper.toEntity(passwordDto);
+        userService.updatePassword(userId, password);
     }
 
     @GetMapping("/{userId}/tickets")
