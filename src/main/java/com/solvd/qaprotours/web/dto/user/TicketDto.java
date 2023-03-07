@@ -21,7 +21,7 @@ public class TicketDto {
     private Long id;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private UserDto user;
+    private Long userId;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private TourDto tour;

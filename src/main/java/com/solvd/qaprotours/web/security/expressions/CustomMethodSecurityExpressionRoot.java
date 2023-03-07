@@ -50,7 +50,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
         JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
         Long id = userDetails.getId();
 
-        return ticketService.getById(ticketId).getUser().getId().equals(id);
+        return ticketService.getById(ticketId).getUserId().equals(id);
     }
 
     public boolean canConfirmTicket() {
