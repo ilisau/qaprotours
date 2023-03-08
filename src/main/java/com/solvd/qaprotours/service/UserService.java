@@ -8,9 +8,14 @@ import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.web.dto.ErrorDto;
 import feign.Response;
 import feign.codec.ErrorDecoder;
+import lombok.SneakyThrows;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.stream.Collectors;
 
 /**
  * @author Ermakovich Kseniya, Lisov Ilya
@@ -45,9 +50,12 @@ public interface UserService {
     @Component
     class ClientErrorDecoder implements ErrorDecoder {
 
+        @SneakyThrows
         @Override
         public Exception decode(String methodKey, Response response) {
-            ErrorDto errorResponse = new Gson().fromJson(response.body().toString(), ErrorDto.class);
+            String json = new BufferedReader(new InputStreamReader(response.body().asInputStream()))
+                    .lines().collect(Collectors.joining("\n"));
+            ErrorDto errorResponse = new Gson().fromJson(json, ErrorDto.class);
             return new UserClientException(errorResponse.getMessage(), errorResponse.getDetails());
         }
 
