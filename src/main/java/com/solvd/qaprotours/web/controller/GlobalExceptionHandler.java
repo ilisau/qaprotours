@@ -125,9 +125,9 @@ public class GlobalExceptionHandler {
         return new ErrorDto("Service is not available. Try again.");
     }
 
-    @ExceptionHandler(MicroserviceException.class)
+    @ExceptionHandler(UserClientException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorDto handleMicroserviceException(MicroserviceException e) {
+    public ErrorDto handleMicroserviceException(UserClientException e) {
         return new ErrorDto(e.getMessage(), e.getDetails());
     }
 

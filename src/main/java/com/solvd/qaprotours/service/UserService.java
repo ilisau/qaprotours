@@ -1,7 +1,7 @@
 package com.solvd.qaprotours.service;
 
 import com.google.gson.Gson;
-import com.solvd.qaprotours.domain.exception.MicroserviceException;
+import com.solvd.qaprotours.domain.exception.UserClientException;
 import com.solvd.qaprotours.domain.jwt.JwtToken;
 import com.solvd.qaprotours.domain.user.Password;
 import com.solvd.qaprotours.domain.user.User;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * @author Ermakovich Kseniya, Lisov Ilya
  */
-@FeignClient(value = "user-service", path = "/api/v1/users")
+@FeignClient(value = "user-client", path = "/api/v1/users")
 public interface UserService {
 
     @GetMapping("/{id}")
@@ -43,12 +43,12 @@ public interface UserService {
     void delete(@PathVariable Long id);
 
     @Component
-    class MicroserviceClientErrorDecoder implements ErrorDecoder {
+    class ClientErrorDecoder implements ErrorDecoder {
 
         @Override
         public Exception decode(String methodKey, Response response) {
             ErrorDto errorResponse = new Gson().fromJson(response.body().toString(), ErrorDto.class);
-            return new MicroserviceException(errorResponse.getMessage(), errorResponse.getDetails());
+            return new UserClientException(errorResponse.getMessage(), errorResponse.getDetails());
         }
 
     }
