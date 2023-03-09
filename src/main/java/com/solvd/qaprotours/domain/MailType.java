@@ -5,7 +5,6 @@ package com.solvd.qaprotours.domain;
  */
 public enum MailType {
 
-    ACTIVATION,
     PASSWORD_RESET,
     BOOKED_TOUR,
     TICKET_CANCELED

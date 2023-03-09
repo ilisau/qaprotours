@@ -115,7 +115,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadCredentialsException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ErrorDto handleBadCredentials(BadCredentialsException e) {
+    public ErrorDto handleBadCredentialsException(BadCredentialsException e) {
         return new ErrorDto("Bad credentials.");
     }
 
@@ -123,6 +123,12 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     public ErrorDto handleServiceNotAvailableException(ServiceNotAvailableException e) {
         return new ErrorDto("Service is not available. Try again.");
+    }
+
+    @ExceptionHandler(UserClientException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDto handleMicroserviceException(UserClientException e) {
+        return new ErrorDto(e.getMessage(), e.getDetails());
     }
 
     @ExceptionHandler

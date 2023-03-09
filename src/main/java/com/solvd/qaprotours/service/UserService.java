@@ -1,27 +1,64 @@
 package com.solvd.qaprotours.service;
 
+import com.google.gson.Gson;
+import com.solvd.qaprotours.domain.exception.UserClientException;
 import com.solvd.qaprotours.domain.jwt.JwtToken;
+import com.solvd.qaprotours.domain.user.Password;
 import com.solvd.qaprotours.domain.user.User;
+import com.solvd.qaprotours.web.dto.ErrorDto;
+import feign.Response;
+import feign.codec.ErrorDecoder;
+import lombok.SneakyThrows;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.stream.Collectors;
 
 /**
  * @author Ermakovich Kseniya, Lisov Ilya
  */
+@FeignClient(value = "user-client", path = "/api/v1/users")
 public interface UserService {
 
-    User getById(Long id);
+    @GetMapping("/{id}")
+    User getById(@PathVariable Long id);
 
-    User getByEmail(String email);
+    @GetMapping("/email/{email}")
+    User getByEmail(@PathVariable String email);
 
-    void update(User user);
+    @PutMapping
+    void update(@RequestBody User user);
 
-    void updatePassword(Long userId, String newPassword);
+    @PostMapping("/{userId}/password")
+    void updatePassword(@PathVariable Long userId, @RequestBody String newPassword);
 
-    void updatePassword(Long userId, String oldPassword, String newPassword);
+    @PutMapping("/{userId}/password")
+    void updatePassword(@PathVariable Long userId, @RequestBody Password password);
 
-    void create(User user);
+    @PostMapping
+    void create(@RequestBody User user);
 
-    void activate(JwtToken token);
+    @PostMapping("/activate")
+    void activate(@RequestBody JwtToken token);
 
-    void delete(Long id);
+    @DeleteMapping("/{id}")
+    void delete(@PathVariable Long id);
+
+    @Component
+    class ClientErrorDecoder implements ErrorDecoder {
+
+        @SneakyThrows
+        @Override
+        public Exception decode(String methodKey, Response response) {
+            String json = new BufferedReader(new InputStreamReader(response.body().asInputStream()))
+                    .lines().collect(Collectors.joining("\n"));
+            ErrorDto errorResponse = new Gson().fromJson(json, ErrorDto.class);
+            return new UserClientException(errorResponse.getMessage(), errorResponse.getDetails());
+        }
+
+    }
 
 }

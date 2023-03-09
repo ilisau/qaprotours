@@ -2,8 +2,10 @@ package com.solvd.qaprotours.service.impl;
 
 import com.solvd.qaprotours.domain.MailType;
 import com.solvd.qaprotours.domain.user.Ticket;
+import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.service.MailService;
 import com.solvd.qaprotours.service.TicketService;
+import com.solvd.qaprotours.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ public class Scheduler {
 
     private final MailService mailService;
     private final TicketService ticketService;
+    private final UserService userService;
 
     @Scheduled(cron = "0 0 0 * * *")
     public void findBookedTickets() {
@@ -28,7 +31,8 @@ public class Scheduler {
         tickets.forEach((ticket) -> {
             Map<String, Object> params = new HashMap<>();
             params.put("ticket", ticket);
-            mailService.sendMail(ticket.getUser(), MailType.BOOKED_TOUR, params);
+            User user = userService.getById(ticket.getUserId());
+            mailService.sendMail(user, MailType.BOOKED_TOUR, params);
         });
     }
 
@@ -40,7 +44,8 @@ public class Scheduler {
             params.put("ticket", ticket);
             ticketService.cancel(ticket.getId());
 
-            mailService.sendMail(ticket.getUser(), MailType.TICKET_CANCELED, params);
+            User user = userService.getById(ticket.getUserId());
+            mailService.sendMail(user, MailType.TICKET_CANCELED, params);
         });
     }
 
