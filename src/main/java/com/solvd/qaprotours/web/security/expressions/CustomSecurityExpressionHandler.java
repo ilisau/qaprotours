@@ -2,7 +2,6 @@ package com.solvd.qaprotours.web.security.expressions;
 
 import com.solvd.qaprotours.service.TicketService;
 import com.solvd.qaprotours.service.TourService;
-import com.solvd.qaprotours.service.UserService;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
@@ -26,7 +25,6 @@ public class CustomSecurityExpressionHandler extends DefaultMethodSecurityExpres
         root.setTrustResolver(this.trustResolver);
         root.setPermissionEvaluator(getPermissionEvaluator());
         root.setRoleHierarchy(getRoleHierarchy());
-        root.setUserService(this.applicationContext.getBean(UserService.class));
         root.setTicketService(this.applicationContext.getBean(TicketService.class));
         root.setTourService(this.applicationContext.getBean(TourService.class));
         return root;

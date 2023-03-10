@@ -2,10 +2,10 @@ package com.solvd.qaprotours.service;
 
 import com.google.gson.Gson;
 import com.solvd.qaprotours.domain.exception.UserClientException;
-import com.solvd.qaprotours.domain.jwt.JwtToken;
-import com.solvd.qaprotours.domain.user.Password;
-import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.web.dto.ErrorDto;
+import com.solvd.qaprotours.web.dto.jwt.JwtTokenDto;
+import com.solvd.qaprotours.web.dto.user.PasswordDto;
+import com.solvd.qaprotours.web.dto.user.UserDto;
 import feign.Response;
 import feign.codec.ErrorDecoder;
 import lombok.SneakyThrows;
@@ -21,28 +21,28 @@ import java.util.stream.Collectors;
  * @author Ermakovich Kseniya, Lisov Ilya
  */
 @FeignClient(value = "user-client", path = "/api/v1/users")
-public interface UserService {
+public interface UserClient {
 
     @GetMapping("/{id}")
-    User getById(@PathVariable Long id);
+    UserDto getById(@PathVariable Long id);
 
     @GetMapping("/email/{email}")
-    User getByEmail(@PathVariable String email);
+    UserDto getByEmail(@PathVariable String email);
 
     @PutMapping
-    void update(@RequestBody User user);
+    void update(@RequestBody UserDto user);
 
     @PostMapping("/{userId}/password")
     void updatePassword(@PathVariable Long userId, @RequestBody String newPassword);
 
     @PutMapping("/{userId}/password")
-    void updatePassword(@PathVariable Long userId, @RequestBody Password password);
+    void updatePassword(@PathVariable Long userId, @RequestBody PasswordDto password);
 
     @PostMapping
-    void create(@RequestBody User user);
+    void create(@RequestBody UserDto user);
 
     @PostMapping("/activate")
-    void activate(@RequestBody JwtToken token);
+    void activate(@RequestBody JwtTokenDto token);
 
     @DeleteMapping("/{id}")
     void delete(@PathVariable Long id);
