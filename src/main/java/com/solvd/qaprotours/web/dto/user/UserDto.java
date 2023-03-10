@@ -33,7 +33,6 @@ public class UserDto {
 
     @NotNull(message = "password cannot be null", groups = {OnCreate.class})
     @Size(min = 8, message = "password must be more than {min} characters", groups = {OnCreate.class})
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
