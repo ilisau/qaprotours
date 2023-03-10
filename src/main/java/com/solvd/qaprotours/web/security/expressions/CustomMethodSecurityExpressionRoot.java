@@ -4,7 +4,6 @@ import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.service.TicketService;
 import com.solvd.qaprotours.service.TourService;
-import com.solvd.qaprotours.service.UserService;
 import com.solvd.qaprotours.web.security.jwt.JwtUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
@@ -27,7 +26,6 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
     private Object target;
     private HttpServletRequest request;
 
-    private UserService userService;
     private TicketService ticketService;
     private TourService tourService;
 

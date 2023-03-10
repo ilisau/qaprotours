@@ -1,5 +1,6 @@
 package com.solvd.qaprotours.service.impl;
 
+import com.solvd.qaprotours.domain.MailData;
 import com.solvd.qaprotours.domain.MailType;
 import com.solvd.qaprotours.domain.exception.AuthException;
 import com.solvd.qaprotours.domain.exception.InvalidTokenException;
@@ -9,8 +10,12 @@ import com.solvd.qaprotours.domain.jwt.JwtToken;
 import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.service.AuthService;
 import com.solvd.qaprotours.service.JwtService;
-import com.solvd.qaprotours.service.MailService;
-import com.solvd.qaprotours.service.UserService;
+import com.solvd.qaprotours.service.MailClient;
+import com.solvd.qaprotours.service.UserClient;
+import com.solvd.qaprotours.web.dto.MailDataDto;
+import com.solvd.qaprotours.web.dto.user.UserDto;
+import com.solvd.qaprotours.web.mapper.MailDataMapper;
+import com.solvd.qaprotours.web.mapper.UserMapper;
 import com.solvd.qaprotours.web.security.jwt.JwtTokenType;
 import com.solvd.qaprotours.web.security.jwt.JwtUserDetails;
 import com.solvd.qaprotours.web.security.jwt.JwtUserDetailsFactory;
@@ -29,14 +34,17 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    private final UserService userService;
+    private final UserClient userClient;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    private final MailService mailService;
+    private final MailClient mailClient;
+    private final MailDataMapper mailDataMapper;
+    private final UserMapper userMapper;
 
     @Override
     public JwtResponse login(Authentication authentication) {
-        User user = userService.getByEmail(authentication.getEmail());
+        UserDto userDto = userClient.getByEmail(authentication.getEmail());
+        User user = userMapper.toEntity(userDto);
         if (!passwordEncoder.matches(authentication.getPassword(), user.getPassword())) {
             throw new AuthException("wrong password");
         }
@@ -55,7 +63,8 @@ public class AuthServiceImpl implements AuthService {
         if (!jwtService.isTokenType(jwtToken.getToken(), JwtTokenType.REFRESH)) {
             throw new AuthException("invalid refresh token");
         }
-        User user = userService.getByEmail(userDetails.getEmail());
+        UserDto userDto = userClient.getByEmail(userDetails.getEmail());
+        User user = userMapper.toEntity(userDto);
         String accessToken = jwtService.generateToken(JwtTokenType.ACCESS, user);
         String refreshToken = jwtService.generateToken(JwtTokenType.REFRESH, user);
         return new JwtResponse(accessToken, refreshToken);
@@ -63,11 +72,17 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void sendRestoreToken(String email) {
-        User user = userService.getByEmail(email);
+        UserDto userDto = userClient.getByEmail(email);
+        User user = userMapper.toEntity(userDto);
         Map<String, Object> params = new HashMap<>();
         String token = jwtService.generateToken(JwtTokenType.RESET, user);
         params.put("token", token);
-        mailService.sendMail(user, MailType.PASSWORD_RESET, params);
+        params.put("user.email", user.getEmail());
+        params.put("user.name", user.getName());
+        params.put("user.surname", user.getSurname());
+        MailData mailData = new MailData(MailType.PASSWORD_RESET, params);
+        MailDataDto dto = mailDataMapper.toDto(mailData);
+        mailClient.sendMail(dto);
     }
 
     @Override
@@ -80,7 +95,7 @@ public class AuthServiceImpl implements AuthService {
             throw new InvalidTokenException("invalid reset token");
         }
         JwtUserDetails userDetails = JwtUserDetailsFactory.create(claims);
-        userService.updatePassword(userDetails.getId(), password);
+        userClient.updatePassword(userDetails.getId(), password);
     }
 
 }
