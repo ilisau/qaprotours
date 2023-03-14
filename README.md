@@ -34,6 +34,8 @@ We use Kafka here for sending messages to mail client instead of blocking rest a
 - ```POSTGRES_PASSWORD``` - PostgreSQL password
 - ```POSTGRES_DB``` - database and schema name, prefered 'qaprotours'
 
+- ```KAFKA_HOST``` - host with port for Kafka bootstrap server
+
 
 - ```MINIO_BUCKET``` - bucket name for images, 'tours' default
 - ```MINIO_URL``` - preferred url to access Minio client
