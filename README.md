@@ -23,18 +23,16 @@ respond to requests.
 
 You can change Circuit Breaker configuration in ```resilience4j.circuitbreaker``` property.
 
+3) Kafka
+
+We use Kafka here for sending messages to mail client instead of blocking rest approach.
+
 ### Arguments from .env file
 
 - ```HOST``` - 'postgres' for PostreSQL
 - ```POSTGRES_USERNAME``` - PostgreSQL user
 - ```POSTGRES_PASSWORD``` - PostgreSQL password
 - ```POSTGRES_DB``` - database and schema name, prefered 'qaprotours'
-
-
-- ```SPRING_MAIL_HOST``` - mail host, 'smtp.gmail.com' for example
-- ```SPRING_MAIL_PORT``` - mail port, '587' for example
-- ```SPRING_MAIL_USERNAME``` - mail address
-- ```SPRING_MAIL_PASSWORD``` - generated password, not actual account password
 
 
 - ```MINIO_BUCKET``` - bucket name for images, 'tours' default
