@@ -16,14 +16,14 @@ public class MessageSenderImpl implements MessageSender {
     private final KafkaSender<String, Object> sender;
 
     @Override
-    public void sendMessage(String topic, int partition, Object data) {
+    public void sendMessage(String topic, int partition, String key, Object data) {
         sender.send(
                         Mono.just(
                                 SenderRecord.create(
                                         topic,
                                         partition,
                                         System.currentTimeMillis(),
-                                        "key",
+                                        key,
                                         data,
                                         null
                                 )

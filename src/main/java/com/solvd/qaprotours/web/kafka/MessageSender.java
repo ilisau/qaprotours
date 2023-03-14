@@ -5,6 +5,6 @@ package com.solvd.qaprotours.web.kafka;
  */
 public interface MessageSender {
 
-    void sendMessage(String topic, int partition, Object data);
+    void sendMessage(String topic, int partition, String key, Object data);
 
 }

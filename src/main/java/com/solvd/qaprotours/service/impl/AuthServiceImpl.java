@@ -82,7 +82,7 @@ public class AuthServiceImpl implements AuthService {
         params.put("user.surname", user.getSurname());
         MailData mailData = new MailData(MailType.PASSWORD_RESET, params);
         MailDataDto dto = mailDataMapper.toDto(mailData);
-        messageSender.sendMessage("mail", 0, dto);
+        messageSender.sendMessage("mail", 0, user.getId().toString(), dto);
     }
 
     @Override
