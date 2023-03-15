@@ -10,10 +10,10 @@ import com.solvd.qaprotours.domain.jwt.JwtToken;
 import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.service.AuthService;
 import com.solvd.qaprotours.service.JwtService;
-import com.solvd.qaprotours.service.MailClient;
 import com.solvd.qaprotours.service.UserClient;
 import com.solvd.qaprotours.web.dto.MailDataDto;
 import com.solvd.qaprotours.web.dto.user.UserDto;
+import com.solvd.qaprotours.web.kafka.MessageSender;
 import com.solvd.qaprotours.web.mapper.MailDataMapper;
 import com.solvd.qaprotours.web.mapper.UserMapper;
 import com.solvd.qaprotours.web.security.jwt.JwtTokenType;
@@ -37,9 +37,9 @@ public class AuthServiceImpl implements AuthService {
     private final UserClient userClient;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    private final MailClient mailClient;
     private final MailDataMapper mailDataMapper;
     private final UserMapper userMapper;
+    private final MessageSender messageSender;
 
     @Override
     public JwtResponse login(Authentication authentication) {
@@ -82,7 +82,7 @@ public class AuthServiceImpl implements AuthService {
         params.put("user.surname", user.getSurname());
         MailData mailData = new MailData(MailType.PASSWORD_RESET, params);
         MailDataDto dto = mailDataMapper.toDto(mailData);
-        mailClient.sendMail(dto);
+        messageSender.sendMessage("mail", 0, user.getId().toString(), dto);
     }
 
     @Override

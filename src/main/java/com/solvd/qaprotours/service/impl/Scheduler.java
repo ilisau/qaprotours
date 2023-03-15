@@ -4,11 +4,11 @@ import com.solvd.qaprotours.domain.MailData;
 import com.solvd.qaprotours.domain.MailType;
 import com.solvd.qaprotours.domain.user.Ticket;
 import com.solvd.qaprotours.domain.user.User;
-import com.solvd.qaprotours.service.MailClient;
 import com.solvd.qaprotours.service.TicketService;
 import com.solvd.qaprotours.service.UserClient;
 import com.solvd.qaprotours.web.dto.MailDataDto;
 import com.solvd.qaprotours.web.dto.user.UserDto;
+import com.solvd.qaprotours.web.kafka.MessageSender;
 import com.solvd.qaprotours.web.mapper.MailDataMapper;
 import com.solvd.qaprotours.web.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
@@ -26,11 +26,11 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class Scheduler {
 
-    private final MailClient mailClient;
     private final TicketService ticketService;
     private final UserClient userClient;
     private final MailDataMapper mailDataMapper;
     private final UserMapper userMapper;
+    private final MessageSender messageSender;
 
     @Scheduled(cron = "0 0 0 * * *")
     public void findBookedTickets() {
@@ -48,7 +48,7 @@ public class Scheduler {
             params.put("ticket.tour.arrivalTime", ticket.getTour().getArrivalTime());
             MailData mailData = new MailData(MailType.BOOKED_TOUR, params);
             MailDataDto dto = mailDataMapper.toDto(mailData);
-            mailClient.sendMail(dto);
+            messageSender.sendMessage("mail", 0, user.getId().toString(), dto);
         });
     }
 
@@ -69,7 +69,7 @@ public class Scheduler {
             ticketService.cancel(ticket.getId());
             MailData mailData = new MailData(MailType.TICKET_CANCELED, params);
             MailDataDto dto = mailDataMapper.toDto(mailData);
-            mailClient.sendMail(dto);
+            messageSender.sendMessage("mail", 0, user.getId().toString(), dto);
         });
     }
 

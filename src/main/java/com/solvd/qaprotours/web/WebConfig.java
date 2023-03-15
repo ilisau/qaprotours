@@ -1,5 +1,7 @@
 package com.solvd.qaprotours.web;
 
+import com.jcabi.xml.XML;
+import com.jcabi.xml.XMLDocument;
 import com.solvd.qaprotours.service.property.MinioProperties;
 import io.minio.MinioClient;
 import io.swagger.v3.oas.models.Components;
@@ -8,9 +10,12 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import java.io.File;
 
 /**
  * @author Ermakovich Kseniya, Lisov Ilya
@@ -53,6 +58,12 @@ public class WebConfig {
                         .title("QaproTours API")
                         .description("Tour dervice")
                         .version("v1"));
+    }
+
+    @SneakyThrows
+    @Bean
+    public XML producerXml() {
+        return new XMLDocument(new File("src/main/resources/kafka/producer.xml"));
     }
 
 }
