@@ -1,6 +1,5 @@
 package com.solvd.qaprotours.web.security.expressions;
 
-import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.service.TicketService;
 import com.solvd.qaprotours.service.TourService;
@@ -48,7 +47,8 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
         JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
         Long id = userDetails.getId();
 
-        return ticketService.getById(ticketId).getUserId().equals(id);
+        return ticketService.getById(ticketId)
+                .map(ticket -> ticket.getUserId().equals(id)).block();
     }
 
     public boolean canConfirmTicket() {
@@ -60,9 +60,9 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
     public boolean canAccessDraftTour(Long tourId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        Tour tour = tourService.getById(tourId);
-
-        return !tour.isDraft() || hasAnyRole(authentication, User.Role.EMPLOYEE);
+        return tourService.getById(tourId)
+                .map(tour -> !tour.isDraft() || hasAnyRole(authentication, User.Role.EMPLOYEE))
+                .block();
     }
 
     private boolean hasAnyRole(Authentication authentication, User.Role... roles) {

@@ -1,6 +1,5 @@
 package com.solvd.qaprotours.web.controller;
 
-import com.solvd.qaprotours.domain.user.Ticket;
 import com.solvd.qaprotours.service.TicketService;
 import com.solvd.qaprotours.web.dto.user.TicketDto;
 import com.solvd.qaprotours.web.mapper.TicketMapper;
@@ -8,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 /**
  * @author Lisov Ilya
@@ -22,22 +22,22 @@ public class TicketController {
 
     @GetMapping("/{ticketId}")
     @PreAuthorize("canAccessTicket(#ticketId)")
-    public TicketDto getTicket(@PathVariable Long ticketId) {
-        Ticket ticket = ticketService.getById(ticketId);
-        return ticketMapper.toDto(ticket);
+    public Mono<TicketDto> getTicket(@PathVariable Long ticketId) {
+        return ticketService.getById(ticketId)
+                .map(ticketMapper::toDto);
     }
 
     @DeleteMapping("/{ticketId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("canAccessTicket(#ticketId)")
-    public void deleteTicket(@PathVariable Long ticketId) {
-        ticketService.delete(ticketId);
+    public Mono<Void> deleteTicket(@PathVariable Long ticketId) {
+        return ticketService.delete(ticketId);
     }
 
     @PostMapping("/{ticketId}/confirm")
     @PreAuthorize("canConfirmTicket()")
-    public void confirmTicket(@PathVariable Long ticketId) {
-        ticketService.confirm(ticketId);
+    public Mono<Void> confirmTicket(@PathVariable Long ticketId) {
+        return ticketService.confirm(ticketId);
     }
 
 }

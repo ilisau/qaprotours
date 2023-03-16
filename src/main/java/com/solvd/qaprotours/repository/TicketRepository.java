@@ -1,20 +1,22 @@
 package com.solvd.qaprotours.repository;
 
 import com.solvd.qaprotours.domain.user.Ticket;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * @author Lisov Ilya
  */
-public interface TicketRepository extends JpaRepository<Ticket, Long> {
+@Repository
+public interface TicketRepository extends ReactiveCrudRepository<Ticket, Long> {
 
-    List<Ticket> findAllByUserId(Long userId);
+    Flux<Ticket> findAllByUserId(Long userId);
 
-    List<Ticket> findAllByTourArrivalTimeIsBeforeAndStatus(LocalDateTime time, Ticket.Status status);
+    Flux<Ticket> findAllByTourArrivalTimeIsBeforeAndStatus(LocalDateTime time, Ticket.Status status);
 
-    List<Ticket> findAllByTourArrivalTimeIsAfterAndTourArrivalTimeIsBeforeAndStatus(LocalDateTime start, LocalDateTime end, Ticket.Status status);
+    Flux<Ticket> findAllByTourArrivalTimeIsAfterAndTourArrivalTimeIsBeforeAndStatus(LocalDateTime start, LocalDateTime end, Ticket.Status status);
 
 }

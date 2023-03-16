@@ -3,6 +3,7 @@ package com.solvd.qaprotours.domain.user;
 import com.solvd.qaprotours.domain.tour.Tour;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
 
@@ -10,12 +11,10 @@ import java.time.LocalDateTime;
  * @author Ermakovich Kseniya
  */
 @Data
-@Entity
-@Table(name = "tickets")
+@org.springframework.data.relational.core.mapping.Table(name = "tickets")
 public class Ticket {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "user_id")

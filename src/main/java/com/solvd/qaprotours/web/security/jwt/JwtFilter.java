@@ -42,8 +42,7 @@ public class JwtFilter extends GenericFilterBean {
                 }
             }
             filterChain.doFilter(req, res);
-        } catch (JwtException | AuthException e) {
-            throw new AuthException("Invalid token");
+        } catch (JwtException | AuthException ignored) {
         }
     }
 

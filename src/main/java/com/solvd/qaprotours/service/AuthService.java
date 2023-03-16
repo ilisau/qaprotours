@@ -3,18 +3,19 @@ package com.solvd.qaprotours.service;
 import com.solvd.qaprotours.domain.jwt.Authentication;
 import com.solvd.qaprotours.domain.jwt.JwtResponse;
 import com.solvd.qaprotours.domain.jwt.JwtToken;
+import reactor.core.publisher.Mono;
 
 /**
  * @author Ermakovich Kseniya, Lisov Ilya
  */
 public interface AuthService {
 
-    JwtResponse login(Authentication authentication);
+    Mono<JwtResponse> login(Authentication authentication);
 
-    JwtResponse refresh(JwtToken jwtToken);
+    Mono<JwtResponse> refresh(JwtToken jwtToken);
 
-    void sendRestoreToken(String email);
+    Mono<Void> sendRestoreToken(String email);
 
-    void restoreUserPassword(String token, String password);
+    Mono<Void> restoreUserPassword(String token, String password);
 
 }
