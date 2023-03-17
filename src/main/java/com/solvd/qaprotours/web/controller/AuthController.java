@@ -5,13 +5,12 @@ import com.solvd.qaprotours.domain.jwt.JwtResponse;
 import com.solvd.qaprotours.domain.jwt.JwtToken;
 import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.service.AuthService;
-import com.solvd.qaprotours.service.UserService;
+import com.solvd.qaprotours.service.UserClient;
 import com.solvd.qaprotours.web.dto.jwt.AuthenticationDto;
 import com.solvd.qaprotours.web.dto.jwt.JwtResponseDto;
 import com.solvd.qaprotours.web.dto.jwt.JwtTokenDto;
 import com.solvd.qaprotours.web.dto.user.UserDto;
 import com.solvd.qaprotours.web.dto.validation.OnCreate;
-import com.solvd.qaprotours.web.mapper.UserMapper;
 import com.solvd.qaprotours.web.mapper.jwt.AuthenticationMapper;
 import com.solvd.qaprotours.web.mapper.jwt.JwtResponseMapper;
 import com.solvd.qaprotours.web.mapper.jwt.JwtTokenMapper;
@@ -29,8 +28,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
-    private final UserService userService;
-    private final UserMapper userMapper;
+    private final UserClient userClient;
     private final JwtResponseMapper jwtResponseMapper;
     private final JwtTokenMapper jwtTokenMapper;
     private final AuthenticationMapper authenticationMapper;
@@ -45,15 +43,13 @@ public class AuthController {
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public void register(@Validated(OnCreate.class) @RequestBody UserDto userDto) {
-        User user = userMapper.toEntity(userDto);
-        user.setRole(User.Role.CLIENT);
-        userService.create(user);
+        userDto.setRole(User.Role.CLIENT);
+        userClient.create(userDto);
     }
 
     @PostMapping("/register/confirm")
     public void confirm(@Validated @RequestBody JwtTokenDto jwtTokenDto) {
-        JwtToken token = jwtTokenMapper.toEntity(jwtTokenDto);
-        userService.activate(token);
+        userClient.activate(jwtTokenDto);
     }
 
     @PostMapping("/refresh")

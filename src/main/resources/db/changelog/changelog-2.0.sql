@@ -1,16 +1,6 @@
 --liquibase formatted sql
 --changeset lisov:3
 
-INSERT INTO users (id, name, surname, email, password, role, is_activated)
-VALUES (1, 'Mark', 'Ivanov', 'mark.ivanov@gmail.com', '$2a$10$wnXXYMX2IUTMtC7ajTIeM.dMLEZcpMjorqfdvAFhdOeYiJW3WXewG',
-        'CLIENT', true),
-       (2, 'John', 'Smith', 'johnsmith@gmail.com', '$2a$10$wnXXYMX2IUTMtC7ajTIeM.dMLEZcpMjorqfdvAFhdOeYiJW3WXewG',
-        'CLIENT', true),
-       (3, 'Mike', 'Jordan', 'mikejordan@gmail.com', '$2a$10$wnXXYMX2IUTMtC7ajTIeM.dMLEZcpMjorqfdvAFhdOeYiJW3WXewG',
-        'CLIENT', false),
-       (4, 'Ivan', 'Petrov', 'ivan.petrov@gmail.com', '$2a$10$wnXXYMX2IUTMtC7ajTIeM.dMLEZcpMjorqfdvAFhdOeYiJW3WXewG',
-        'EMPLOYEE', true);
-
 INSERT INTO addresses (id, country, city, street, house_number)
 VALUES (1, 'Belarus', 'Minsk', 'Mogilevskaya', 1),
        (2, 'Egypt', 'Cairo', 'Tahrir st', 12),
@@ -37,5 +27,5 @@ VALUES (1, 'Inspiring Minsk', 'Tour through the most popular Minsk landmarks', '
 INSERT INTO tickets (id, user_id, tour_id, order_time, status, client_amount)
 VALUES (1, 1, 1, '2021-11-04 05:00:00', 'ORDERED', 1),
        (2, 1, 2, '2021-11-02 05:00:00', 'CONFIRMED', 2),
-       (3, 2, 3, '2021-11-03 05:00:00', 'ORDERED', 5),
+       (3, 2, 3, '2021-11-03 05:00:00', 'ORDERED', 3),
        (4, 3, 4, '2021-11-04 05:40:00', 'ORDERED', 3);

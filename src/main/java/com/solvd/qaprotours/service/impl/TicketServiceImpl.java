@@ -8,7 +8,6 @@ import com.solvd.qaprotours.domain.user.Ticket;
 import com.solvd.qaprotours.repository.TicketRepository;
 import com.solvd.qaprotours.service.TicketService;
 import com.solvd.qaprotours.service.TourService;
-import com.solvd.qaprotours.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +25,6 @@ import java.util.List;
 public class TicketServiceImpl implements TicketService {
 
     private final TicketRepository ticketRepository;
-    private final UserService userService;
     private final TourService tourService;
 
     @Override
@@ -75,7 +73,7 @@ public class TicketServiceImpl implements TicketService {
         }
 
         Ticket ticket = new Ticket();
-        ticket.setUser(userService.getById(userId));
+        ticket.setUserId(userId);
         ticket.setTour(tourService.getById(tourId));
         ticket.setOrderTime(LocalDateTime.now());
         ticket.setStatus(Ticket.Status.ORDERED);
