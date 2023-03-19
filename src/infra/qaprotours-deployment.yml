@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: qaprotours-app
-          image: ilyalisov/qaprotours:new
+          image: ilyalisov/qaprotours:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

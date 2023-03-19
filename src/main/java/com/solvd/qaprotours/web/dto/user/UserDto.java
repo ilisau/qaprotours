@@ -38,4 +38,6 @@ public class UserDto {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private User.Role role;
 
+    private boolean isActivated;
+
 }
