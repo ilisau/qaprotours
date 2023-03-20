@@ -33,26 +33,6 @@ spec:
               value: postgres
             - name: POSTGRES_DB
               value: qaprotours
-            - name: SPRING_MAIL_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: qaprotours-secrets
-                  key: SPRING_MAIL_HOST
-            - name: SPRING_MAIL_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: qaprotours-secrets
-                  key: SPRING_MAIL_PORT
-            - name: SPRING_MAIL_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: qaprotours-secrets
-                  key: SPRING_MAIL_USERNAME
-            - name: SPRING_MAIL_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: qaprotours-secrets
-                  key: SPRING_MAIL_PASSWORD
             - name: MINIO_BUCKET
               valueFrom:
                 configMapKeyRef:
@@ -73,3 +53,8 @@ spec:
                 secretKeyRef:
                   name: minio-secrets
                   key: MINIO_SECRET_KEY
+            - name: KAFKA_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: qaprotours-configmap
+                  key: KAFKA_HOST
