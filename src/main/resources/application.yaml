@@ -11,6 +11,9 @@ spring:
     change-log: classpath:db/db.changelog.yaml
     enabled: true
     default-schema: ${POSTGRES_DB}
+    url: jdbc:postgresql://${HOST}:5432/${POSTGRES_DB}?currentSchema=${POSTGRES_DB}
+    password: ${POSTGRES_PASSWORD}
+    user: ${POSTGRES_USERNAME}
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -102,10 +105,10 @@ image:
     - svg
     - webp
 
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka
 
 server:
   port: 8080
