@@ -44,20 +44,20 @@ public class UserController {
 
     @GetMapping("/{userId}")
     @PreAuthorize("canAccessUser(#userId)")
-    public UserDto getById(@PathVariable Long userId) {
+    public UserDto getById(@PathVariable String userId) {
         return userClient.getById(userId);
     }
 
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("canAccessUser(#userId)")
-    public void delete(@PathVariable Long userId) {
+    public void delete(@PathVariable String userId) {
         userClient.delete(userId);
     }
 
     @PutMapping("/{userId}/password")
     @PreAuthorize("canAccessUser(#userId)")
-    public void updatePassword(@PathVariable Long userId,
+    public void updatePassword(@PathVariable String userId,
                                @Validated @RequestBody PasswordDto passwordDto) {
         userClient.updatePassword(userId, passwordDto);
     }
@@ -65,7 +65,7 @@ public class UserController {
     @GetMapping("/{userId}/tickets")
     @PreAuthorize("canAccessUser(#userId)")
     @CircuitBreaker(name = TICKET_SERVICE, fallbackMethod = "getEmptyTicketList")
-    public List<TicketDto> getTickets(@PathVariable Long userId) {
+    public List<TicketDto> getTickets(@PathVariable String userId) {
         List<Ticket> tickets = ticketService.getAllByUserId(userId);
         return ticketMapper.toDto(tickets);
     }
@@ -73,7 +73,7 @@ public class UserController {
     @PostMapping("/{userId}/tickets/{tourId}")
     @PreAuthorize("canAccessUser(#userId)")
     @CircuitBreaker(name = TICKET_SERVICE, fallbackMethod = "handleServiceError")
-    public void addTicket(@PathVariable Long userId,
+    public void addTicket(@PathVariable String userId,
                           @PathVariable Long tourId,
                           @RequestParam Integer peopleAmount) {
         ticketService.create(userId, tourId, peopleAmount);

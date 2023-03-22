@@ -33,11 +33,11 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
         super(authentication);
     }
 
-    public boolean canAccessUser(Long userId) {
+    public boolean canAccessUser(String userId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
-        Long id = userDetails.getId();
+        String id = userDetails.getId();
 
         return userId.equals(id);
     }
@@ -46,7 +46,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
-        Long id = userDetails.getId();
+        String id = userDetails.getId();
 
         return ticketService.getById(ticketId).getUserId().equals(id);
     }

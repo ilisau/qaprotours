@@ -36,7 +36,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Ticket> getAllByUserId(Long userId) {
+    public List<Ticket> getAllByUserId(String userId) {
         return ticketRepository.findAllByUserId(userId);
     }
 
@@ -63,7 +63,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @Transactional
-    public void create(Long userId, Long tourId, Integer peopleAmount) {
+    public void create(String userId, Long tourId, Integer peopleAmount) {
         Tour tour = tourService.getById(tourId);
         if (tour.getPlacesAmount() < peopleAmount) {
             throw new NoFreePlacesException("not enough places in tour");

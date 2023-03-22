@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public interface UserClient {
 
     @GetMapping("/{id}")
-    UserDto getById(@PathVariable Long id);
+    UserDto getById(@PathVariable String id);
 
     @GetMapping("/email/{email}")
     UserDto getByEmail(@PathVariable String email);
@@ -33,10 +33,10 @@ public interface UserClient {
     void update(@RequestBody UserDto user);
 
     @PostMapping("/{userId}/password")
-    void updatePassword(@PathVariable Long userId, @RequestBody String newPassword);
+    void updatePassword(@PathVariable String userId, @RequestBody String newPassword);
 
     @PutMapping("/{userId}/password")
-    void updatePassword(@PathVariable Long userId, @RequestBody PasswordDto password);
+    void updatePassword(@PathVariable String userId, @RequestBody PasswordDto password);
 
     @PostMapping
     void create(@RequestBody UserDto user);
@@ -45,7 +45,7 @@ public interface UserClient {
     void activate(@RequestBody JwtTokenDto token);
 
     @DeleteMapping("/{id}")
-    void delete(@PathVariable Long id);
+    void delete(@PathVariable String id);
 
     @Component
     class ClientErrorDecoder implements ErrorDecoder {

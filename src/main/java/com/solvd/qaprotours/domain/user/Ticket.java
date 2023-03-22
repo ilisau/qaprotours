@@ -19,7 +19,7 @@ public class Ticket {
     private Long id;
 
     @Column(name = "user_id")
-    private Long userId;
+    private String userId;
 
     @ManyToOne
     @JoinColumn(name = "tour_id")

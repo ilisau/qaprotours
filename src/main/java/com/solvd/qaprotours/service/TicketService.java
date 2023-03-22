@@ -11,13 +11,13 @@ public interface TicketService {
 
     Ticket getById(Long id);
 
-    List<Ticket> getAllByUserId(Long userId);
+    List<Ticket> getAllByUserId(String userId);
 
     List<Ticket> getAllSoonTickets();
 
     List<Ticket> getAllSoonNotConfirmedTickets();
 
-    void create(Long userId, Long tourId, Integer peopleAmount);
+    void create(String userId, Long tourId, Integer peopleAmount);
 
     void delete(Long ticketId);
 

@@ -48,7 +48,7 @@ public class Scheduler {
             params.put("ticket.tour.arrivalTime", ticket.getTour().getArrivalTime());
             MailData mailData = new MailData(MailType.BOOKED_TOUR, params);
             MailDataDto dto = mailDataMapper.toDto(mailData);
-            messageSender.sendMessage("mail", 0, user.getId().toString(), dto);
+            messageSender.sendMessage("mail", 0, user.getId(), dto);
         });
     }
 
@@ -69,7 +69,7 @@ public class Scheduler {
             ticketService.cancel(ticket.getId());
             MailData mailData = new MailData(MailType.TICKET_CANCELED, params);
             MailDataDto dto = mailDataMapper.toDto(mailData);
-            messageSender.sendMessage("mail", 0, user.getId().toString(), dto);
+            messageSender.sendMessage("mail", 0, user.getId(), dto);
         });
     }
 
