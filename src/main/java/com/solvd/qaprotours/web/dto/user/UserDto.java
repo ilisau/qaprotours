@@ -16,7 +16,7 @@ import lombok.Data;
 public class UserDto {
 
     @NotNull(message = "id cannot be null", groups = {OnUpdate.class})
-    private Long id;
+    private String id;
 
     @NotNull(message = "name cannot be null", groups = {OnCreate.class, OnUpdate.class})
     @Size(min = 1, max = 255, message = "name must be between {min} and {max} characters", groups = {OnCreate.class, OnUpdate.class})

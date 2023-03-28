@@ -18,7 +18,7 @@ public interface UserClient {
     Mono<Void> update(User user);
 
     Mono<Void> updatePassword(Long userId, String newPassword);
-
+    
     Mono<Void> updatePassword(Long userId, Password password);
 
     Mono<Void> create(User user);
