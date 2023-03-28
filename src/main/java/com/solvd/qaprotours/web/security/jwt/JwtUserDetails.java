@@ -16,7 +16,7 @@ import java.util.Collection;
 @AllArgsConstructor
 public class JwtUserDetails implements UserDetails {
 
-    private final Long id;
+    private final String id;
     private final String password;
     private final String email;
     private final boolean enabled;

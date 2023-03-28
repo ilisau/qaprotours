@@ -26,7 +26,7 @@ public class UserClientImpl implements UserClient {
     private final JwtTokenMapper jwtTokenMapper;
 
     @Override
-    public Mono<UserDto> getById(Long id) {
+    public Mono<UserDto> getById(String id) {
         return webClientBuilder.build()
                 .get()
                 .uri("http://user-client/api/v1/users/" + id)
@@ -54,7 +54,7 @@ public class UserClientImpl implements UserClient {
     }
 
     @Override
-    public Mono<Void> updatePassword(Long userId, String newPassword) {
+    public Mono<Void> updatePassword(String userId, String newPassword) {
         return webClientBuilder.build()
                 .post()
                 .uri("http://user-client/api/v1/users/" + userId + "/password")
@@ -64,7 +64,7 @@ public class UserClientImpl implements UserClient {
     }
 
     @Override
-    public Mono<Void> updatePassword(Long userId, Password password) {
+    public Mono<Void> updatePassword(String userId, Password password) {
         return webClientBuilder.build()
                 .put()
                 .uri("http://user-client/api/v1/users/" + userId + "/password")
@@ -94,7 +94,7 @@ public class UserClientImpl implements UserClient {
     }
 
     @Override
-    public Mono<Void> delete(Long id) {
+    public Mono<Void> delete(String id) {
         return webClientBuilder.build()
                 .delete()
                 .uri("http://user-client/api/v1/users/" + id)

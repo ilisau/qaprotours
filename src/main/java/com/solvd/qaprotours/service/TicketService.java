@@ -17,7 +17,7 @@ public interface TicketService {
 
     Flux<Ticket> getAllSoonNotConfirmedTickets();
 
-    Mono<Void> create(Long userId, Long tourId, Integer peopleAmount);
+    Mono<Void> create(String userId, Long tourId, Integer peopleAmount);
 
     Mono<Void> delete(Long ticketId);
 

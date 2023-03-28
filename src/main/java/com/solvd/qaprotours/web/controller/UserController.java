@@ -52,20 +52,20 @@ public class UserController {
 
     @GetMapping("/{userId}")
     @PreAuthorize("canAccessUser(#userId)")
-    public Mono<UserDto> getById(@PathVariable Long userId) {
+    public Mono<UserDto> getById(@PathVariable String userId) {
         return userClient.getById(userId);
     }
 
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("canAccessUser(#userId)")
-    public Mono<Void> delete(@PathVariable Long userId) {
+    public Mono<Void> delete(@PathVariable String userId) {
         return userClient.delete(userId);
     }
 
     @PutMapping("/{userId}/password")
     @PreAuthorize("canAccessUser(#userId)")
-    public Mono<Void> updatePassword(@PathVariable Long userId,
+    public Mono<Void> updatePassword(@PathVariable String userId,
                                      @Validated @RequestBody PasswordDto passwordDto) {
         Password password = passwordMapper.toEntity(passwordDto);
         return userClient.updatePassword(userId, password);
@@ -82,7 +82,7 @@ public class UserController {
     @PostMapping("/{userId}/tickets/{tourId}")
     @PreAuthorize("canAccessUser(#userId)")
     @CircuitBreaker(name = TICKET_SERVICE, fallbackMethod = "handleServiceError")
-    public Mono<Void> addTicket(@PathVariable Long userId,
+    public Mono<Void> addTicket(@PathVariable String userId,
                                 @PathVariable Long tourId,
                                 @RequestParam Integer peopleAmount) {
         return ticketService.create(userId, tourId, peopleAmount);

@@ -65,7 +65,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @Transactional
-    public Mono<Void> create(Long userId, Long tourId, Integer peopleAmount) {
+    public Mono<Void> create(String userId, Long tourId, Integer peopleAmount) {
         return tourService.getById(tourId)
                 .onErrorResume(Mono::error)
                 .flatMap(tour -> {
