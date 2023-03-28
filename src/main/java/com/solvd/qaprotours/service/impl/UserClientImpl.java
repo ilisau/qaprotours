@@ -19,7 +19,6 @@ import reactor.core.publisher.Mono;
 @Service
 @RequiredArgsConstructor
 public class UserClientImpl implements UserClient {
-    //TODO change localhost on user-client
 
     private final WebClient.Builder webClientBuilder;
     private final UserMapper userMapper;
@@ -30,7 +29,7 @@ public class UserClientImpl implements UserClient {
     public Mono<UserDto> getById(Long id) {
         return webClientBuilder.build()
                 .get()
-                .uri("http://localhost:8081/api/v1/users/" + id)
+                .uri("http://user-client/api/v1/users/" + id)
                 .retrieve()
                 .bodyToMono(UserDto.class);
     }
@@ -39,7 +38,7 @@ public class UserClientImpl implements UserClient {
     public Mono<UserDto> getByEmail(String email) {
         return webClientBuilder.build()
                 .get()
-                .uri("http://localhost:8081/api/v1/users/email/" + email)
+                .uri("http://user-client/api/v1/users/email/" + email)
                 .retrieve()
                 .bodyToMono(UserDto.class);
     }
@@ -48,7 +47,7 @@ public class UserClientImpl implements UserClient {
     public Mono<Void> update(User user) {
         return webClientBuilder.build()
                 .put()
-                .uri("http://localhost:8081/api/v1/users")
+                .uri("http://user-client/api/v1/users")
                 .bodyValue(userMapper.toDto(user))
                 .retrieve()
                 .bodyToMono(Void.class);
@@ -58,7 +57,7 @@ public class UserClientImpl implements UserClient {
     public Mono<Void> updatePassword(Long userId, String newPassword) {
         return webClientBuilder.build()
                 .post()
-                .uri("http://localhost:8081/api/v1/users/" + userId + "/password")
+                .uri("http://user-client/api/v1/users/" + userId + "/password")
                 .bodyValue(newPassword)
                 .retrieve()
                 .bodyToMono(Void.class);
@@ -68,7 +67,7 @@ public class UserClientImpl implements UserClient {
     public Mono<Void> updatePassword(Long userId, Password password) {
         return webClientBuilder.build()
                 .put()
-                .uri("http://localhost:8081/api/v1/users/" + userId + "/password")
+                .uri("http://user-client/api/v1/users/" + userId + "/password")
                 .bodyValue(passwordMapper.toDto(password))
                 .retrieve()
                 .bodyToMono(Void.class);
@@ -78,7 +77,7 @@ public class UserClientImpl implements UserClient {
     public Mono<Void> create(User user) {
         return webClientBuilder.build()
                 .post()
-                .uri("http://localhost:8081/api/v1/users")
+                .uri("http://user-client/api/v1/users")
                 .bodyValue(userMapper.toDto(user))
                 .retrieve()
                 .bodyToMono(Void.class);
@@ -88,7 +87,7 @@ public class UserClientImpl implements UserClient {
     public Mono<Void> activate(JwtToken token) {
         return webClientBuilder.build()
                 .post()
-                .uri("http://localhost:8081/api/v1/users/activate")
+                .uri("http://user-client/api/v1/users/activate")
                 .bodyValue(jwtTokenMapper.toDto(token))
                 .retrieve()
                 .bodyToMono(Void.class);
@@ -98,7 +97,7 @@ public class UserClientImpl implements UserClient {
     public Mono<Void> delete(Long id) {
         return webClientBuilder.build()
                 .delete()
-                .uri("http://localhost:8081/api/v1/users/" + id)
+                .uri("http://user-client/api/v1/users/" + id)
                 .retrieve()
                 .bodyToMono(Void.class);
     }

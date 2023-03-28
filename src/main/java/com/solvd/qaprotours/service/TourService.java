@@ -14,8 +14,6 @@ public interface TourService {
 
     Flux<Tour> getAll(Integer currentPage, Integer pageSize, TourCriteria tourCriteria);
 
-    Flux<Tour> getAllByCriteria(TourCriteria tourCriteria, int currentPage, int pageSize);
-
     Mono<Tour> save(Tour tour);
 
     Mono<Tour> publish(Tour tour);
