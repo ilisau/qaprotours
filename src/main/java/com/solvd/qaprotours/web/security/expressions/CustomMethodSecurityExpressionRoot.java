@@ -40,12 +40,13 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
         return userId.equals(id);
     }
 
-    public Mono<Boolean> canAccessTicket(Long ticketId) {
+    public boolean canAccessTicket(Long ticketId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
         String id = userDetails.getId();
         return ticketService.getById(ticketId)
-                .map(ticket -> ticket.getUserId().equals(id));
+                .map(ticket -> ticket.getUserId().equals(id))
+                .block();
     }
 
     public boolean canConfirmTicket() {
@@ -54,11 +55,12 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
         return hasAnyRole(authentication, User.Role.EMPLOYEE);
     }
 
-    public Mono<Boolean> canAccessDraftTour(Long tourId) {
+    public boolean canAccessDraftTour(Long tourId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         return tourService.getById(tourId)
-                .map(tour -> !tour.isDraft() || hasAnyRole(authentication, User.Role.EMPLOYEE));
+                .map(tour -> !tour.isDraft() || hasAnyRole(authentication, User.Role.EMPLOYEE))
+                .block();
     }
 
     private boolean hasAnyRole(Authentication authentication, User.Role... roles) {

@@ -1,7 +1,6 @@
 package com.solvd.qaprotours.domain.user;
 
 import com.solvd.qaprotours.domain.tour.Tour;
-import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
@@ -21,22 +20,15 @@ public class Ticket {
 
     @Id
     private Long id;
-
-    @Column(name = "user_id")
     private String userId;
 
     @ManyToOne
     @JoinColumn(name = "tour_id")
     private Tour tour;
-
-    @Column(name = "order_time", nullable = false)
     private LocalDateTime orderTime;
 
-    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status;
-
-    @Column(name = "client_amount", nullable = false)
     private Integer clientsAmount;
 
     public enum Status {
