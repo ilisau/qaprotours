@@ -49,16 +49,14 @@ public class ImageServiceImpl implements ImageService {
                     if (file.isEmpty() || file.getOriginalFilename() == null) {
                         throw new ImageUploadException("Image must have name");
                     }
-
                     String fileName = generateFileName(tour, file);
-                    InputStream inputStream = null;
+                    InputStream inputStream;
                     try {
                         inputStream = file.getInputStream();
                     } catch (IOException e) {
                         return Mono.error(new RuntimeException(e));
                     }
                     saveImage(inputStream, fileName);
-
                     imageProperties.getThumbnails().forEach((Integer size) -> {
                         String name = generateThumbnailName(tour, file, size);
                         InputStream is = getThumbnailInputStream(file, size);
@@ -122,16 +120,12 @@ public class ImageServiceImpl implements ImageService {
         Image img = ImageIO.read(file.getInputStream());
         double ratio = 1.0 * height / img.getHeight(null);
         int width = img.getWidth(null);
-
         Image newImg = ImageIO.read(file.getInputStream()).getScaledInstance((int) (width * ratio), height, BufferedImage.SCALE_SMOOTH);
         BufferedImage bufferedImage = new BufferedImage((int) (width * ratio), height, BufferedImage.TYPE_INT_RGB);
-
         Graphics2D g2 = bufferedImage.createGraphics();
         g2.drawImage(newImg, null, null);
-
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         ImageIO.write(bufferedImage, getExtension(file), outStream);
-
         return new ByteArrayInputStream(outStream.toByteArray());
     }
 

@@ -11,7 +11,7 @@ public interface TicketService {
 
     Mono<Ticket> getById(Long id);
 
-    Flux<Ticket> getAllByUserId(Long userId);
+    Flux<Ticket> getAllByUserId(String userId);
 
     Flux<Ticket> getAllSoonTickets();
 

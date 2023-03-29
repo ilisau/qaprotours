@@ -38,7 +38,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @Transactional(readOnly = true)
-    public Flux<Ticket> getAllByUserId(Long userId) {
+    public Flux<Ticket> getAllByUserId(String userId) {
         return ticketRepository.findAllByUserId(userId);
     }
 

@@ -58,7 +58,9 @@ public class TourServiceImpl implements TourService {
     @Override
     @Transactional(readOnly = true)
     public Mono<Tour> getById(Long tourId) {
-        Mono<Tour> error = Mono.error(new ResourceDoesNotExistException("tour with id " + tourId + " does not exist"));
+        Mono<Tour> error = Mono.error(
+                new ResourceDoesNotExistException("tour with id " + tourId + " does not exist")
+        );
         return tourRepository.findById(tourId)
                 .switchIfEmpty(error);
     }

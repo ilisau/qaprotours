@@ -1,6 +1,5 @@
 package com.solvd.qaprotours.web.security.jwt;
 
-import com.solvd.qaprotours.domain.exception.AuthException;
 import com.solvd.qaprotours.service.JwtService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -42,7 +41,7 @@ public class JwtFilter extends GenericFilterBean {
                 }
             }
             filterChain.doFilter(req, res);
-        } catch (JwtException | AuthException ignored) {
+        } catch (JwtException ignored) {
         }
     }
 

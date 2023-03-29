@@ -49,7 +49,7 @@ public class Scheduler {
                             .flatMap(params -> {
                                 MailData mailData = new MailData(MailType.BOOKED_TOUR, params);
                                 MailDataDto dto = mailDataMapper.toDto(mailData);
-                                return messageSender.sendMessage("mail", 0, ticket.getUserId().toString(), dto).then();
+                                return messageSender.sendMessage("mail", 0, ticket.getUserId(), dto).then();
                             })
                             .subscribe());
                     return tickets;
@@ -78,8 +78,13 @@ public class Scheduler {
                             .flatMap(params -> {
                                 MailData mailData = new MailData(MailType.TICKET_CANCELED, params);
                                 MailDataDto dto = mailDataMapper.toDto(mailData);
-                                return messageSender.sendMessage("mail", 0, ticket.getUserId().toString(), dto).then();
+                                return messageSender.sendMessage("mail",
+                                        0,
+                                        ticket.getUserId(),
+                                        dto
+                                ).then();
                             })
+                            .flatMap(t -> ticketService.cancel(ticket.getId()))
                             .subscribe());
                     return tickets;
                 })

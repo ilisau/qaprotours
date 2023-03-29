@@ -12,6 +12,7 @@ import org.springframework.security.access.expression.method.MethodSecurityExpre
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import reactor.core.publisher.Mono;
 
 /**
  * @author Lisov Ilya
@@ -34,21 +35,17 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
 
     public boolean canAccessUser(String userId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
         JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
         String id = userDetails.getId();
-
         return userId.equals(id);
     }
 
-    public boolean canAccessTicket(Long ticketId) {
+    public Mono<Boolean> canAccessTicket(Long ticketId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
         JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
         String id = userDetails.getId();
-
         return ticketService.getById(ticketId)
-                .map(ticket -> ticket.getUserId().equals(id)).block();
+                .map(ticket -> ticket.getUserId().equals(id));
     }
 
     public boolean canConfirmTicket() {
@@ -57,12 +54,11 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
         return hasAnyRole(authentication, User.Role.EMPLOYEE);
     }
 
-    public boolean canAccessDraftTour(Long tourId) {
+    public Mono<Boolean> canAccessDraftTour(Long tourId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         return tourService.getById(tourId)
-                .map(tour -> !tour.isDraft() || hasAnyRole(authentication, User.Role.EMPLOYEE))
-                .block();
+                .map(tour -> !tour.isDraft() || hasAnyRole(authentication, User.Role.EMPLOYEE));
     }
 
     private boolean hasAnyRole(Authentication authentication, User.Role... roles) {

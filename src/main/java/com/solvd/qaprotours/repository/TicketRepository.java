@@ -11,10 +11,12 @@ import java.time.LocalDateTime;
  */
 public interface TicketRepository extends ReactiveCrudRepository<Ticket, Long> {
 
-    Flux<Ticket> findAllByUserId(Long userId);
+    Flux<Ticket> findAllByUserId(String userId);
 
     Flux<Ticket> findAllByTourArrivalTimeIsBeforeAndStatus(LocalDateTime time, Ticket.Status status);
 
-    Flux<Ticket> findAllByTourArrivalTimeIsAfterAndTourArrivalTimeIsBeforeAndStatus(LocalDateTime start, LocalDateTime end, Ticket.Status status);
+    Flux<Ticket> findAllByTourArrivalTimeIsAfterAndTourArrivalTimeIsBeforeAndStatus(LocalDateTime start,
+                                                                                    LocalDateTime end,
+                                                                                    Ticket.Status status);
 
 }
