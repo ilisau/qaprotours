@@ -11,11 +11,12 @@ import com.solvd.qaprotours.service.TourService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
 
 /**
  * @author Lisov Ilya
@@ -29,20 +30,21 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @Transactional(readOnly = true)
-    public Ticket getById(Long id) {
+    public Mono<Ticket> getById(Long id) {
+        Mono<Ticket> error = Mono.error(new ResourceDoesNotExistException("ticket not found"));
         return ticketRepository.findById(id)
-                .orElseThrow(() -> new ResourceDoesNotExistException("ticket not found"));
+                .switchIfEmpty(error);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Ticket> getAllByUserId(String userId) {
+    public Flux<Ticket> getAllByUserId(String userId) {
         return ticketRepository.findAllByUserId(userId);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Ticket> getAllSoonTickets() {
+    public Flux<Ticket> getAllSoonTickets() {
         LocalDateTime startTime = LocalDateTime.of(
                 LocalDate.now().plusDays(1),
                 LocalTime.MIDNIGHT);
@@ -54,7 +56,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Ticket> getAllSoonNotConfirmedTickets() {
+    public Flux<Ticket> getAllSoonNotConfirmedTickets() {
         LocalDateTime time = LocalDateTime.of(
                 LocalDate.now().plusDays(4),
                 LocalTime.MIDNIGHT);
@@ -63,63 +65,91 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @Transactional
-    public void create(String userId, Long tourId, Integer peopleAmount) {
-        Tour tour = tourService.getById(tourId);
-        if (tour.getPlacesAmount() < peopleAmount) {
-            throw new NoFreePlacesException("not enough places in tour");
-        }
-        if (tour.getArrivalTime().isBefore(LocalDateTime.now())) {
-            throw new TourAlreadyStartedException("tour already started");
-        }
-
-        Ticket ticket = new Ticket();
-        ticket.setUserId(userId);
-        ticket.setTour(tourService.getById(tourId));
-        ticket.setOrderTime(LocalDateTime.now());
-        ticket.setStatus(Ticket.Status.ORDERED);
-        ticket.setClientsAmount(peopleAmount);
-        ticketRepository.save(ticket);
-
-        tour.setPlacesAmount(tour.getPlacesAmount() - peopleAmount);
-        tourService.save(tour);
+    public Mono<Void> create(String userId, Long tourId, Integer peopleAmount) {
+        return tourService.getById(tourId)
+                .onErrorResume(Mono::error)
+                .flatMap(tour -> {
+                    if (tour.getPlacesAmount() < peopleAmount) {
+                        return Mono.error(new NoFreePlacesException("not enough places in tour"));
+                    }
+                    if (tour.getArrivalTime().isBefore(LocalDateTime.now())) {
+                        return Mono.error(new TourAlreadyStartedException("tour already started"));
+                    }
+                    return Mono.just(tour);
+                })
+                .onErrorResume(Mono::error)
+                .map(tour -> {
+                    Ticket ticket = new Ticket();
+                    ticket.setUserId(userId);
+                    ticket.setTour(tour);
+                    ticket.setOrderTime(LocalDateTime.now());
+                    ticket.setStatus(Ticket.Status.ORDERED);
+                    ticket.setClientsAmount(peopleAmount);
+                    return ticket;
+                })
+                .flatMap(ticketRepository::save)
+                .map(ticket -> {
+                    Tour tour = ticket.getTour();
+                    tour.setPlacesAmount(tour.getPlacesAmount() - peopleAmount);
+                    return tour;
+                })
+                .flatMap(tourService::save)
+                .then();
     }
 
     @Override
     @Transactional
-    public void delete(Long ticketId) {
-        Ticket ticket = ticketRepository.findById(ticketId)
-                .orElseThrow(() -> new ResourceDoesNotExistException("ticket not found"));
-        int peopleAmount = ticket.getClientsAmount();
-        Tour tour = tourService.getById(ticket.getTour().getId());
-        if (tour.getArrivalTime().isAfter(LocalDateTime.now())) {
-            tour.setPlacesAmount(tour.getPlacesAmount() + peopleAmount);
-        }
-        tourService.save(tour);
-        ticketRepository.deleteById(ticketId);
+    public Mono<Void> delete(Long ticketId) {
+        Mono<Ticket> error = Mono.error(new ResourceDoesNotExistException("ticket not found"));
+        return ticketRepository.findById(ticketId)
+                .switchIfEmpty(error)
+                .map(ticket -> {
+                    int peopleAmount = ticket.getClientsAmount();
+                    Tour tour = ticket.getTour();
+                    if (tour.getArrivalTime().isAfter(LocalDateTime.now())) {
+                        tour.setPlacesAmount(tour.getPlacesAmount() + peopleAmount);
+                    }
+                    return ticket;
+                })
+                .map(Ticket::getTour)
+                .flatMap(tourService::save)
+                .flatMap(tour -> ticketRepository.deleteById(ticketId))
+                .then();
     }
 
     @Override
     @Transactional
-    public void confirm(Long ticketId) {
-        Ticket ticket = ticketRepository.findById(ticketId)
-                .orElseThrow(() -> new ResourceDoesNotExistException("ticket not found"));
-        ticket.setStatus(Ticket.Status.CONFIRMED);
-        ticketRepository.save(ticket);
+    public Mono<Void> confirm(Long ticketId) {
+        Mono<Ticket> error = Mono.error(new ResourceDoesNotExistException("ticket not found"));
+        return ticketRepository.findById(ticketId)
+                .switchIfEmpty(error)
+                .map(ticket -> {
+                    ticket.setStatus(Ticket.Status.CONFIRMED);
+                    return ticket;
+                })
+                .flatMap(ticketRepository::save)
+                .then();
     }
 
     @Override
     @Transactional
-    public void cancel(Long ticketId) {
-        Ticket ticket = ticketRepository.findById(ticketId)
-                .orElseThrow(() -> new ResourceDoesNotExistException("ticket not found"));
-        int peopleAmount = ticket.getClientsAmount();
-        Tour tour = tourService.getById(ticket.getTour().getId());
-        if (tour.getArrivalTime().isAfter(LocalDateTime.now())) {
-            tour.setPlacesAmount(tour.getPlacesAmount() + peopleAmount);
-        }
-        tourService.save(tour);
-        ticket.setStatus(Ticket.Status.CANCELED);
-        ticketRepository.save(ticket);
+    public Mono<Void> cancel(Long ticketId) {
+        Mono<Ticket> error = Mono.error(new ResourceDoesNotExistException("ticket not found"));
+        return ticketRepository.findById(ticketId)
+                .switchIfEmpty(error)
+                .map(ticket -> {
+                    int peopleAmount = ticket.getClientsAmount();
+                    ticket.setStatus(Ticket.Status.CANCELED);
+                    Tour tour = ticket.getTour();
+                    if (tour.getArrivalTime().isAfter(LocalDateTime.now())) {
+                        tour.setPlacesAmount(tour.getPlacesAmount() + peopleAmount);
+                    }
+                    return ticket;
+                })
+                .flatMap(ticketRepository::save)
+                .map(Ticket::getTour)
+                .flatMap(tourService::save)
+                .then();
     }
 
 }

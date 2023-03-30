@@ -1,28 +1,28 @@
 package com.solvd.qaprotours.service;
 
 import com.solvd.qaprotours.domain.user.Ticket;
-
-import java.util.List;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 /**
  * @author Lisov Ilya
  */
 public interface TicketService {
 
-    Ticket getById(Long id);
+    Mono<Ticket> getById(Long id);
 
-    List<Ticket> getAllByUserId(String userId);
+    Flux<Ticket> getAllByUserId(String userId);
 
-    List<Ticket> getAllSoonTickets();
+    Flux<Ticket> getAllSoonTickets();
 
-    List<Ticket> getAllSoonNotConfirmedTickets();
+    Flux<Ticket> getAllSoonNotConfirmedTickets();
 
-    void create(String userId, Long tourId, Integer peopleAmount);
+    Mono<Void> create(String userId, Long tourId, Integer peopleAmount);
 
-    void delete(Long ticketId);
+    Mono<Void> delete(Long ticketId);
 
-    void confirm(Long ticketId);
+    Mono<Void> confirm(Long ticketId);
 
-    void cancel(Long ticketId);
+    Mono<Void> cancel(Long ticketId);
 
 }

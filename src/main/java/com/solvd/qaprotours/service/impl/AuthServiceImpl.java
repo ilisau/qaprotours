@@ -11,8 +11,6 @@ import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.service.AuthService;
 import com.solvd.qaprotours.service.JwtService;
 import com.solvd.qaprotours.service.UserClient;
-import com.solvd.qaprotours.web.dto.MailDataDto;
-import com.solvd.qaprotours.web.dto.user.UserDto;
 import com.solvd.qaprotours.web.kafka.MessageSender;
 import com.solvd.qaprotours.web.mapper.MailDataMapper;
 import com.solvd.qaprotours.web.mapper.UserMapper;
@@ -23,6 +21,8 @@ import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,51 +42,72 @@ public class AuthServiceImpl implements AuthService {
     private final MessageSender messageSender;
 
     @Override
-    public JwtResponse login(Authentication authentication) {
-        UserDto userDto = userClient.getByEmail(authentication.getEmail());
-        User user = userMapper.toEntity(userDto);
-        if (!passwordEncoder.matches(authentication.getPassword(), user.getPassword())) {
-            throw new AuthException("wrong password");
-        }
-        if (!user.isActivated()) {
-            throw new AuthException("user is not activated");
-        }
-        String accessToken = jwtService.generateToken(JwtTokenType.ACCESS, user);
-        String refreshToken = jwtService.generateToken(JwtTokenType.REFRESH, user);
-        return new JwtResponse(accessToken, refreshToken);
+    public Mono<JwtResponse> login(Authentication authentication) {
+        return userClient.getByEmail(authentication.getEmail())
+                .flatMap(userDto -> {
+                    User user = userMapper.toEntity(userDto);
+                    if (!passwordEncoder.matches(authentication.getPassword(), user.getPassword())) {
+                        return Mono.error(new AuthException("wrong password"));
+                    }
+                    if (!user.isActivated()) {
+                        return Mono.error(new AuthException("user is not activated"));
+                    }
+                    return Mono.just(user);
+                })
+                .onErrorResume(Mono::error)
+                .flatMapMany(u -> {
+                    String accessToken = jwtService.generateToken(JwtTokenType.ACCESS, u);
+                    String refreshToken = jwtService.generateToken(JwtTokenType.REFRESH, u);
+                    return Flux.just(accessToken, refreshToken).collectList();
+                })
+                .map(tokens -> new JwtResponse(tokens.get(0), tokens.get(1)))
+                .next();
     }
 
     @Override
-    public JwtResponse refresh(JwtToken jwtToken) {
-        Claims claims = jwtService.parse(jwtToken.getToken());
-        JwtUserDetails userDetails = JwtUserDetailsFactory.create(claims);
-        if (!jwtService.isTokenType(jwtToken.getToken(), JwtTokenType.REFRESH)) {
-            throw new AuthException("invalid refresh token");
-        }
-        UserDto userDto = userClient.getByEmail(userDetails.getEmail());
-        User user = userMapper.toEntity(userDto);
-        String accessToken = jwtService.generateToken(JwtTokenType.ACCESS, user);
-        String refreshToken = jwtService.generateToken(JwtTokenType.REFRESH, user);
-        return new JwtResponse(accessToken, refreshToken);
+    public Mono<JwtResponse> refresh(JwtToken jwtToken) {
+        return Mono.just(jwtService.parse(jwtToken.getToken()))
+                .map(JwtUserDetailsFactory::create)
+                .flatMap(userDetails -> {
+                    if (!jwtService.isTokenType(jwtToken.getToken(), JwtTokenType.REFRESH)) {
+                        return Mono.error(new AuthException("invalid refresh token"));
+                    }
+                    return Mono.just(userDetails);
+                })
+                .onErrorResume(Mono::error)
+                .flatMap(userDetails -> userClient.getByEmail(userDetails.getEmail()))
+                .map(userMapper::toEntity)
+                .flatMapMany(u -> {
+                    String accessToken = jwtService.generateToken(JwtTokenType.ACCESS, u);
+                    String refreshToken = jwtService.generateToken(JwtTokenType.REFRESH, u);
+                    return Flux.just(accessToken, refreshToken).collectList();
+                })
+                .map(tokens -> new JwtResponse(tokens.get(0), tokens.get(1)))
+                .next();
     }
 
     @Override
-    public void sendRestoreToken(String email) {
-        UserDto userDto = userClient.getByEmail(email);
-        User user = userMapper.toEntity(userDto);
-        Map<String, Object> params = new HashMap<>();
-        String token = jwtService.generateToken(JwtTokenType.RESET, user);
-        params.put("token", token);
-        params.put("user.email", user.getEmail());
-        params.put("user.name", user.getName());
-        params.put("user.surname", user.getSurname());
-        MailData mailData = new MailData(MailType.PASSWORD_RESET, params);
-        MailDataDto dto = mailDataMapper.toDto(mailData);
-        messageSender.sendMessage("mail", 0, user.getId().toString(), dto);
+    public Mono<Void> sendRestoreToken(String email) {
+        return userClient.getByEmail(email)
+                .map(userMapper::toEntity)
+                .map(user -> {
+                    Map<String, Object> params = new HashMap<>();
+                    String token = jwtService.generateToken(JwtTokenType.RESET, user);
+                    params.put("token", token);
+                    params.put("user.email", user.getEmail());
+                    params.put("user.name", user.getName());
+                    params.put("user.surname", user.getSurname());
+                    return params;
+                })
+                .flatMap(params -> messageSender.sendMessage("mail",
+                        0,
+                        params.get("user.id").toString(),
+                        mailDataMapper.toDto(new MailData(MailType.PASSWORD_RESET, params))).then())
+                .then();
     }
 
     @Override
-    public void restoreUserPassword(String token, String password) {
+    public Mono<Void> restoreUserPassword(String token, String password) {
         if (!jwtService.validateToken(token)) {
             throw new InvalidTokenException("token is expired");
         }
@@ -95,7 +116,7 @@ public class AuthServiceImpl implements AuthService {
             throw new InvalidTokenException("invalid reset token");
         }
         JwtUserDetails userDetails = JwtUserDetailsFactory.create(claims);
-        userClient.updatePassword(userDetails.getId(), password);
+        return userClient.updatePassword(userDetails.getId(), password);
     }
 
 }

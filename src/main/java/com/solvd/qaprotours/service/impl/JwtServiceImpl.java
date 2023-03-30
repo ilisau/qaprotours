@@ -17,8 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +38,7 @@ public class JwtServiceImpl implements JwtService {
 
     private final JwtProperties jwtProperties;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final UserDetailsService userDetailsService;
+    private final ReactiveUserDetailsService userDetailsService;
     private Key key;
 
     @PostConstruct
@@ -70,8 +69,11 @@ public class JwtServiceImpl implements JwtService {
     public Authentication getAuthentication(String token) {
         Claims claims = parse(token);
         JwtUserDetails jwtUserDetails = JwtUserDetailsFactory.create(claims);
-        UserDetails userDetails = userDetailsService.loadUserByUsername(jwtUserDetails.getEmail());
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        return userDetailsService.findByUsername(jwtUserDetails.getEmail())
+                .map(userDetails -> new UsernamePasswordAuthenticationToken(userDetails,
+                        "",
+                        userDetails.getAuthorities()))
+                .block();
     }
 
     @Override
