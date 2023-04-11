@@ -18,7 +18,6 @@ import lombok.Setter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -37,7 +36,6 @@ import java.util.Objects;
 public class JwtServiceImpl implements JwtService {
 
     private final JwtProperties jwtProperties;
-    private final BCryptPasswordEncoder passwordEncoder;
     private final ReactiveUserDetailsService userDetailsService;
     private Key key;
 

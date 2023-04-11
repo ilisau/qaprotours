@@ -50,6 +50,7 @@ public class Tour {
     private BigDecimal rating;
     private Integer dayDuration;
     private boolean isDraft;
+
     @ElementCollection
     @CollectionTable(name = "tour_image", joinColumns = @JoinColumn(name = "tour_id"))
     private List<String> imageUrls;

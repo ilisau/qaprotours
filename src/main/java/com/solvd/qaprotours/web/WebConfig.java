@@ -58,7 +58,7 @@ public class WebConfig {
                 )
                 .info(new Info()
                         .title("QaproTours API")
-                        .description("Tour dervice")
+                        .description("Tour service")
                         .version("v1"));
     }
 
