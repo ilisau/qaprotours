@@ -14,12 +14,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -35,30 +37,37 @@ public class ImageServiceImpl implements ImageService {
     private final ImageProperties imageProperties;
 
     @Override
-    public void uploadImage(Long tourId, com.solvd.qaprotours.domain.Image image) {
+    public Mono<Void> uploadImage(Long tourId, com.solvd.qaprotours.domain.Image image) {
         try {
             createBucket();
-            Tour tour = tourService.getById(tourId);
-
-            MultipartFile file = image.getFile();
-            if (file.isEmpty() || file.getOriginalFilename() == null) {
-                throw new ImageUploadException("Image must have name");
-            }
-
-            String fileName = generateFileName(tour, file);
-            InputStream inputStream = file.getInputStream();
-            saveImage(inputStream, fileName);
-
-            imageProperties.getThumbnails().forEach((Integer size) -> {
-                String name = generateThumbnailName(tour, file, size);
-                InputStream is = getThumbnailInputStream(file, size);
-                saveImage(is, name);
-            });
-
-            tourService.addImage(tourId, fileName);
         } catch (Exception e) {
             throw new ImageUploadException("Image upload failed: " + e.getMessage());
         }
+        return tourService.getById(tourId)
+                .flatMap(tour -> {
+                    MultipartFile file = image.getFile();
+                    if (file.isEmpty() || file.getOriginalFilename() == null) {
+                        throw new ImageUploadException("Image must have name");
+                    }
+                    String fileName = generateFileName(tour, file);
+                    InputStream inputStream;
+                    try {
+                        inputStream = file.getInputStream();
+                    } catch (IOException e) {
+                        return Mono.error(new RuntimeException(e));
+                    }
+                    saveImage(inputStream, fileName);
+                    imageProperties.getThumbnails().forEach((Integer size) -> {
+                        String name = generateThumbnailName(tour, file, size);
+                        InputStream is = getThumbnailInputStream(file, size);
+                        saveImage(is, name);
+                    });
+                    return Mono.just(fileName);
+                })
+                .onErrorResume(Mono::error)
+                .flatMap(fileName -> tourService.addImage(tourId, fileName))
+                .then();
+
     }
 
     @SneakyThrows
@@ -111,16 +120,12 @@ public class ImageServiceImpl implements ImageService {
         Image img = ImageIO.read(file.getInputStream());
         double ratio = 1.0 * height / img.getHeight(null);
         int width = img.getWidth(null);
-
         Image newImg = ImageIO.read(file.getInputStream()).getScaledInstance((int) (width * ratio), height, BufferedImage.SCALE_SMOOTH);
         BufferedImage bufferedImage = new BufferedImage((int) (width * ratio), height, BufferedImage.TYPE_INT_RGB);
-
         Graphics2D g2 = bufferedImage.createGraphics();
         g2.drawImage(newImg, null, null);
-
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         ImageIO.write(bufferedImage, getExtension(file), outStream);
-
         return new ByteArrayInputStream(outStream.toByteArray());
     }
 

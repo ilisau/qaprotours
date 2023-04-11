@@ -23,8 +23,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 /**
  * @author Lisov Ilya
@@ -42,53 +42,53 @@ public class TourController {
     private final String IMAGE_SERVICE = "imageService";
 
     @GetMapping
-    public List<TourDto> getAll(@RequestParam(required = false) Integer currentPage,
+    public Flux<TourDto> getAll(@RequestParam(required = false) Integer currentPage,
                                 @RequestParam(required = false) Integer pageSize,
                                 @RequestBody(required = false) TourCriteriaDto tourCriteriaDto) {
         TourCriteria tourCriteria = tourCriteriaMapper.toEntity(tourCriteriaDto);
-        List<Tour> tours = tourService.getAll(currentPage, pageSize, tourCriteria);
-        return tourMapper.toDto(tours);
+        return tourService.getAll(currentPage, pageSize, tourCriteria)
+                .map(tourMapper::toDto);
     }
 
     @PostMapping
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public TourDto saveDraft(@RequestBody TourDto tourDto) {
+    public Mono<TourDto> saveDraft(@RequestBody TourDto tourDto) {
         Tour tour = tourMapper.toEntity(tourDto);
-        tour = tourService.save(tour);
-        return tourMapper.toDto(tour);
+        return tourService.save(tour)
+                .map(tourMapper::toDto);
     }
 
     @PostMapping("/publish")
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public TourDto publish(@Validated(OnCreate.class) @RequestBody TourDto tourDto) {
+    public Mono<TourDto> publish(@Validated(OnCreate.class) @RequestBody TourDto tourDto) {
         Tour tour = tourMapper.toEntity(tourDto);
-        tour = tourService.publish(tour);
-        return tourMapper.toDto(tour);
+        return tourService.publish(tour)
+                .map(tourMapper::toDto);
     }
 
     @GetMapping("/{tourId}")
     @PreAuthorize("canAccessDraftTour(#tourId)")
-    public TourDto getById(@PathVariable Long tourId) {
-        Tour tour = tourService.getById(tourId);
-        return tourMapper.toDto(tour);
+    public Mono<TourDto> getById(@PathVariable Long tourId) {
+        return tourService.getById(tourId)
+                .map(tourMapper::toDto);
     }
 
     @DeleteMapping("/{tourId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public void delete(@PathVariable Long tourId) {
-        tourService.delete(tourId);
+    public Mono<Void> delete(@PathVariable Long tourId) {
+        return tourService.delete(tourId);
     }
 
     @PostMapping("/{tourId}/photo")
     @PreAuthorize("hasRole('EMPLOYEE')")
     @ValidateExtension
     @CircuitBreaker(name = IMAGE_SERVICE, fallbackMethod = "handleError")
-    public void uploadImage(@PathVariable Long tourId,
-                            @ModelAttribute ImageDto dto) {
+    public Mono<Void> uploadImage(@PathVariable Long tourId,
+                                  @ModelAttribute ImageDto dto) {
         Image image = imageMapper.toEntity(dto);
-        imageService.uploadImage(tourId, image);
+        return imageService.uploadImage(tourId, image);
     }
 
     private void handleError(Exception e) {

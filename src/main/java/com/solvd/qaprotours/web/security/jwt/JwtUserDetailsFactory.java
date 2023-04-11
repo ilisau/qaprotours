@@ -33,7 +33,7 @@ public class JwtUserDetailsFactory {
         }
 
         return new JwtUserDetails(
-                claims.get("id", Long.class),
+                claims.get("id", String.class),
                 null,
                 claims.getSubject(),
                 true,

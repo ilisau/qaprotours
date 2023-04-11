@@ -12,4 +12,6 @@ public interface JwtTokenMapper {
 
     JwtToken toEntity(JwtTokenDto jwtTokenDto);
 
+    JwtTokenDto toDto(JwtToken jwtToken);
+
 }
