@@ -15,6 +15,6 @@ kubectl apply -f qaprotours-deployment.yml
 kubectl apply -f pg-stateful.yml
 kubectl apply -f minio-stateful.yml
 kubectl apply -f kafka-deployment.yml
-kubectl apply -f zookeeper-deployment.yml
+kubectl apply -f zookeeper-stateful.yml
 
 minikube service qaprotours
