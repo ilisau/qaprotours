@@ -16,9 +16,3 @@ kubectl apply -f pg-stateful.yml
 kubectl apply -f minio-stateful.yml
 kubectl apply -f kafka-deployment.yml
 kubectl apply -f zookeeper-stateful.yml
-
-istioctl install
-
-kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.17/samples/addons/prometheus.yaml
-kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.17/samples/addons/grafana.yaml
-kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.17/samples/addons/kiali.yaml
