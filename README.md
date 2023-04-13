@@ -4,17 +4,7 @@ After starting application you need to grant readonly authority for bucket to an
 
 This application provides:
 
-1) Eureka Service Registry with [Eureka server](https://github.com/ilisau/eureka-server)
-
-We use Service Registry to avoid direct URLs of services via passing requests
-to [Eureka server](https://github.com/ilisau/eureka-server) instead.
-Services register themselves on server, so server knows addresses of all services.
-When we need to call any service we need only know service name, and server
-passes request to services itself, so we don't need to know their addresses.
-
-You can change server address in ```eureka.client.server-url.defaultZone``` property.
-
-2) Resilience4j Circuit Breaker
+1) Resilience4j Circuit Breaker
 
 We use Circuit Breaker to wrap function calls and return default data instead
 of throwing exceptions if supplier service is unavailable. This approach helps to avoid falling of request.
@@ -23,7 +13,7 @@ respond to requests.
 
 You can change Circuit Breaker configuration in ```resilience4j.circuitbreaker``` property.
 
-3) Kafka
+2) Kafka
 
 We use Kafka here for sending messages to mail client instead of blocking rest approach.
 
@@ -41,3 +31,15 @@ We use Kafka here for sending messages to mail client instead of blocking rest a
 - ```MINIO_URL``` - preferred url to access Minio client
 - ```MINIO_ACCESS_KEY``` - Minio access key
 - ```MINIO_SECRET_KEY``` - Minio secret key
+
+To run application you need to run
+```console
+ sh run.sh
+ sh istio-setup.sh
+ ```
+It will ask permission to install ```Istio``` to your cluster, so you need to grant it.
+After this command were executed, your cluster will contain required Istio configs and application will be available through ```localhost```
+
+### Required applications to correct work
+1) [User client](https://github.com/ilisau/user-service)
+2) [Mail client](https://github.com/ilisau/mail-service)
