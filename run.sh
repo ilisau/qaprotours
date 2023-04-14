@@ -1,4 +1,6 @@
 cd src/infra || exit
+kubectl apply -f qaprotours-service-account.yml
+
 kubectl apply -f minio-secrets.yml
 kubectl apply -f pg-secrets.yml
 kubectl apply -f qaprotours-configmap.yml
@@ -16,5 +18,3 @@ kubectl apply -f pg-stateful.yml
 kubectl apply -f minio-stateful.yml
 kubectl apply -f kafka-deployment.yml
 kubectl apply -f zookeeper-stateful.yml
-
-minikube service qaprotours

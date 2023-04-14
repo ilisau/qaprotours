@@ -12,6 +12,7 @@ spec:
       labels:
         app: qaprotours
     spec:
+      serviceAccountName: qaprotours-serviceaccount
       containers:
         - name: qaprotours-app
           image: ilyalisov/qaprotours:latest
