@@ -2,26 +2,38 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE_NAME = "qaprotours"
-        DOCKER_REGISTRY_URL = "docker.io"
+        DOCKER_TAG = "${env.BUILD_NUMBER}"
+        DOCKER_IMAGE = "ilyalisov/qaprotours:${DOCKER_TAG}"
     }
 
     stages {
-        stage('Build Docker Image') {
+        stage('Checkout') {
             steps {
-                git url: 'https://github.com/ilisau/qaprotours.git', branch: 'main'
-                sh "docker build -t $DOCKER_REGISTRY_URL/$DOCKER_IMAGE_NAME:${BUILD_NUMBER} ."
+                git branch: 'main', url: 'https://github.com/ilisau/qaprotours.git'
             }
         }
-//         stage('Push Docker Image') {
-//             steps {
-//                 withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials',
-//                 passwordVariable: 'DOCKERHUB_PASSWORD',
-//                 usernameVariable: 'DOCKERHUB_USERNAME')]) {
-//                     sh "docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD $DOCKER_REGISTRY_URL"
-//                     sh "docker push $DOCKER_REGISTRY_URL/$DOCKER_IMAGE_NAME:${BUILD_NUMBER}"
-//                 }
-//             }
-//         }
+
+        stage('Build image') {
+            steps {
+                sh "docker build -t ${DOCKER_IMAGE} -t ilyalisov/qaprotours:latest ."
+            }
+        }
+
+        stage('Push image') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'DOCKERHUB', passwordVariable: 'DOCKERHUB_PASSWORD', usernameVariable: 'DOCKERHUB_USERNAME')]) {
+                    sh "docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}"
+                    sh "docker push ${DOCKER_IMAGE}"
+                }
+            }
+        }
+
+        stage('Update cluster') {
+            steps {
+                sh "sh run.sh"
+                sh "sh istio-setup.sh"
+                sh "sh jenkins-setup.sh"
+            }
+        }
     }
 }
