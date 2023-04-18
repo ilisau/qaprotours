@@ -7,4 +7,7 @@ spec:
   replicas: 2
   template:
     spec:
+      serviceAccountName: github-runner-api-sa
+      labels:
+        - k8s-api
       repository: ilisau/qaprotours
