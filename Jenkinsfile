@@ -9,12 +9,16 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
+                sh "rm -r github"
+                sh "mkdir github"
+                sh "cd github"
                 git branch: 'main', url: 'https://github.com/ilisau/qaprotours.git'
             }
         }
 
         stage('Build image') {
             steps {
+                sh "docker image prune -f"
                 sh "docker build -t ${DOCKER_IMAGE} -t ilyalisov/qaprotours:latest ."
             }
         }
@@ -30,9 +34,7 @@ pipeline {
 
         stage('Update cluster') {
             steps {
-                sh "sh run.sh"
-                sh "sh istio-setup.sh"
-                sh "sh jenkins-setup.sh"
+                sh "kubectl rollout restart deployment qaprotours"
             }
         }
     }
