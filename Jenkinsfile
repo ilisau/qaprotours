@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                sh "rm -r github"
+                sh "rm -dfr github"
                 sh "mkdir github"
                 sh "cd github"
                 git branch: 'main', url: 'https://github.com/ilisau/qaprotours.git'
@@ -28,6 +28,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'DOCKERHUB', passwordVariable: 'DOCKERHUB_PASSWORD', usernameVariable: 'DOCKERHUB_USERNAME')]) {
                     sh "docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}"
                     sh "docker push ${DOCKER_IMAGE}"
+                    sh "docker push ilyalisov/qaprotours:latest"
                 }
             }
         }
