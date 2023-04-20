@@ -16,7 +16,7 @@ spec:
       serviceAccountName: jenkins-admin
       containers:
         - name: docker
-          image: docker:latest
+          image: docker:dind
           ports:
             - containerPort: 2375
             - containerPort: 2376

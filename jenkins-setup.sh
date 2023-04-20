@@ -7,3 +7,4 @@ kubectl apply -f jenkins-deployment.yml
 kubectl apply -f docker-deployment.yml
 kubectl apply -f docker-service.yml
 kubectl apply -f jenkins-service.yml
+kubectl apply -f jenkins-ingress.yaml

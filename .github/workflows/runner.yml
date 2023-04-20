@@ -3,7 +3,7 @@ name: Auto Build/Deploy
 on:
   push:
     branches:
-      - "*"
+      - "main"
 
 jobs:
   build:
