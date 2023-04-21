@@ -36,10 +36,21 @@ To run application you need to run
 ```console
  sh run.sh
  sh istio-setup.sh
+ sh runner-setup.sh
  ```
+
 It will ask permission to install ```Istio``` to your cluster, so you need to grant it.
-After this command were executed, your cluster will contain required Istio configs and application will be available through ```localhost```
+After this command were executed, your cluster will contain required Istio configs and application will be available
+through ```localhost```
 
 ### Required applications to correct work
+
 1) [User client](https://github.com/ilisau/user-service)
 2) [Mail client](https://github.com/ilisau/mail-service)
+
+### CI/CD
+
+This application uses inside-cluster runner and rollout restart deployment `qaprotours`, it needs to be configured
+in `runner-setup.sh` and place your [Personal Access Token](https://github.com/settings/tokens) instead of `###YOUR_PERSONAL_ACCESS_TOKEN###`
+
+Jenkins is also included in this setup, so you can access Jenkins from `jenkins.localhost` after executing `minikube tunnel`

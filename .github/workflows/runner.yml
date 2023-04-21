@@ -1,0 +1,21 @@
+name: Auto Build/Deploy
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  build:
+    name: Build
+    runs-on:
+      - self-hosted
+      - k8s-api
+    steps:
+      - name: Get Pods
+        run: |
+          set -ex
+          cd $HOME
+          wget https://dl.k8s.io/release/v1.26.0/bin/linux/arm64/kubectl
+          chmod +x ./kubectl
+          ./kubectl rollout restart deployment qaprotours -n default
