@@ -59,3 +59,14 @@ spec:
                 configMapKeyRef:
                   name: qaprotours-configmap
                   key: KAFKA_HOST
+          volumeMounts:
+            - name: my-service-account-token
+              mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+              readOnly: true
+      volumes:
+        - name: my-service-account-token
+          projected:
+            sources:
+              - serviceAccountToken:
+                  path: token
+                  expirationSeconds: 3600

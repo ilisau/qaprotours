@@ -34,6 +34,7 @@ We use Kafka here for sending messages to mail client instead of blocking rest a
 
 To run application you need to run
 ```console
+ sh kafka-setup.sh 
  sh run.sh
  sh istio-setup.sh
  ```
