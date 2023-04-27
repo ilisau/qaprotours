@@ -32,8 +32,9 @@ We use Kafka here for sending messages to mail client instead of blocking rest a
 - ```MINIO_ACCESS_KEY``` - Minio access key
 - ```MINIO_SECRET_KEY``` - Minio secret key
 
-To run application you need to run
+To run application you need to install [Helm](https://helm.sh/docs/intro/install/) and run
 ```console
+ sh kafka-setup.sh 
  sh run.sh
  sh istio-setup.sh
  sh runner-setup.sh
