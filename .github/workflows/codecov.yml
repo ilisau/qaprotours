@@ -21,7 +21,22 @@ jobs:
             maven-
       - run: |
           mvn clean install
-      - uses: codecov/codecov-action@v3
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage-report
+          path: target/site/jacoco/index.html
+      - name: Parse coverage report
+        run: |
+          coverage=$(xmllint --xpath "sum(//report/counter[@type='LINE'][@missed>0]/@missed) div sum(//report/counter[@type='LINE']/@total) * 100" target/site/jacoco/jacoco.xml)
+          echo "Code coverage: $coverage%"
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
         with:
           files: ./target/site/jacoco/jacoco.xml
           fail_ci_if_error: true
+      - name: Fail build if coverage is too low
+        if: ${{ env.coverage < 65 }}
+        run: exit 1
+        env:
+          coverage: ${{ steps.parse_coverage.outputs.coverage }}
