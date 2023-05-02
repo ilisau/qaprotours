@@ -8,5 +8,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Generate report
+        run: mvn verify
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
