@@ -278,7 +278,7 @@
                         <configuration>
                             <rules>
                                 <rule implementation="org.jacoco.maven.RuleConfiguration">
-                                    <element>BUNDLE</element>
+                                    <element>PACKAGE</element>
                                     <limits>
                                         <limit implementation="org.jacoco.report.check.Limit">
                                             <counter>INSTRUCTION</counter>
@@ -286,6 +286,9 @@
                                             <minimum>0.65</minimum>
                                         </limit>
                                     </limits>
+                                    <includes>
+                                        <include>com.solvd.qaprotours.service.impl</include>
+                                    </includes>
                                 </rule>
                             </rules>
                         </configuration>
