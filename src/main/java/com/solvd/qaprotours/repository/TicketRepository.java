@@ -17,7 +17,8 @@ public interface TicketRepository extends ReactiveCrudRepository<Ticket, Long> {
             LocalDateTime time, Ticket.Status status
     );
 
-    Flux<Ticket> findAllByTourArrivalTimeIsAfterAndTourArrivalTimeIsBeforeAndStatus(
+    Flux<Ticket>
+    findAllByTourArrivalTimeIsAfterAndTourArrivalTimeIsBeforeAndStatus(
             LocalDateTime start, LocalDateTime end, Ticket.Status status
     );
 

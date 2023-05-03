@@ -1,6 +1,7 @@
 package com.solvd.qaprotours.web.controller;
 
 import com.solvd.qaprotours.domain.Image;
+import com.solvd.qaprotours.domain.Pagination;
 import com.solvd.qaprotours.domain.exception.AuthException;
 import com.solvd.qaprotours.domain.exception.ImageUploadException;
 import com.solvd.qaprotours.domain.exception.ServiceNotAvailableException;
@@ -48,7 +49,7 @@ public class TourController {
     private final TourMapper tourMapper;
     private final TourCriteriaMapper tourCriteriaMapper;
     private final ImageMapper imageMapper;
-    private final String IMAGE_SERVICE = "imageService";
+    private static final String IMAGE_SERVICE = "imageService";
 
     @GetMapping
     public Flux<TourDto> getAll(
@@ -58,7 +59,8 @@ public class TourController {
     ) {
         TourCriteria tourCriteria = tourCriteriaMapper
                 .toEntity(tourCriteriaDto);
-        return tourService.getAll(currentPage, pageSize, tourCriteria)
+        Pagination pagination = new Pagination(currentPage, pageSize);
+        return tourService.getAll(pagination, tourCriteria)
                 .map(tourMapper::toDto);
     }
 

@@ -54,9 +54,10 @@ public class TicketServiceImpl implements TicketService {
         LocalDateTime endTime = LocalDateTime.of(
                 LocalDate.now().plusDays(2),
                 LocalTime.MIDNIGHT);
-        return ticketRepository.findAllByTourArrivalTimeIsAfterAndTourArrivalTimeIsBeforeAndStatus(
-                startTime, endTime, Ticket.Status.CONFIRMED
-        );
+        return ticketRepository
+            .findAllByTourArrivalTimeIsAfterAndTourArrivalTimeIsBeforeAndStatus(
+                        startTime, endTime, Ticket.Status.CONFIRMED
+                );
     }
 
     @Override

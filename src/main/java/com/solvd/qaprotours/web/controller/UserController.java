@@ -50,7 +50,7 @@ public class UserController {
     private final TicketMapper ticketMapper;
     private final UserMapper userMapper;
     private final PasswordMapper passwordMapper;
-    private final String TICKET_SERVICE = "ticketService";
+    private static final String TICKET_SERVICE = "ticketService";
 
     @PutMapping
     @PreAuthorize("canAccessUser(#userDto.getId())")

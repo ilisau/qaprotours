@@ -1,5 +1,6 @@
 package com.solvd.qaprotours.service;
 
+import com.solvd.qaprotours.domain.Pagination;
 import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.domain.tour.TourCriteria;
 import reactor.core.publisher.Flux;
@@ -12,8 +13,7 @@ public interface TourService {
 
     Mono<Tour> getById(Long tourId);
 
-    Flux<Tour> getAll(Integer currentPage,
-                      Integer pageSize,
+    Flux<Tour> getAll(Pagination pagination,
                       TourCriteria tourCriteria);
 
     Mono<Tour> save(Tour tour);

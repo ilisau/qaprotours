@@ -1,5 +1,6 @@
 package com.solvd.qaprotours.service.impl;
 
+import com.solvd.qaprotours.domain.Pagination;
 import com.solvd.qaprotours.domain.exception.ResourceDoesNotExistException;
 import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.domain.tour.TourCriteria;
@@ -20,22 +21,22 @@ import reactor.core.publisher.Mono;
 public class TourServiceImpl implements TourService {
 
     private final TourRepository tourRepository;
-    private final int PAGE_SIZE = 20;
+    private static final int PAGE_SIZE = 20;
 
     @Override
     @Transactional(readOnly = true)
-    public Flux<Tour> getAll(Integer currentPage,
-                             Integer pageSize,
+    public Flux<Tour> getAll(final Pagination pagination,
                              final TourCriteria tourCriteria) {
-        if (currentPage == null || pageSize == null) {
-            currentPage = 0;
-            pageSize = PAGE_SIZE;
+        if (pagination.getCurrentPage() == null
+                || pagination.getPageSize() == null) {
+            pagination.setCurrentPage(0);
+            pagination.setPageSize(PAGE_SIZE);
         }
         Sort sort = Sort.by(Sort.Order.asc("arrivalTime"),
                 Sort.Order.desc("rating"));
         return tourRepository.findAll(sort)
-                .buffer(pageSize)
-                .skip(currentPage)
+                .buffer(pagination.getPageSize())
+                .skip(pagination.getCurrentPage())
                 .take(1)
                 .flatMapIterable(tours -> tours);
     }
