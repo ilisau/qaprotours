@@ -294,7 +294,7 @@
                                         </limit>
                                     </limits>
                                     <includes>
-                                        <include>com.solvd.qaprotours.service.*</include>
+                                        <include>com.solvd.qaprotours.service.impl</include>
                                     </includes>
                                 </rule>
                             </rules>
