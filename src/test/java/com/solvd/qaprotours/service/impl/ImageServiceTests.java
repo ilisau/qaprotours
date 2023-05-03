@@ -15,7 +15,13 @@ import org.springframework.mock.web.MockMultipartFile;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
@@ -41,18 +47,18 @@ public class ImageServiceTests {
 
     @Test
     void uploadImage() {
-        Long tourId = 1L;
-        Image image = new Image();
-        image.setFile(new MockMultipartFile(
-                "image1.jpeg",
-                "image1.jpeg",
-                "image/jpeg",
-                new byte[]{1, 2, 3})
-        );
-        Tour tour = new Tour();
-        tour.setId(tourId);
-        tour.setImageUrls(Collections.emptyList());
         try {
+            Long tourId = 1L;
+            Image image = new Image();
+            MockMultipartFile file = new MockMultipartFile(
+                    "image1.jpeg",
+                    "image1.jpeg",
+                    "image/jpeg",
+                    generateImage());
+            image.setFile(file);
+            Tour tour = new Tour();
+            tour.setId(tourId);
+            tour.setImageUrls(Collections.emptyList());
             when(minioClient.bucketExists(any()))
                     .thenReturn(true);
             when(minioProperties.getBucket())
@@ -61,13 +67,29 @@ public class ImageServiceTests {
                     .thenReturn(Mono.just(tour));
             when(tourService.addImage(eq(tourId), eq("tour_1_full.jpeg")))
                     .thenReturn(Mono.empty());
+            Integer thumbHeight = 100;
+            when(imageProperties.getThumbnails())
+                    .thenReturn(List.of(thumbHeight));
+            Mono<Void> result = imageService.uploadImage(1L, image);
+            StepVerifier.create(result)
+                    .expectNextCount(0)
+                    .verifyComplete();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        Mono<Void> result = imageService.uploadImage(1L, image);
-        StepVerifier.create(result)
-                .expectNextCount(0)
-                .verifyComplete();
+    }
+
+    private static InputStream generateImage() throws Exception {
+        BufferedImage image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
+        for (int x = 0; x < 100; x++) {
+            for (int y = 0; y < 100; y++) {
+                int color = (x % 2 == 0 && y % 2 == 0) ? 0xFF0000 : 0xFFFFFF;
+                image.setRGB(x, y, color);
+            }
+        }
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ImageIO.write(image, "png", outputStream);
+        return new ByteArrayInputStream(outputStream.toByteArray());
     }
 
 }
