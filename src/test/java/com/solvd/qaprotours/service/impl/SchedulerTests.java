@@ -52,49 +52,51 @@ public class SchedulerTests {
 
     @Test
     void findBookedTickets() {
-        String userId = "1";
-        String userName = "Mike";
-        String userSurname = "Ivanov";
-        String userEmail = "mike@example.com";
-        User user = new User();
-        user.setId(userId);
-        user.setName(userName);
-        user.setSurname(userSurname);
-        user.setEmail(userEmail);
-        UserDto userDto = new UserDto();
-        userDto.setId(userId);
-        userDto.setName(userName);
-        userDto.setSurname(userSurname);
-        userDto.setEmail(userEmail);
-        String tourName = "Tour";
-        String tourCountry = "Egypt";
-        String tourCity = "Cairo";
-        LocalDateTime tourArrivalTime = LocalDateTime.now().plusDays(1);
-        Tour tour = new Tour();
-        tour.setName(tourName);
-        tour.setCountry(tourCountry);
-        tour.setCity(tourCity);
-        tour.setArrivalTime(tourArrivalTime);
-        Ticket ticket = new Ticket();
-        ticket.setUserId(userId);
-        ticket.setTour(tour);
-        List<Ticket> tickets = List.of(ticket);
+        User user = generateUser();
+        UserDto userDto = generateUserDto();
+        Tour tour = generateTour();
+        List<Ticket> tickets = generateTickets(user, tour);
         when(ticketService.getAllSoonTickets())
                 .thenReturn(Flux.just(tickets.toArray(new Ticket[0])));
-        when(userClient.getById(userId))
+        when(userClient.getById(user.getId()))
                 .thenReturn(Mono.just(userDto));
         when(userMapper.toEntity(userDto))
                 .thenReturn(user);
         when(mailDataMapper.toDto(any()))
                 .thenReturn(new MailDataDto());
-        when(messageSender.sendMessage(eq("mail"), anyInt(), anyString(), any()))
+        when(messageSender
+                .sendMessage(eq("mail"), anyInt(), anyString(), any())
+        )
                 .thenReturn(Flux.empty());
         scheduler.findBookedTickets();
-        verify(messageSender, times(tickets.size())).sendMessage(eq("mail"), anyInt(), anyString(), any());
+        verify(messageSender, times(tickets.size()))
+                .sendMessage(eq("mail"), anyInt(), anyString(), any());
     }
 
     @Test
     void findNotConfirmedTickets() {
+        User user = generateUser();
+        UserDto userDto = generateUserDto();
+        Tour tour = generateTour();
+        List<Ticket> tickets = generateTickets(user, tour);
+        when(ticketService.getAllSoonNotConfirmedTickets())
+                .thenReturn(Flux.just(tickets.toArray(new Ticket[0])));
+        when(userClient.getById(user.getId()))
+                .thenReturn(Mono.just(userDto));
+        when(userMapper.toEntity(userDto))
+                .thenReturn(user);
+        when(mailDataMapper.toDto(any()))
+                .thenReturn(new MailDataDto());
+        when(messageSender
+                .sendMessage(eq("mail"), anyInt(), anyString(), any())
+        )
+                .thenReturn(Flux.empty());
+        scheduler.findNotConfirmedTickets();
+        verify(messageSender, times(tickets.size()))
+                .sendMessage(eq("mail"), anyInt(), anyString(), any());
+    }
+
+    private User generateUser() {
         String userId = "1";
         String userName = "Mike";
         String userSurname = "Ivanov";
@@ -104,11 +106,23 @@ public class SchedulerTests {
         user.setName(userName);
         user.setSurname(userSurname);
         user.setEmail(userEmail);
+        return user;
+    }
+
+    private UserDto generateUserDto() {
+        String userId = "1";
+        String userName = "Mike";
+        String userSurname = "Ivanov";
+        String userEmail = "mike@example.com";
         UserDto userDto = new UserDto();
         userDto.setId(userId);
         userDto.setName(userName);
         userDto.setSurname(userSurname);
         userDto.setEmail(userEmail);
+        return userDto;
+    }
+
+    private Tour generateTour() {
         String tourName = "Tour";
         String tourCountry = "Egypt";
         String tourCity = "Cairo";
@@ -118,22 +132,15 @@ public class SchedulerTests {
         tour.setCountry(tourCountry);
         tour.setCity(tourCity);
         tour.setArrivalTime(tourArrivalTime);
+        return tour;
+    }
+
+    private List<Ticket> generateTickets(User user, Tour tour) {
         Ticket ticket = new Ticket();
-        ticket.setUserId(userId);
+        ticket.setUserId(user.getId());
         ticket.setTour(tour);
         List<Ticket> tickets = List.of(ticket);
-        when(ticketService.getAllSoonNotConfirmedTickets())
-                .thenReturn(Flux.just(tickets.toArray(new Ticket[0])));
-        when(userClient.getById(userId))
-                .thenReturn(Mono.just(userDto));
-        when(userMapper.toEntity(userDto))
-                .thenReturn(user);
-        when(mailDataMapper.toDto(any()))
-                .thenReturn(new MailDataDto());
-        when(messageSender.sendMessage(eq("mail"), anyInt(), anyString(), any()))
-                .thenReturn(Flux.empty());
-        scheduler.findNotConfirmedTickets();
-        verify(messageSender, times(tickets.size())).sendMessage(eq("mail"), anyInt(), anyString(), any());
+        return tickets;
     }
 
 }

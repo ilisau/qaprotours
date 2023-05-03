@@ -41,7 +41,6 @@ public class TicketServiceTests {
     void getByExistingId() {
         Long id = 1L;
         Ticket ticket = new Ticket();
-        ticket.setId(id);
         when(ticketRepository.findById(id))
                 .thenReturn(Mono.just(ticket));
         Mono<Ticket> result = ticketService.getById(id);
@@ -66,24 +65,20 @@ public class TicketServiceTests {
     @Test
     void getAllByUserId() {
         String userId = "1";
-        Ticket ticket1 = new Ticket();
-        Ticket ticket2 = new Ticket();
-        List<Ticket> tickets = List.of(ticket1, ticket2);
+        List<Ticket> tickets = generateTickets();
         when(ticketRepository.findAllByUserId(userId))
                 .thenReturn(Flux.just(tickets.toArray(new Ticket[0])));
         Flux<Ticket> result = ticketService.getAllByUserId(userId);
         StepVerifier.create(result)
-                .expectNext(ticket1)
-                .expectNext(ticket2)
+                .expectNext(tickets.get(0))
+                .expectNext(tickets.get(1))
                 .expectNextCount(0)
                 .verifyComplete();
     }
 
     @Test
     void getAllSoonTickets() {
-        Ticket ticket1 = new Ticket();
-        Ticket ticket2 = new Ticket();
-        List<Ticket> tickets = List.of(ticket1, ticket2);
+        List<Ticket> tickets = generateTickets();
         when(ticketRepository.findAllByTourArrivalTimeIsAfterAndTourArrivalTimeIsBeforeAndStatus(
                 any(),
                 any(),
@@ -91,25 +86,23 @@ public class TicketServiceTests {
                 .thenReturn(Flux.just(tickets.toArray(new Ticket[0])));
         Flux<Ticket> result = ticketService.getAllSoonTickets();
         StepVerifier.create(result)
-                .expectNext(ticket1)
-                .expectNext(ticket2)
+                .expectNext(tickets.get(0))
+                .expectNext(tickets.get(1))
                 .expectNextCount(0)
                 .verifyComplete();
     }
 
     @Test
     void getAllSoonNotConfirmedTickets() {
-        Ticket ticket1 = new Ticket();
-        Ticket ticket2 = new Ticket();
-        List<Ticket> tickets = List.of(ticket1, ticket2);
+        List<Ticket> tickets = generateTickets();
         when(ticketRepository.findAllByTourArrivalTimeIsBeforeAndStatus(
                 any(),
                 eq(Ticket.Status.ORDERED)))
                 .thenReturn(Flux.just(tickets.toArray(new Ticket[0])));
         Flux<Ticket> result = ticketService.getAllSoonNotConfirmedTickets();
         StepVerifier.create(result)
-                .expectNext(ticket1)
-                .expectNext(ticket2)
+                .expectNext(tickets.get(0))
+                .expectNext(tickets.get(1))
                 .expectNextCount(0)
                 .verifyComplete();
     }
@@ -222,6 +215,13 @@ public class TicketServiceTests {
                 .verifyComplete();
         verify(ticketRepository).save(any());
         verify(tourService).save(any());
+    }
+
+    private List<Ticket> generateTickets() {
+        Ticket ticket1 = new Ticket();
+        Ticket ticket2 = new Ticket();
+        List<Ticket> tickets = List.of(ticket1, ticket2);
+        return tickets;
     }
 
 }

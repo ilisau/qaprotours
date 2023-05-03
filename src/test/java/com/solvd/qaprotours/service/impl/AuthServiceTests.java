@@ -45,10 +45,10 @@ public class AuthServiceTests {
     private JwtService jwtService;
 
     @Mock
-    private MailDataMapper mailDataMapper;
+    private UserMapper userMapper;
 
     @Mock
-    private UserMapper userMapper;
+    private MailDataMapper mailDataMapper;
 
     @Mock
     private MessageSender messageSender;
@@ -58,41 +58,20 @@ public class AuthServiceTests {
 
     @Test
     void loginWithCorrectPassword() {
-        String userId = "1";
-        String userName = "Mike";
-        String userSurname = "Ivanov";
-        String userEmail = "mike@example.com";
-        String password = "12345678";
-        User user = new User();
-        user.setId(userId);
-        user.setName(userName);
-        user.setSurname(userSurname);
-        user.setEmail(userEmail);
-        user.setActivated(true);
-        user.setPassword(password);
-        Authentication authentication = new Authentication();
-        authentication.setEmail("email@example.com");
-        authentication.setPassword(password);
-        UserDto userDto = new UserDto();
-        userDto.setId(userId);
-        userDto.setName(userName);
-        userDto.setSurname(userSurname);
-        userDto.setEmail(userEmail);
+        User user = generateUser();
+        UserDto userDto = generateUserDto();
+        Authentication authentication = generateAuthentication(user);
+        JwtResponse response = generateResponse();
         when(userClient.getByEmail(authentication.getEmail()))
                 .thenReturn(Mono.just(userDto));
         when(userMapper.toEntity(userDto))
                 .thenReturn(user);
         when(passwordEncoder.matches(eq(authentication.getPassword()), anyString()))
                 .thenReturn(true);
-        String accessToken = "Access token";
-        String refreshToken = "Refresh token";
         when(jwtService.generateToken(JwtTokenType.ACCESS, user))
-                .thenReturn(accessToken);
+                .thenReturn(response.getAccessToken());
         when(jwtService.generateToken(JwtTokenType.REFRESH, user))
-                .thenReturn(refreshToken);
-        JwtResponse response = new JwtResponse();
-        response.setAccessToken(accessToken);
-        response.setRefreshToken(refreshToken);
+                .thenReturn(response.getRefreshToken());
         Mono<JwtResponse> result = authService.login(authentication);
         StepVerifier.create(result)
                 .expectNext(response)
@@ -104,26 +83,9 @@ public class AuthServiceTests {
 
     @Test
     void loginWithIncorrectPassword() {
-        String userId = "1";
-        String userName = "Mike";
-        String userSurname = "Ivanov";
-        String userEmail = "mike@example.com";
-        String password = "12345678";
-        User user = new User();
-        user.setId(userId);
-        user.setName(userName);
-        user.setSurname(userSurname);
-        user.setEmail(userEmail);
-        user.setActivated(true);
-        user.setPassword(password);
-        Authentication authentication = new Authentication();
-        authentication.setEmail("email@example.com");
-        authentication.setPassword(password);
-        UserDto userDto = new UserDto();
-        userDto.setId(userId);
-        userDto.setName(userName);
-        userDto.setSurname(userSurname);
-        userDto.setEmail(userEmail);
+        User user = generateUser();
+        UserDto userDto = generateUserDto();
+        Authentication authentication = generateAuthentication(user);
         when(userClient.getByEmail(authentication.getEmail()))
                 .thenReturn(Mono.just(userDto));
         when(userMapper.toEntity(userDto))
@@ -141,35 +103,24 @@ public class AuthServiceTests {
 
     @Test
     void refreshWithCorrectToken() {
-        String userId = "1";
-        String userEmail = "email@example.com";
+        User user = generateUser();
+        UserDto userDto = generateUserDto();
         JwtToken token = new JwtToken();
         token.setToken("Token");
-        String accessToken = "Access token";
-        String refreshToken = "Refresh token";
-        JwtResponse response = new JwtResponse();
-        response.setAccessToken(accessToken);
-        response.setRefreshToken(refreshToken);
-        Claims claims = new DefaultClaims();
-        claims.put("id", userId);
-        claims.setSubject(userEmail);
-        User user = new User();
-        user.setId(userId);
-        user.setEmail(userEmail);
-        UserDto userDto = new UserDto();
-        userDto.setEmail(userEmail);
+        JwtResponse response = generateResponse();
+        Claims claims = generateClaims(user);
         when(jwtService.parse(token.getToken()))
                 .thenReturn(claims);
         when(jwtService.isTokenType(token.getToken(), JwtTokenType.REFRESH))
                 .thenReturn(true);
-        when(userClient.getByEmail(userEmail))
+        when(userClient.getByEmail(user.getEmail()))
                 .thenReturn(Mono.just(userDto));
         when(userMapper.toEntity(userDto))
                 .thenReturn(user);
         when(jwtService.generateToken(JwtTokenType.ACCESS, user))
-                .thenReturn(accessToken);
+                .thenReturn(response.getAccessToken());
         when(jwtService.generateToken(JwtTokenType.REFRESH, user))
-                .thenReturn(refreshToken);
+                .thenReturn(response.getRefreshToken());
         Mono<JwtResponse> result = authService.refresh(token);
         StepVerifier.create(result)
                 .expectNext(response)
@@ -262,6 +213,58 @@ public class AuthServiceTests {
                 .expectError()
                 .verify();
         verify(userClient, never()).updatePassword(userId, password);
+    }
+
+    private User generateUser() {
+        String userId = "1";
+        String userName = "Mike";
+        String userSurname = "Ivanov";
+        String userEmail = "mike@example.com";
+        String password = "12345678";
+        User user = new User();
+        user.setId(userId);
+        user.setName(userName);
+        user.setSurname(userSurname);
+        user.setEmail(userEmail);
+        user.setActivated(true);
+        user.setPassword(password);
+        return user;
+    }
+
+    private UserDto generateUserDto() {
+        String userId = "1";
+        String userName = "Mike";
+        String userSurname = "Ivanov";
+        String userEmail = "mike@example.com";
+        UserDto userDto = new UserDto();
+        userDto.setId(userId);
+        userDto.setName(userName);
+        userDto.setSurname(userSurname);
+        userDto.setEmail(userEmail);
+        return userDto;
+    }
+
+    private Authentication generateAuthentication(User user) {
+        Authentication authentication = new Authentication();
+        authentication.setEmail("email@example.com");
+        authentication.setPassword(user.getPassword());
+        return authentication;
+    }
+
+    private JwtResponse generateResponse() {
+        String accessToken = "Access token";
+        String refreshToken = "Refresh token";
+        JwtResponse response = new JwtResponse();
+        response.setAccessToken(accessToken);
+        response.setRefreshToken(refreshToken);
+        return response;
+    }
+
+    private Claims generateClaims(User user) {
+        Claims claims = new DefaultClaims();
+        claims.put("id", user.getId());
+        claims.setSubject(user.getEmail());
+        return claims;
     }
 
 }

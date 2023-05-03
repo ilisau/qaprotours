@@ -38,15 +38,13 @@ public class TourServiceTests {
         Integer currentPage = 0;
         Integer pageSize = 5;
         TourCriteria tourCriteria = null;
-        Tour tour1 = new Tour();
-        Tour tour2 = new Tour();
-        List<Tour> tours = List.of(tour1, tour2);
+        List<Tour> tours = generateTours();
         when(tourRepository.findAll(any()))
                 .thenReturn(Flux.just(tours.toArray(new Tour[0])));
         Flux<Tour> result = tourService.getAll(currentPage, pageSize, tourCriteria);
         StepVerifier.create(result)
-                .expectNext(tour1)
-                .expectNext(tour2)
+                .expectNext(tours.get(0))
+                .expectNext(tours.get(1))
                 .expectNextCount(0)
                 .verifyComplete();
     }
@@ -56,22 +54,20 @@ public class TourServiceTests {
         Integer currentPage = null;
         Integer pageSize = null;
         TourCriteria tourCriteria = null;
-        Tour tour1 = new Tour();
-        Tour tour2 = new Tour();
-        List<Tour> tours = List.of(tour1, tour2);
+        List<Tour> tours = generateTours();
         when(tourRepository.findAll(any()))
                 .thenReturn(Flux.just(tours.toArray(new Tour[0])));
         Flux<Tour> result = tourService.getAll(currentPage, pageSize, tourCriteria);
         StepVerifier.create(result)
-                .expectNext(tour1)
-                .expectNext(tour2)
+                .expectNext(tours.get(0))
+                .expectNext(tours.get(1))
                 .expectNextCount(0)
                 .verifyComplete();
     }
 
     @Test
     void save() {
-        Tour tour = new Tour();
+        Tour tour = generateTour();
         when(tourRepository.save(tour))
                 .thenReturn(Mono.just(tour));
         Mono<Tour> result = tourService.save(tour);
@@ -84,7 +80,7 @@ public class TourServiceTests {
 
     @Test
     void publish() {
-        Tour tour = new Tour();
+        Tour tour = generateTour();
         when(tourRepository.save(tour))
                 .thenReturn(Mono.just(tour));
         Mono<Tour> result = tourService.publish(tour);
@@ -97,16 +93,14 @@ public class TourServiceTests {
 
     @Test
     void getByExistingId() {
-        Long id = 1L;
-        Tour tour = new Tour();
-        tour.setId(id);
-        when(tourRepository.findById(id))
+        Tour tour = generateTour();
+        when(tourRepository.findById(tour.getId()))
                 .thenReturn(Mono.just(tour));
-        Mono<Tour> result = tourService.getById(id);
+        Mono<Tour> result = tourService.getById(tour.getId());
         StepVerifier.create(result)
                 .expectNext(tour)
                 .verifyComplete();
-        verify(tourRepository).findById(id);
+        verify(tourRepository).findById(tour.getId());
     }
 
     @Test
@@ -135,21 +129,33 @@ public class TourServiceTests {
 
     @Test
     void addImage() {
-        Long tourId = 1L;
+        Tour tour = generateTour();
         String fileName = "image.jpeg";
-        Tour tour = new Tour();
-        tour.setId(tourId);
-        tour.setImageUrls(new ArrayList<>());
-        when(tourRepository.findById(tourId))
+        when(tourRepository.findById(tour.getId()))
                 .thenReturn(Mono.just(tour));
         when(tourRepository.save(tour))
                 .thenReturn(Mono.just(tour));
-        Mono<Void> result = tourService.addImage(tourId, fileName);
+        Mono<Void> result = tourService.addImage(tour.getId(), fileName);
         StepVerifier.create(result)
                 .expectNextCount(0)
                 .verifyComplete();
         verify(tourRepository).save(tour);
         assertEquals(tour.getImageUrls().size(), 1);
+    }
+
+    private Tour generateTour() {
+        Long tourId = 1L;
+        Tour tour = new Tour();
+        tour.setId(tourId);
+        tour.setImageUrls(new ArrayList<>());
+        return tour;
+    }
+
+    private List<Tour> generateTours() {
+        Tour tour1 = new Tour();
+        Tour tour2 = new Tour();
+        List<Tour> tours = List.of(tour1, tour2);
+        return tours;
     }
 
 }

@@ -48,24 +48,15 @@ public class ImageServiceTests {
     @Test
     void uploadImage() {
         try {
-            Long tourId = 1L;
-            Image image = new Image();
-            MockMultipartFile file = new MockMultipartFile(
-                    "image1.jpeg",
-                    "image1.jpeg",
-                    "image/jpeg",
-                    generateImage());
-            image.setFile(file);
-            Tour tour = new Tour();
-            tour.setId(tourId);
-            tour.setImageUrls(Collections.emptyList());
+            Tour tour = generateTour();
+            Image image = generateImage();
             when(minioClient.bucketExists(any()))
                     .thenReturn(true);
             when(minioProperties.getBucket())
                     .thenReturn("tours");
-            when(tourService.getById(tourId))
+            when(tourService.getById(tour.getId()))
                     .thenReturn(Mono.just(tour));
-            when(tourService.addImage(eq(tourId), eq("tour_1_full.jpeg")))
+            when(tourService.addImage(eq(tour.getId()), eq("tour_1_full.jpeg")))
                     .thenReturn(Mono.empty());
             Integer thumbHeight = 100;
             when(imageProperties.getThumbnails())
@@ -79,7 +70,22 @@ public class ImageServiceTests {
         }
     }
 
-    private static InputStream generateImage() throws Exception {
+    private Image generateImage() {
+        Image image = new Image();
+        try {
+            MockMultipartFile file = new MockMultipartFile(
+                    "image1.jpeg",
+                    "image1.jpeg",
+                    "image/jpeg",
+                    generateImageByteStream());
+            image.setFile(file);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return image;
+    }
+
+    private InputStream generateImageByteStream() throws Exception {
         BufferedImage image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
         for (int x = 0; x < 100; x++) {
             for (int y = 0; y < 100; y++) {
@@ -90,6 +96,14 @@ public class ImageServiceTests {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ImageIO.write(image, "png", outputStream);
         return new ByteArrayInputStream(outputStream.toByteArray());
+    }
+
+    private Tour generateTour() {
+        Long tourId = 1L;
+        Tour tour = new Tour();
+        tour.setId(tourId);
+        tour.setImageUrls(Collections.emptyList());
+        return tour;
     }
 
 }
