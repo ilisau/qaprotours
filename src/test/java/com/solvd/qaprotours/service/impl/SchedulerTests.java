@@ -51,7 +51,7 @@ public class SchedulerTests {
     private Scheduler scheduler;
 
     @Test
-    public void findBookedTickets() {
+    void findBookedTickets() {
         String userId = "1";
         String userName = "Mike";
         String userSurname = "Ivanov";
@@ -94,7 +94,7 @@ public class SchedulerTests {
     }
 
     @Test
-    public void findNotConfirmedTickets() {
+    void findNotConfirmedTickets() {
         String userId = "1";
         String userName = "Mike";
         String userSurname = "Ivanov";
