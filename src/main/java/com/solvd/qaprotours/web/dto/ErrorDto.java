@@ -18,7 +18,7 @@ public class ErrorDto {
 
     private Map<String, String> details;
 
-    public ErrorDto(String message) {
+    public ErrorDto(final String message) {
         this.message = message;
     }
 

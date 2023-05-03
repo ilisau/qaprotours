@@ -45,7 +45,7 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public Claims parse(String token) {
+    public Claims parse(final String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
@@ -54,7 +54,7 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public String generateToken(JwtTokenType type, User user) {
+    public String generateToken(final JwtTokenType type, final User user) {
         return switch (type) {
             case ACCESS -> generateAccessToken(user);
             case REFRESH -> generateRefreshToken(user);
@@ -64,24 +64,27 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public Authentication getAuthentication(String token) {
+    public Authentication getAuthentication(final String token) {
         Claims claims = parse(token);
         JwtUserDetails jwtUserDetails = JwtUserDetailsFactory.create(claims);
         return userDetailsService.findByUsername(jwtUserDetails.getEmail())
-                .map(userDetails -> new UsernamePasswordAuthenticationToken(userDetails,
+                .map(userDetails -> new UsernamePasswordAuthenticationToken(
+                        userDetails,
                         "",
                         userDetails.getAuthorities()))
                 .block();
     }
 
     @Override
-    public boolean isTokenType(String token, JwtTokenType type) {
+    public boolean isTokenType(final String token,
+                               final JwtTokenType type) {
         Claims claims = parse(token);
         return Objects.equals(claims.get("type"), type.name());
     }
 
-    private String generateRefreshToken(User user) {
-        final Instant refreshExpiration = Instant.now().plus(jwtProperties.getRefresh(), ChronoUnit.HOURS);
+    private String generateRefreshToken(final User user) {
+        final Instant refreshExpiration = Instant.now()
+                .plus(jwtProperties.getRefresh(), ChronoUnit.HOURS);
         return Jwts.builder()
                 .setSubject(user.getEmail())
                 .claim("id", user.getId())
@@ -91,8 +94,9 @@ public class JwtServiceImpl implements JwtService {
                 .compact();
     }
 
-    private String generateAccessToken(User user) {
-        final Instant accessExpiration = Instant.now().plus(jwtProperties.getAccess(), ChronoUnit.MINUTES);
+    private String generateAccessToken(final User user) {
+        final Instant accessExpiration = Instant.now()
+                .plus(jwtProperties.getAccess(), ChronoUnit.MINUTES);
         return Jwts.builder()
                 .setSubject(user.getEmail())
                 .claim("id", user.getId())
@@ -103,8 +107,9 @@ public class JwtServiceImpl implements JwtService {
                 .compact();
     }
 
-    private String generateActivationToken(User user) {
-        final Instant accessExpiration = Instant.now().plus(jwtProperties.getActivation(), ChronoUnit.HOURS);
+    private String generateActivationToken(final User user) {
+        final Instant accessExpiration = Instant.now()
+                .plus(jwtProperties.getActivation(), ChronoUnit.HOURS);
         return Jwts.builder()
                 .setSubject(user.getEmail())
                 .claim("id", user.getId())
@@ -114,8 +119,9 @@ public class JwtServiceImpl implements JwtService {
                 .compact();
     }
 
-    private String generateResetToken(User user) {
-        final Instant accessExpiration = Instant.now().plus(jwtProperties.getReset(), ChronoUnit.HOURS);
+    private String generateResetToken(final User user) {
+        final Instant accessExpiration = Instant.now()
+                .plus(jwtProperties.getReset(), ChronoUnit.HOURS);
         return Jwts.builder()
                 .setSubject(user.getEmail())
                 .claim("id", user.getId())
@@ -126,7 +132,7 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public boolean validateToken(String token) {
+    public boolean validateToken(final String token) {
         try {
             Jws<Claims> claims = Jwts
                     .parserBuilder()
@@ -140,7 +146,7 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public Long retrieveUserId(String token) {
+    public Long retrieveUserId(final String token) {
         return Long.valueOf(parse(token)
                 .get("id")
                 .toString());

@@ -46,11 +46,13 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(final HttpSecurity http)
+            throws Exception {
         return http
                 .httpBasic().disable()
                 .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionManagement().
+                sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .exceptionHandling()
                 .authenticationEntryPoint(authenticationEntryPoint())
@@ -58,19 +60,24 @@ public class SecurityConfig {
                 .and()
                 .authorizeHttpRequests()
                 .requestMatchers("/api/v1/auth/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/v1/tours").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/v1/tours/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/tours")
+                .permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/tours/**")
+                .permitAll()
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/v3/api-docs/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtFilter,
+                        UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
     private AuthenticationEntryPoint authenticationEntryPoint() {
-        return (HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) -> {
+        return (HttpServletRequest request,
+                HttpServletResponse response,
+                AuthenticationException authException) -> {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             PrintWriter writer = response.getWriter();
             writer.println("Unauthorized");
@@ -78,7 +85,9 @@ public class SecurityConfig {
     }
 
     private AccessDeniedHandler accessDeniedHandler() {
-        return (HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) -> {
+        return (HttpServletRequest request,
+                HttpServletResponse response,
+                AccessDeniedException accessDeniedException) -> {
             response.setStatus(HttpStatus.FORBIDDEN.value());
             PrintWriter writer = response.getWriter();
             writer.println("access denied");

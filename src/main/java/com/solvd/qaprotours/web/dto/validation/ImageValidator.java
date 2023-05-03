@@ -13,12 +13,14 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @SupportedValidationTarget(ValidationTarget.PARAMETERS)
 @RequiredArgsConstructor
-public class ImageValidator implements ConstraintValidator<ValidateExtension, Object[]> {
+public class ImageValidator
+        implements ConstraintValidator<ValidateExtension, Object[]> {
 
     private final ImageProperties imageProperties;
 
     @Override
-    public boolean isValid(Object[] value, ConstraintValidatorContext context) {
+    public boolean isValid(final Object[] value,
+                           final ConstraintValidatorContext context) {
 
         if (value[1] == null) {
             return false;
@@ -29,7 +31,8 @@ public class ImageValidator implements ConstraintValidator<ValidateExtension, Ob
         }
 
         String extension = file.getOriginalFilename()
-                .substring(file.getOriginalFilename().lastIndexOf(".") + 1);
+                .substring(file.getOriginalFilename().
+                        lastIndexOf(".") + 1);
         return imageProperties.getExtensions().contains(extension);
     }
 

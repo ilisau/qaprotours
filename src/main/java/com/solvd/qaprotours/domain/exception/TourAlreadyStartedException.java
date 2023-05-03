@@ -5,7 +5,7 @@ package com.solvd.qaprotours.domain.exception;
  */
 public class TourAlreadyStartedException extends RuntimeException {
 
-    public TourAlreadyStartedException(String message) {
+    public TourAlreadyStartedException(final String message) {
         super(message);
     }
 

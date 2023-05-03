@@ -24,7 +24,9 @@ public class TourServiceImpl implements TourService {
 
     @Override
     @Transactional(readOnly = true)
-    public Flux<Tour> getAll(Integer currentPage, Integer pageSize, TourCriteria tourCriteria) {
+    public Flux<Tour> getAll(Integer currentPage,
+                             Integer pageSize,
+                             final TourCriteria tourCriteria) {
         if (currentPage == null || pageSize == null) {
             currentPage = 0;
             pageSize = PAGE_SIZE;
@@ -40,13 +42,13 @@ public class TourServiceImpl implements TourService {
 
     @Override
     @Transactional
-    public Mono<Tour> save(Tour tour) {
+    public Mono<Tour> save(final Tour tour) {
         return tourRepository.save(tour);
     }
 
     @Override
     @Transactional
-    public Mono<Tour> publish(Tour tour) {
+    public Mono<Tour> publish(final Tour tour) {
         return Mono.just(tour)
                 .map(t -> {
                     t.setDraft(false);
@@ -57,9 +59,11 @@ public class TourServiceImpl implements TourService {
 
     @Override
     @Transactional(readOnly = true)
-    public Mono<Tour> getById(Long tourId) {
+    public Mono<Tour> getById(final Long tourId) {
         Mono<Tour> error = Mono.error(
-                new ResourceDoesNotExistException("tour with id " + tourId + " does not exist")
+                new ResourceDoesNotExistException(
+                        "tour with id " + tourId + " does not exist"
+                )
         );
         return tourRepository.findById(tourId)
                 .switchIfEmpty(error);
@@ -67,12 +71,13 @@ public class TourServiceImpl implements TourService {
 
     @Override
     @Transactional
-    public Mono<Void> delete(Long tourId) {
+    public Mono<Void> delete(final Long tourId) {
         return tourRepository.deleteById(tourId);
     }
 
     @Override
-    public Mono<Void> addImage(Long tourId, String fileName) {
+    public Mono<Void> addImage(final Long tourId,
+                               final String fileName) {
         return getById(tourId)
                 .map(tour -> {
                     tour.getImageUrls().add(fileName);

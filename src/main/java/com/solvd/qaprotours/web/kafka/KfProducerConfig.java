@@ -69,7 +69,9 @@ public class KfProducerConfig {
     }
 
     @Bean
-    public KafkaSender<String, Object> sender(SenderOptions<String, Object> senderOptions) {
+    public KafkaSender<String, Object> sender(
+            final SenderOptions<String, Object> senderOptions
+    ) {
         return KafkaSender.create(senderOptions);
     }
 

@@ -15,24 +15,40 @@ import lombok.Data;
 @Data
 public class UserDto {
 
-    @NotNull(message = "id cannot be null", groups = {OnUpdate.class})
+    @NotNull(message = "id cannot be null",
+            groups = {OnUpdate.class})
     private String id;
 
-    @NotNull(message = "name cannot be null", groups = {OnCreate.class, OnUpdate.class})
-    @Size(min = 1, max = 255, message = "name must be between {min} and {max} characters", groups = {OnCreate.class, OnUpdate.class})
+    @NotNull(message = "name cannot be null",
+            groups = {OnCreate.class, OnUpdate.class})
+    @Size(min = 1,
+            max = 255,
+            message = "name must be between {min} and {max} characters",
+            groups = {OnCreate.class, OnUpdate.class})
     private String name;
 
-    @NotNull(message = "surname cannot be null", groups = {OnCreate.class, OnUpdate.class})
-    @Size(min = 1, max = 255, message = "surname must be between {min} and {max} characters", groups = {OnCreate.class, OnUpdate.class})
+    @NotNull(message = "surname cannot be null",
+            groups = {OnCreate.class, OnUpdate.class})
+    @Size(min = 1,
+            max = 255,
+            message = "surname must be between {min} and {max} characters",
+            groups = {OnCreate.class, OnUpdate.class})
     private String surname;
 
-    @NotNull(message = "email cannot be null", groups = {OnCreate.class, OnUpdate.class})
-    @Email(message = "email must be valid", groups = {OnCreate.class, OnUpdate.class})
-    @Size(min = 1, max = 255, message = "email must be between {min} and {max} characters", groups = {OnCreate.class, OnUpdate.class})
+    @NotNull(message = "email cannot be null",
+            groups = {OnCreate.class, OnUpdate.class})
+    @Email(message = "email must be valid",
+            groups = {OnCreate.class, OnUpdate.class})
+    @Size(min = 1,
+            max = 255,
+            message = "email must be between {min} and {max} characters",
+            groups = {OnCreate.class, OnUpdate.class})
     private String email;
 
-    @NotNull(message = "password cannot be null", groups = {OnCreate.class})
-    @Size(min = 8, message = "password must be more than {min} characters", groups = {OnCreate.class})
+    @NotNull(message = "password cannot be null",
+            groups = {OnCreate.class})
+    @Size(min = 8, message = "password must be more than {min} characters",
+            groups = {OnCreate.class})
     private String password;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

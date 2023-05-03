@@ -5,7 +5,7 @@ package com.solvd.qaprotours.domain.exception;
  */
 public class NoFreePlacesException extends RuntimeException {
 
-    public NoFreePlacesException(String message) {
+    public NoFreePlacesException(final String message) {
         super(message);
     }
 

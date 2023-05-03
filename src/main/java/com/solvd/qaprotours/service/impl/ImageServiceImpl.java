@@ -17,7 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -37,11 +38,16 @@ public class ImageServiceImpl implements ImageService {
     private final ImageProperties imageProperties;
 
     @Override
-    public Mono<Void> uploadImage(Long tourId, com.solvd.qaprotours.domain.Image image) {
+    public Mono<Void> uploadImage(final Long tourId,
+                                  final com.solvd.qaprotours.domain.Image image
+    ) {
         try {
             createBucket();
         } catch (Exception e) {
-            throw new ImageUploadException("Image upload failed: " + e.getMessage());
+            throw new ImageUploadException(
+                    "Image upload failed: "
+                            + e.getMessage()
+            );
         }
         return tourService.getById(tourId)
                 .flatMap(tour -> {
@@ -83,29 +89,56 @@ public class ImageServiceImpl implements ImageService {
         }
     }
 
-    private String generateFileName(Tour tour, MultipartFile file) {
+    private String generateFileName(final Tour tour,
+                                    final MultipartFile file) {
         String extension = getExtension(file);
         if (tour.getImageUrls().size() > 0) {
-            return "tour_" + tour.getId() + "_full_" + (tour.getImageUrls().size()) + "." + extension;
+            return "tour_"
+                    + tour.getId()
+                    + "_full_"
+                    + (tour.getImageUrls().size())
+                    + "."
+                    + extension;
         }
-        return "tour_" + tour.getId() + "_full" + "." + extension;
+        return "tour_"
+                + tour.getId()
+                + "_full"
+                + "."
+                + extension;
     }
 
-    private String generateThumbnailName(Tour tour, MultipartFile file, int height) {
+    private String generateThumbnailName(final Tour tour,
+                                         final MultipartFile file,
+                                         final int height) {
         String extension = getExtension(file);
         if (tour.getImageUrls().size() > 0) {
-            return "tour_" + tour.getId() + "_thumb_" + height + "_" + (tour.getImageUrls().size()) + "." + extension;
+            return "tour_"
+                    + tour.getId()
+                    + "_thumb_"
+                    + height
+                    + "_"
+                    + (tour.getImageUrls().size())
+                    + "."
+                    + extension;
         }
-        return "tour_" + tour.getId() + "_thumb" + height + "." + extension;
+        return "tour_"
+                + tour.getId()
+                + "_thumb"
+                + height
+                + "."
+                + extension;
     }
 
-    private String getExtension(MultipartFile file) {
+    private String getExtension(final MultipartFile file) {
         return file.getOriginalFilename()
-                .substring(file.getOriginalFilename().lastIndexOf(".") + 1);
+                .substring(file.getOriginalFilename()
+                        .lastIndexOf(".")
+                        + 1);
     }
 
     @SneakyThrows
-    private void saveImage(InputStream inputStream, String fileName) {
+    private void saveImage(final InputStream inputStream,
+                           final String fileName) {
         minioClient.putObject(
                 PutObjectArgs.builder()
                         .stream(inputStream, inputStream.available(), -1)
@@ -116,12 +149,18 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @SneakyThrows
-    private InputStream getThumbnailInputStream(MultipartFile file, int height) {
+    private InputStream getThumbnailInputStream(final MultipartFile file,
+                                                final int height) {
         Image img = ImageIO.read(file.getInputStream());
         double ratio = 1.0 * height / img.getHeight(null);
         int width = img.getWidth(null);
-        Image newImg = ImageIO.read(file.getInputStream()).getScaledInstance((int) (width * ratio), height, BufferedImage.SCALE_SMOOTH);
-        BufferedImage bufferedImage = new BufferedImage((int) (width * ratio), height, BufferedImage.TYPE_INT_RGB);
+        Image newImg = ImageIO.read(file.getInputStream())
+                .getScaledInstance((int) (width * ratio),
+                        height,
+                        BufferedImage.SCALE_SMOOTH);
+        BufferedImage bufferedImage = new BufferedImage((int) (width * ratio),
+                height,
+                BufferedImage.TYPE_INT_RGB);
         Graphics2D g2 = bufferedImage.createGraphics();
         g2.drawImage(newImg, null, null);
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();

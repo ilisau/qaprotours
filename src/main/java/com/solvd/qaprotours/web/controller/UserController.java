@@ -54,57 +54,63 @@ public class UserController {
 
     @PutMapping
     @PreAuthorize("canAccessUser(#userDto.getId())")
-    public Mono<Void> update(@Validated(OnUpdate.class) @RequestBody UserDto userDto) {
+    public Mono<Void> update(
+            @Validated(OnUpdate.class) @RequestBody final UserDto userDto
+    ) {
         User user = userMapper.toEntity(userDto);
         return userClient.update(user);
     }
 
     @GetMapping("/{userId}")
     @PreAuthorize("canAccessUser(#userId)")
-    public Mono<UserDto> getById(@PathVariable String userId) {
+    public Mono<UserDto> getById(@PathVariable final String userId) {
         return userClient.getById(userId);
     }
 
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("canAccessUser(#userId)")
-    public Mono<Void> delete(@PathVariable String userId) {
+    public Mono<Void> delete(@PathVariable final String userId) {
         return userClient.delete(userId);
     }
 
     @PutMapping("/{userId}/password")
     @PreAuthorize("canAccessUser(#userId)")
-    public Mono<Void> updatePassword(@PathVariable String userId,
-                                     @Validated @RequestBody PasswordDto passwordDto) {
+    public Mono<Void> updatePassword(
+            @PathVariable final String userId,
+            @Validated @RequestBody final PasswordDto passwordDto
+    ) {
         Password password = passwordMapper.toEntity(passwordDto);
         return userClient.updatePassword(userId, password);
     }
 
     @GetMapping("/{userId}/tickets")
     @PreAuthorize("canAccessUser(#userId)")
-    @CircuitBreaker(name = TICKET_SERVICE, fallbackMethod = "getEmptyTicketList")
-    public Flux<TicketDto> getTickets(@PathVariable String userId) {
+    @CircuitBreaker(name = TICKET_SERVICE,
+            fallbackMethod = "getEmptyTicketList")
+    public Flux<TicketDto> getTickets(@PathVariable final String userId) {
         return ticketService.getAllByUserId(userId)
                 .map(ticketMapper::toDto);
     }
 
     @PostMapping("/{userId}/tickets/{tourId}")
     @PreAuthorize("canAccessUser(#userId)")
-    @CircuitBreaker(name = TICKET_SERVICE, fallbackMethod = "handleServiceError")
-    public Mono<Void> addTicket(@PathVariable String userId,
-                                @PathVariable Long tourId,
-                                @RequestParam Integer peopleAmount) {
+    @CircuitBreaker(name = TICKET_SERVICE,
+            fallbackMethod = "handleServiceError")
+    public Mono<Void> addTicket(@PathVariable final String userId,
+                                @PathVariable final Long tourId,
+                                @RequestParam final Integer peopleAmount) {
         return ticketService.create(userId, tourId, peopleAmount);
     }
 
-    private List<TicketDto> getEmptyTicketList(Exception e) {
+    private List<TicketDto> getEmptyTicketList(final Exception e) {
         if (e.getClass().equals(AccessDeniedException.class)) {
             throw new AuthException(e.getMessage());
         }
         return new ArrayList<>();
     }
 
-    private void handleServiceError(Exception e) {
+    private void handleServiceError(final Exception e) {
         if (e.getClass().equals(AccessDeniedException.class)) {
             throw new AuthException(e.getMessage());
         }

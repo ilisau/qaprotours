@@ -9,6 +9,9 @@ import reactor.kafka.sender.SenderResult;
  */
 public interface MessageSender {
 
-    Flux<SenderResult<MailDataDto>> sendMessage(String topic, int partition, String key, MailDataDto data);
+    Flux<SenderResult<MailDataDto>> sendMessage(String topic,
+                                                int partition,
+                                                String key,
+                                                MailDataDto data);
 
 }

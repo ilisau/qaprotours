@@ -12,14 +12,15 @@ import org.springframework.security.access.expression.method.MethodSecurityExpre
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import reactor.core.publisher.Mono;
 
 /**
  * @author Lisov Ilya
  */
 @Getter
 @Setter
-public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot implements MethodSecurityExpressionOperations {
+public class CustomMethodSecurityExpressionRoot
+        extends SecurityExpressionRoot
+        implements MethodSecurityExpressionOperations {
 
     private Object filterObject;
     private Object returnObject;
@@ -29,20 +30,28 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
     private TicketService ticketService;
     private TourService tourService;
 
-    public CustomMethodSecurityExpressionRoot(Authentication authentication) {
+    public CustomMethodSecurityExpressionRoot(
+            final Authentication authentication
+    ) {
         super(authentication);
     }
 
-    public boolean canAccessUser(String userId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
+    public boolean canAccessUser(final String userId) {
+        Authentication authentication = SecurityContextHolder
+                .getContext()
+                .getAuthentication();
+        JwtUserDetails userDetails = (JwtUserDetails) authentication
+                .getPrincipal();
         String id = userDetails.getId();
         return userId.equals(id);
     }
 
-    public boolean canAccessTicket(Long ticketId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
+    public boolean canAccessTicket(final Long ticketId) {
+        Authentication authentication = SecurityContextHolder
+                .getContext()
+                .getAuthentication();
+        JwtUserDetails userDetails = (JwtUserDetails) authentication
+                .getPrincipal();
         String id = userDetails.getId();
         return ticketService.getById(ticketId)
                 .map(ticket -> ticket.getUserId().equals(id))
@@ -50,22 +59,27 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
     }
 
     public boolean canConfirmTicket() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
+        Authentication authentication = SecurityContextHolder
+                .getContext()
+                .getAuthentication();
         return hasAnyRole(authentication, User.Role.EMPLOYEE);
     }
 
-    public boolean canAccessDraftTour(Long tourId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
+    public boolean canAccessDraftTour(final Long tourId) {
+        Authentication authentication = SecurityContextHolder
+                .getContext()
+                .getAuthentication();
         return tourService.getById(tourId)
-                .map(tour -> !tour.isDraft() || hasAnyRole(authentication, User.Role.EMPLOYEE))
+                .map(tour -> !tour.isDraft()
+                        || hasAnyRole(authentication, User.Role.EMPLOYEE))
                 .block();
     }
 
-    private boolean hasAnyRole(Authentication authentication, User.Role... roles) {
+    private boolean hasAnyRole(final Authentication authentication,
+                               final User.Role... roles) {
         for (User.Role role : roles) {
-            SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.getAuthority());
+            SimpleGrantedAuthority authority =
+                    new SimpleGrantedAuthority(role.getAuthority());
             if (authentication.getAuthorities().contains(authority)) {
                 return true;
             }

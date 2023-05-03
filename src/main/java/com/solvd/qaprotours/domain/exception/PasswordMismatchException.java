@@ -5,7 +5,7 @@ package com.solvd.qaprotours.domain.exception;
  */
 public class PasswordMismatchException extends RuntimeException {
 
-    public PasswordMismatchException(String message) {
+    public PasswordMismatchException(final String message) {
         super(message);
     }
 

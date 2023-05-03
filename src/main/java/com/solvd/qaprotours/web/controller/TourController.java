@@ -22,7 +22,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -42,17 +51,20 @@ public class TourController {
     private final String IMAGE_SERVICE = "imageService";
 
     @GetMapping
-    public Flux<TourDto> getAll(@RequestParam(required = false) Integer currentPage,
-                                @RequestParam(required = false) Integer pageSize,
-                                @RequestBody(required = false) TourCriteriaDto tourCriteriaDto) {
-        TourCriteria tourCriteria = tourCriteriaMapper.toEntity(tourCriteriaDto);
+    public Flux<TourDto> getAll(
+            @RequestParam(required = false) final Integer currentPage,
+            @RequestParam(required = false) final Integer pageSize,
+            @RequestBody(required = false) final TourCriteriaDto tourCriteriaDto
+    ) {
+        TourCriteria tourCriteria = tourCriteriaMapper
+                .toEntity(tourCriteriaDto);
         return tourService.getAll(currentPage, pageSize, tourCriteria)
                 .map(tourMapper::toDto);
     }
 
     @PostMapping
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public Mono<TourDto> saveDraft(@RequestBody TourDto tourDto) {
+    public Mono<TourDto> saveDraft(@RequestBody final TourDto tourDto) {
         Tour tour = tourMapper.toEntity(tourDto);
         return tourService.save(tour)
                 .map(tourMapper::toDto);
@@ -61,7 +73,9 @@ public class TourController {
     @PostMapping("/publish")
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public Mono<TourDto> publish(@Validated(OnCreate.class) @RequestBody TourDto tourDto) {
+    public Mono<TourDto> publish(
+            @Validated(OnCreate.class) @RequestBody final TourDto tourDto
+    ) {
         Tour tour = tourMapper.toEntity(tourDto);
         return tourService.publish(tour)
                 .map(tourMapper::toDto);
@@ -69,7 +83,7 @@ public class TourController {
 
     @GetMapping("/{tourId}")
     @PreAuthorize("canAccessDraftTour(#tourId)")
-    public Mono<TourDto> getById(@PathVariable Long tourId) {
+    public Mono<TourDto> getById(@PathVariable final Long tourId) {
         return tourService.getById(tourId)
                 .map(tourMapper::toDto);
     }
@@ -77,7 +91,7 @@ public class TourController {
     @DeleteMapping("/{tourId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public Mono<Void> delete(@PathVariable Long tourId) {
+    public Mono<Void> delete(@PathVariable final Long tourId) {
         return tourService.delete(tourId);
     }
 
@@ -85,13 +99,13 @@ public class TourController {
     @PreAuthorize("hasRole('EMPLOYEE')")
     @ValidateExtension
     @CircuitBreaker(name = IMAGE_SERVICE, fallbackMethod = "handleError")
-    public Mono<Void> uploadImage(@PathVariable Long tourId,
-                                  @ModelAttribute ImageDto dto) {
+    public Mono<Void> uploadImage(@PathVariable final Long tourId,
+                                  @ModelAttribute final ImageDto dto) {
         Image image = imageMapper.toEntity(dto);
         return imageService.uploadImage(tourId, image);
     }
 
-    private void handleError(Exception e) {
+    private void handleError(final Exception e) {
         if (e.getClass().equals(AccessDeniedException.class)) {
             throw new AuthException(e.getMessage());
         }

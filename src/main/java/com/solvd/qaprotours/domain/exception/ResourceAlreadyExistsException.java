@@ -5,7 +5,7 @@ package com.solvd.qaprotours.domain.exception;
  */
 public class ResourceAlreadyExistsException extends RuntimeException {
 
-    public ResourceAlreadyExistsException(String message) {
+    public ResourceAlreadyExistsException(final String message) {
         super(message);
     }
 

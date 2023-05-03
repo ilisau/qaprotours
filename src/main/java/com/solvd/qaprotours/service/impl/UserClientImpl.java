@@ -32,7 +32,7 @@ public class UserClientImpl implements UserClient {
     private final JwtTokenMapper jwtTokenMapper;
 
     @Override
-    public Mono<UserDto> getById(String id) {
+    public Mono<UserDto> getById(final String id) {
         return webClientBuilder
                 .filter(errorHandler())
                 .build()
@@ -43,7 +43,7 @@ public class UserClientImpl implements UserClient {
     }
 
     @Override
-    public Mono<UserDto> getByEmail(String email) {
+    public Mono<UserDto> getByEmail(final String email) {
         return webClientBuilder
                 .filter(errorHandler())
                 .build()
@@ -54,7 +54,7 @@ public class UserClientImpl implements UserClient {
     }
 
     @Override
-    public Mono<Void> update(User user) {
+    public Mono<Void> update(final User user) {
         return webClientBuilder
                 .filter(errorHandler())
                 .build()
@@ -66,31 +66,37 @@ public class UserClientImpl implements UserClient {
     }
 
     @Override
-    public Mono<Void> updatePassword(String userId, String newPassword) {
+    public Mono<Void> updatePassword(final String userId,
+                                     final String newPassword) {
         return webClientBuilder
                 .filter(errorHandler())
                 .build()
                 .post()
-                .uri("http://user-client/api/v1/users/" + userId + "/password")
+                .uri("http://user-client/api/v1/users/"
+                        + userId
+                        + "/password")
                 .bodyValue(newPassword)
                 .retrieve()
                 .bodyToMono(Void.class);
     }
 
     @Override
-    public Mono<Void> updatePassword(String userId, Password password) {
+    public Mono<Void> updatePassword(final String userId,
+                                     final Password password) {
         return webClientBuilder
                 .filter(errorHandler())
                 .build()
                 .put()
-                .uri("http://user-client/api/v1/users/" + userId + "/password")
+                .uri("http://user-client/api/v1/users/"
+                        + userId
+                        + "/password")
                 .bodyValue(passwordMapper.toDto(password))
                 .retrieve()
                 .bodyToMono(Void.class);
     }
 
     @Override
-    public Mono<Void> create(User user) {
+    public Mono<Void> create(final User user) {
         return webClientBuilder
                 .filter(errorHandler())
                 .build()
@@ -102,7 +108,7 @@ public class UserClientImpl implements UserClient {
     }
 
     @Override
-    public Mono<Void> activate(JwtToken token) {
+    public Mono<Void> activate(final JwtToken token) {
         return webClientBuilder
                 .filter(errorHandler())
                 .build()
@@ -114,7 +120,7 @@ public class UserClientImpl implements UserClient {
     }
 
     @Override
-    public Mono<Void> delete(String id) {
+    public Mono<Void> delete(final String id) {
         return webClientBuilder
                 .filter(errorHandler())
                 .build()
@@ -126,7 +132,12 @@ public class UserClientImpl implements UserClient {
 
     public static ExchangeFilterFunction errorHandler() {
         Function<ErrorDto, Mono<ClientResponse>> error = errorBody ->
-                Mono.error(new UserClientException(errorBody.getMessage(), errorBody.getDetails()));
+                Mono.error(
+                        new UserClientException(
+                                errorBody.getMessage(),
+                                errorBody.getDetails()
+                        )
+                );
         return ExchangeFilterFunction.ofResponseProcessor(clientResponse -> {
             if (clientResponse.statusCode().isError()) {
                 return clientResponse.bodyToMono(ErrorDto.class)

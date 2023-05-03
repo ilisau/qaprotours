@@ -12,7 +12,9 @@ public interface TourService {
 
     Mono<Tour> getById(Long tourId);
 
-    Flux<Tour> getAll(Integer currentPage, Integer pageSize, TourCriteria tourCriteria);
+    Flux<Tour> getAll(Integer currentPage,
+                      Integer pageSize,
+                      TourCriteria tourCriteria);
 
     Mono<Tour> save(Tour tour);
 

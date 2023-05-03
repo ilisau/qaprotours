@@ -37,7 +37,8 @@ public class WebConfig {
     public MinioClient minioClient() {
         return MinioClient.builder()
                 .endpoint(minioProperties.getUrl())
-                .credentials(minioProperties.getAccessKey(), minioProperties.getSecretKey())
+                .credentials(minioProperties.getAccessKey(),
+                        minioProperties.getSecretKey())
                 .build();
     }
 
@@ -45,7 +46,9 @@ public class WebConfig {
     public OpenAPI openAPI() {
         final String securitySchemeName = "bearerAuth";
         return new OpenAPI()
-                .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
+                .addSecurityItem(
+                        new SecurityRequirement().addList(securitySchemeName)
+                )
                 .components(
                         new Components()
                                 .addSecuritySchemes(securitySchemeName,
@@ -71,7 +74,9 @@ public class WebConfig {
     @SneakyThrows
     @Bean
     public XML producerXml() {
-        return new XMLDocument(new File("src/main/resources/kafka/producer.xml"));
+        return new XMLDocument(
+                new File("src/main/resources/kafka/producer.xml")
+        );
     }
 
 }

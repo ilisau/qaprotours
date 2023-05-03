@@ -15,17 +15,20 @@ import java.util.stream.Collectors;
  */
 public class JwtUserDetailsFactory {
 
-    public static JwtUserDetails create(User user) {
+    public static JwtUserDetails create(final User user) {
 
         return new JwtUserDetails(
                 user.getId(),
                 user.getPassword(),
                 user.getEmail(),
                 true,
-                mapToGrantedAuthority(Collections.singletonList(user.getRole())));
+                mapToGrantedAuthority(
+                        Collections.singletonList(user.getRole())
+                )
+        );
     }
 
-    public static JwtUserDetails create(Claims claims) {
+    public static JwtUserDetails create(final Claims claims) {
         User.Role role = null;
         String roleClaim = claims.get("role", String.class);
         if (roleClaim != null) {
@@ -41,10 +44,14 @@ public class JwtUserDetailsFactory {
     }
 
 
-    private static List<GrantedAuthority> mapToGrantedAuthority(List<User.Role> userRoles) {
+    private static List<GrantedAuthority> mapToGrantedAuthority(
+            final List<User.Role> userRoles
+    ) {
         return userRoles.stream()
                 .filter(Objects::nonNull)
-                .map(userRole -> new SimpleGrantedAuthority(userRole.getAuthority()))
+                .map(userRole -> new SimpleGrantedAuthority(
+                        userRole.getAuthority())
+                )
                 .collect(Collectors.toList());
     }
 
