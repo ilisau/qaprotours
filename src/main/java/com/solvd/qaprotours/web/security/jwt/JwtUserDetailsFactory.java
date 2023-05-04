@@ -15,8 +15,12 @@ import java.util.stream.Collectors;
  */
 public class JwtUserDetailsFactory {
 
+    /**
+     * Creates a JwtUserDetails object from a User object.
+     * @param user the User object to be converted.
+     * @return a JwtUserDetails object.
+     */
     public static JwtUserDetails create(final User user) {
-
         return new JwtUserDetails(
                 user.getId(),
                 user.getPassword(),
@@ -28,6 +32,11 @@ public class JwtUserDetailsFactory {
         );
     }
 
+    /**
+     * Creates a JwtUserDetails object from a Claims object.
+     * @param claims the Claims object to be converted.
+     * @return a JwtUserDetails object.
+     */
     public static JwtUserDetails create(final Claims claims) {
         User.Role role = null;
         String roleClaim = claims.get("role", String.class);

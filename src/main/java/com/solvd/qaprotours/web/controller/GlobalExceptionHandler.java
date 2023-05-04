@@ -32,6 +32,11 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    /**
+     * Handles ConstraintViolationException.
+     * @param ex ConstraintViolationException object.
+     * @return ErrorDto object.
+     */
     @ExceptionHandler(ResourceDoesNotExistException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorDto handleResourceDoesNotExistException(
@@ -40,6 +45,11 @@ public class GlobalExceptionHandler {
         return new ErrorDto(ex.getMessage());
     }
 
+    /**
+     * Handles ConstraintViolationException.
+     * @param ex ConstraintViolationException object.
+     * @return ErrorDto object.
+     */
     @ExceptionHandler(ResourceAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDto handleResourceAlreadyExistsException(
@@ -48,6 +58,11 @@ public class GlobalExceptionHandler {
         return new ErrorDto(ex.getMessage());
     }
 
+    /**
+     * Handles ConstraintViolationException.
+     * @param ex ConstraintViolationException object.
+     * @return ErrorDto object.
+     */
     @ExceptionHandler(PasswordMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDto handlePasswordMismatchException(
@@ -56,6 +71,11 @@ public class GlobalExceptionHandler {
         return new ErrorDto(ex.getMessage());
     }
 
+    /**
+     * Handles ConstraintViolationException.
+     * @param ex ConstraintViolationException object.
+     * @return ErrorDto object.
+     */
     @ExceptionHandler(NoFreePlacesException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDto handleNoFreePlacesException(
@@ -64,6 +84,11 @@ public class GlobalExceptionHandler {
         return new ErrorDto(ex.getMessage());
     }
 
+    /**
+     * Handles ConstraintViolationException.
+     * @param ex ConstraintViolationException object.
+     * @return ErrorDto object.
+     */
     @ExceptionHandler(InvalidTokenException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDto handleTokenExpiredException(
@@ -72,12 +97,22 @@ public class GlobalExceptionHandler {
         return new ErrorDto(ex.getMessage());
     }
 
+    /**
+     * Handles ConstraintViolationException.
+     * @param ex ConstraintViolationException object.
+     * @return ErrorDto object.
+     */
     @ExceptionHandler(AuthException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorDto handleAuthException(final AuthException ex) {
         return new ErrorDto(ex.getMessage());
     }
 
+    /**
+     * Handles ConstraintViolationException.
+     * @param ex ConstraintViolationException object.
+     * @return ErrorDto object.
+     */
     @ExceptionHandler(TourAlreadyStartedException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDto handleTourAlreadyStartedException(
@@ -86,6 +121,11 @@ public class GlobalExceptionHandler {
         return new ErrorDto(ex.getMessage());
     }
 
+    /**
+     * Handles ConstraintViolationException.
+     * @param e ConstraintViolationException object.
+     * @return ErrorDto object.
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDto handleMethodArgumentNotValidException(
@@ -99,6 +139,11 @@ public class GlobalExceptionHandler {
         return exceptionBody;
     }
 
+    /**
+     * Handles ConstraintViolationException.
+     * @param e ConstraintViolationException object.
+     * @return ErrorDto object.
+     */
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDto handleConstraintViolationException(
@@ -112,6 +157,11 @@ public class GlobalExceptionHandler {
         return exceptionBody;
     }
 
+    /**
+     * Handles ConstraintViolationException.
+     * @param e ConstraintViolationException object.
+     * @return ErrorDto object.
+     */
     @ExceptionHandler(BindException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDto handleBindException(final BindException e) {
@@ -123,18 +173,33 @@ public class GlobalExceptionHandler {
         return exceptionBody;
     }
 
+    /**
+     * Handles AccessDeniedException.
+     * @param e AccessDeniedException object.
+     * @return ErrorDto object.
+     */
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorDto handleAccessDeniedException(final AccessDeniedException e) {
         return new ErrorDto("Access denied");
     }
 
+    /**
+     * Handles ImageUploadException.
+     * @param e ImageUploadException object.
+     * @return ErrorDto object.
+     */
     @ExceptionHandler(ImageUploadException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorDto handleImageUploadException(final ImageUploadException e) {
         return new ErrorDto(e.getMessage());
     }
 
+    /**
+     * Handles ImageUploadException.
+     * @param e ImageUploadException object.
+     * @return ErrorDto object.
+     */
     @ExceptionHandler(BadCredentialsException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorDto handleBadCredentialsException(
@@ -143,6 +208,11 @@ public class GlobalExceptionHandler {
         return new ErrorDto("Bad credentials.");
     }
 
+    /**
+     * Handles ImageUploadException.
+     * @param e ImageUploadException object.
+     * @return ErrorDto object.
+     */
     @ExceptionHandler(ServiceNotAvailableException.class)
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     public ErrorDto handleServiceNotAvailableException(
@@ -151,12 +221,22 @@ public class GlobalExceptionHandler {
         return new ErrorDto("Service is not available. Try again.");
     }
 
+    /**
+     * Handles ImageUploadException.
+     * @param e ImageUploadException object.
+     * @return ErrorDto object.
+     */
     @ExceptionHandler(UserClientException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDto handleMicroserviceException(final UserClientException e) {
         return new ErrorDto(e.getMessage(), e.getDetails());
     }
 
+    /**
+     * Handles ImageUploadException.
+     * @param e ImageUploadException object.
+     * @return ErrorDto object.
+     */
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorDto handleException(final Exception e) {

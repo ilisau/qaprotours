@@ -5,15 +5,14 @@ import com.solvd.qaprotours.domain.hotel.Point;
 import com.solvd.qaprotours.domain.user.Ticket;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
-import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Embedded;
+import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.math.BigDecimal;
@@ -37,6 +36,7 @@ public class Tour {
     private CateringType cateringType;
 
     @ManyToOne
+    @Column(name = "hotel_id")
     @JoinColumn(name = "hotel_id")
     private Hotel hotel;
 
@@ -51,12 +51,10 @@ public class Tour {
     private Integer dayDuration;
     private boolean isDraft;
 
-    @ElementCollection
-    @CollectionTable(name = "tour_image",
-            joinColumns = @JoinColumn(name = "tour_id"))
+    @MappedCollection(idColumn = "tour_id")
     private List<String> imageUrls;
 
-    @Embedded
+    @Embedded(onEmpty = Embedded.OnEmpty.USE_NULL)
     @AttributeOverrides({
             @AttributeOverride(name = "latitude",
                     column = @Column(name = "latitude")),

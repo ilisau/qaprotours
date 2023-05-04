@@ -18,11 +18,23 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface ValidateExtension {
 
+    /**
+     * Message to be returned in case of validation failed.
+     * @return message
+     */
     String message() default
             "Invalid filename";
 
+    /**
+     * Groups for validation.
+     * @return groups
+     */
     Class<?>[] groups() default {};
 
+    /**
+     * Payload for validation.
+     * @return payload
+     */
     Class<? extends Payload>[] payload() default {};
 
 }

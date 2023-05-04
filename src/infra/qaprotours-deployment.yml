@@ -59,6 +59,11 @@ spec:
                 configMapKeyRef:
                   name: qaprotours-configmap
                   key: KAFKA_HOST
+            - name: USER_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: qaprotours-configmap
+                  key: USER_SERVICE_URL
           volumeMounts:
             - name: my-service-account-token
               mountPath: /var/run/secrets/kubernetes.io/serviceaccount

@@ -18,6 +18,10 @@ public class ErrorDto {
 
     private Map<String, String> details;
 
+    /**
+     * Create an error DTO with a message.
+     * @param message message to be returned to client
+     */
     public ErrorDto(final String message) {
         this.message = message;
     }

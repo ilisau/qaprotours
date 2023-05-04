@@ -3,9 +3,7 @@
 <suppressions>
     <suppress checks="JavadocVariable"/>
     <suppress checks="DesignForExtension"/>
-    <suppress checks="MissingJavadocMethod"/>
     <suppress checks="HideUtilityClassConstructor"/>
-    <suppress checks="JavadocPackage"/>
     <suppress checks="MagicNumber"/>
     <suppress checks="HiddenField"/>
 </suppressions>

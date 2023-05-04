@@ -11,6 +11,7 @@ import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.service.AuthService;
 import com.solvd.qaprotours.service.JwtService;
 import com.solvd.qaprotours.service.UserClient;
+import com.solvd.qaprotours.web.kafka.KafkaMessage;
 import com.solvd.qaprotours.web.kafka.MessageSender;
 import com.solvd.qaprotours.web.mapper.MailDataMapper;
 import com.solvd.qaprotours.web.mapper.UserMapper;
@@ -111,13 +112,16 @@ public class AuthServiceImpl implements AuthService {
                     params.put("user.surname", user.getSurname());
                     return params;
                 })
-                .flatMap(params -> messageSender.sendMessage("mail",
-                                0,
-                                params.get("user.id").toString(),
-                                mailDataMapper.toDto(new MailData(
-                                        MailType.PASSWORD_RESET,
-                                        params)))
-                        .then())
+                .flatMap(params -> {
+                    KafkaMessage message = new KafkaMessage();
+                    message.setTopic("mail");
+                    message.setKey(params.get("user.id").toString());
+                    message.setData(mailDataMapper.toDto(new MailData(
+                            MailType.PASSWORD_RESET,
+                            params)));
+                    return messageSender.sendMessage(message)
+                            .then();
+                })
                 .then();
     }
 

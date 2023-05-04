@@ -30,12 +30,21 @@ public class CustomMethodSecurityExpressionRoot
     private TicketService ticketService;
     private TourService tourService;
 
+    /**
+     * Constructor for internal use by the framework.
+     * @param authentication the {@link Authentication} to use. Cannot be null.
+     */
     public CustomMethodSecurityExpressionRoot(
             final Authentication authentication
     ) {
         super(authentication);
     }
 
+    /**
+     * Checks if the current user is the owner of the user with the given id.
+     * @param userId the id of the user to check
+     * @return true if the current user is the owner of the user with the given
+     */
     public boolean canAccessUser(final String userId) {
         Authentication authentication = SecurityContextHolder
                 .getContext()
@@ -46,6 +55,11 @@ public class CustomMethodSecurityExpressionRoot
         return userId.equals(id);
     }
 
+    /**
+     * Checks if the current user is the owner of the ticket with the given id.
+     * @param ticketId the id of the ticket to check
+     * @return true if the current user is the owner of the ticket with the
+     */
     public boolean canAccessTicket(final Long ticketId) {
         Authentication authentication = SecurityContextHolder
                 .getContext()
@@ -58,6 +72,10 @@ public class CustomMethodSecurityExpressionRoot
                 .block();
     }
 
+    /**
+     * Checks if the current user is employee.
+     * @return true if the current user is employee
+     */
     public boolean canConfirmTicket() {
         Authentication authentication = SecurityContextHolder
                 .getContext()
@@ -65,6 +83,11 @@ public class CustomMethodSecurityExpressionRoot
         return hasAnyRole(authentication, User.Role.EMPLOYEE);
     }
 
+    /**
+     * Checks if the current user is the owner of the tour with the given id.
+     * @param tourId the id of the tour to check
+     * @return true if the current user is the owner of the tour with the given
+     */
     public boolean canAccessDraftTour(final Long tourId) {
         Authentication authentication = SecurityContextHolder
                 .getContext()

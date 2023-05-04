@@ -28,11 +28,19 @@ public class WebConfig {
 
     private final MinioProperties minioProperties;
 
+    /**
+     * Create a password encoder.
+     * @return password encoder
+     */
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Create a minio client.
+     * @return minio client
+     */
     @Bean
     public MinioClient minioClient() {
         return MinioClient.builder()
@@ -42,6 +50,10 @@ public class WebConfig {
                 .build();
     }
 
+    /**
+     * Create a swagger open api.
+     * @return open api
+     */
     @Bean
     public OpenAPI openAPI() {
         final String securitySchemeName = "bearerAuth";
@@ -65,12 +77,20 @@ public class WebConfig {
                         .version("v1"));
     }
 
+    /**
+     * Create a web client builder.
+     * @return web client builder
+     */
     @Bean
     @LoadBalanced
     public WebClient.Builder webClientBuilder() {
         return WebClient.builder();
     }
 
+    /**
+     * Create a xml object for producer.
+     * @return xml
+     */
     @SneakyThrows
     @Bean
     public XML producerXml() {

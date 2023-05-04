@@ -10,6 +10,11 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface AuthenticationMapper {
 
+    /**
+     * Converts AuthenticationDto to Authentication.
+     * @param authenticationDto AuthenticationDto object.
+     * @return Authentication object.
+     */
     Authentication toEntity(AuthenticationDto authenticationDto);
 
 }

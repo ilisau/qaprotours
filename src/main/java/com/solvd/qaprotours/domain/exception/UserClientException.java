@@ -12,6 +12,11 @@ public class UserClientException extends RuntimeException {
 
     private final Map<String, String> details;
 
+    /**
+     * Create an exception with a message and details.
+     * @param message message to be returned to client
+     * @param details details to be returned to client
+     */
     public UserClientException(final String message,
                                final Map<String, String> details) {
         super(message);

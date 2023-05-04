@@ -51,6 +51,14 @@ public class TourController {
     private final ImageMapper imageMapper;
     private static final String IMAGE_SERVICE = "imageService";
 
+    /**
+     * Gets all tours by criteria and paging.
+     *
+     * @param currentPage     page number.
+     * @param pageSize        page size.
+     * @param tourCriteriaDto TourCriteriaDto object.
+     * @return List of tours.
+     */
     @GetMapping
     public Flux<TourDto> getAll(
             @RequestParam(required = false) final Integer currentPage,
@@ -64,6 +72,11 @@ public class TourController {
                 .map(tourMapper::toDto);
     }
 
+    /**
+     * Saves draft tour.
+     * @param tourDto TourDto object.
+     * @return created object.
+     */
     @PostMapping
     @PreAuthorize("hasRole('EMPLOYEE')")
     public Mono<TourDto> saveDraft(@RequestBody final TourDto tourDto) {
@@ -72,6 +85,11 @@ public class TourController {
                 .map(tourMapper::toDto);
     }
 
+    /**
+     * Publishes tour.
+     * @param tourDto TourDto object.
+     * @return created object.
+     */
     @PostMapping("/publish")
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('EMPLOYEE')")
@@ -83,6 +101,11 @@ public class TourController {
                 .map(tourMapper::toDto);
     }
 
+    /**
+     * Gets tour by id.
+     * @param tourId tour id.
+     * @return tour.
+     */
     @GetMapping("/{tourId}")
     @PreAuthorize("canAccessDraftTour(#tourId)")
     public Mono<TourDto> getById(@PathVariable final Long tourId) {
@@ -90,6 +113,11 @@ public class TourController {
                 .map(tourMapper::toDto);
     }
 
+    /**
+     * Deletes tour.
+     * @param tourId tour id.
+     * @return empty response.
+     */
     @DeleteMapping("/{tourId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('EMPLOYEE')")
@@ -97,6 +125,12 @@ public class TourController {
         return tourService.delete(tourId);
     }
 
+    /**
+     * Uploads image to tour.
+     * @param tourId tour id.
+     * @param dto ImageDto object.
+     * @return empty response.
+     */
     @PostMapping("/{tourId}/photo")
     @PreAuthorize("hasRole('EMPLOYEE')")
     @ValidateExtension

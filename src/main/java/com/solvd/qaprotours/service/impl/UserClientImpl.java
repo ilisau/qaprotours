@@ -5,6 +5,7 @@ import com.solvd.qaprotours.domain.jwt.JwtToken;
 import com.solvd.qaprotours.domain.user.Password;
 import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.service.UserClient;
+import com.solvd.qaprotours.service.property.ServiceUrlsProperties;
 import com.solvd.qaprotours.web.dto.ErrorDto;
 import com.solvd.qaprotours.web.dto.user.UserDto;
 import com.solvd.qaprotours.web.mapper.PasswordMapper;
@@ -30,6 +31,7 @@ public class UserClientImpl implements UserClient {
     private final UserMapper userMapper;
     private final PasswordMapper passwordMapper;
     private final JwtTokenMapper jwtTokenMapper;
+    private final ServiceUrlsProperties serviceUrlsProperties;
 
     @Override
     public Mono<UserDto> getById(final String id) {
@@ -37,7 +39,9 @@ public class UserClientImpl implements UserClient {
                 .filter(errorHandler())
                 .build()
                 .get()
-                .uri("http://user-client/api/v1/users/" + id)
+                .uri(serviceUrlsProperties.getUserService()
+                        + "/"
+                        + id)
                 .retrieve()
                 .bodyToMono(UserDto.class);
     }
@@ -48,7 +52,9 @@ public class UserClientImpl implements UserClient {
                 .filter(errorHandler())
                 .build()
                 .get()
-                .uri("http://user-client/api/v1/users/email/" + email)
+                .uri(serviceUrlsProperties.getUserService()
+                        + "/email/"
+                        + email)
                 .retrieve()
                 .bodyToMono(UserDto.class);
     }
@@ -59,7 +65,7 @@ public class UserClientImpl implements UserClient {
                 .filter(errorHandler())
                 .build()
                 .put()
-                .uri("http://user-client/api/v1/users")
+                .uri(serviceUrlsProperties.getUserService())
                 .bodyValue(userMapper.toDto(user))
                 .retrieve()
                 .bodyToMono(Void.class);
@@ -72,7 +78,8 @@ public class UserClientImpl implements UserClient {
                 .filter(errorHandler())
                 .build()
                 .post()
-                .uri("http://user-client/api/v1/users/"
+                .uri(serviceUrlsProperties.getUserService()
+                        + "/"
                         + userId
                         + "/password")
                 .bodyValue(newPassword)
@@ -87,7 +94,8 @@ public class UserClientImpl implements UserClient {
                 .filter(errorHandler())
                 .build()
                 .put()
-                .uri("http://user-client/api/v1/users/"
+                .uri(serviceUrlsProperties.getUserService()
+                        + "/"
                         + userId
                         + "/password")
                 .bodyValue(passwordMapper.toDto(password))
@@ -101,7 +109,7 @@ public class UserClientImpl implements UserClient {
                 .filter(errorHandler())
                 .build()
                 .post()
-                .uri("http://user-client/api/v1/users")
+                .uri(serviceUrlsProperties.getUserService())
                 .bodyValue(userMapper.toDto(user))
                 .retrieve()
                 .bodyToMono(Void.class);
@@ -113,7 +121,8 @@ public class UserClientImpl implements UserClient {
                 .filter(errorHandler())
                 .build()
                 .post()
-                .uri("http://user-client/api/v1/users/activate")
+                .uri(serviceUrlsProperties.getUserService()
+                        + "/activate")
                 .bodyValue(jwtTokenMapper.toDto(token))
                 .retrieve()
                 .bodyToMono(Void.class);
@@ -125,11 +134,16 @@ public class UserClientImpl implements UserClient {
                 .filter(errorHandler())
                 .build()
                 .delete()
-                .uri("http://user-client/api/v1/users/" + id)
+                .uri(serviceUrlsProperties.getUserService()
+                        + id)
                 .retrieve()
                 .bodyToMono(Void.class);
     }
 
+    /**
+     * Method for handling errors from user-client.
+     * @return ExchangeFilterFunction
+     */
     public static ExchangeFilterFunction errorHandler() {
         Function<ErrorDto, Mono<ClientResponse>> error = errorBody ->
                 Mono.error(

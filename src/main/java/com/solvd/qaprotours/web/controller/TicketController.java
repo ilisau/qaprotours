@@ -26,6 +26,11 @@ public class TicketController {
     private final TicketService ticketService;
     private final TicketMapper ticketMapper;
 
+    /**
+     * Get ticket by id.
+     * @param ticketId ticket id
+     * @return ticket
+     */
     @GetMapping("/{ticketId}")
     @PreAuthorize("canAccessTicket(#ticketId)")
     public Mono<TicketDto> getTicket(@PathVariable final Long ticketId) {
@@ -33,6 +38,11 @@ public class TicketController {
                 .map(ticketMapper::toDto);
     }
 
+    /**
+     * Delete a ticket by id.
+     * @param ticketId ticket id
+     * @return empty response
+     */
     @DeleteMapping("/{ticketId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("canAccessTicket(#ticketId)")
@@ -40,6 +50,11 @@ public class TicketController {
         return ticketService.delete(ticketId);
     }
 
+    /**
+     * Confirm a ticket by id.
+     * @param ticketId ticket id
+     * @return empty response
+     */
     @PostMapping("/{ticketId}/confirm")
     @PreAuthorize("canConfirmTicket()")
     public Mono<Void> confirmTicket(@PathVariable final Long ticketId) {

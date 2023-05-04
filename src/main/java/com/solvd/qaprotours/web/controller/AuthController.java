@@ -40,6 +40,11 @@ public class AuthController {
     private final AuthenticationMapper authenticationMapper;
     private final UserMapper userMapper;
 
+    /**
+     * Generate a pair of tokens for user by its email and password.
+     * @param authenticationDto user's email and password
+     * @return pair of tokens
+     */
     @PostMapping("/login")
     public Mono<JwtResponseDto> login(
             @Validated @RequestBody final AuthenticationDto authenticationDto
@@ -50,6 +55,11 @@ public class AuthController {
                 .map(jwtResponseMapper::toDto);
     }
 
+    /**
+     * Register a new user.
+     * @param userDto user's data
+     * @return empty response
+     */
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<Void> register(
@@ -60,6 +70,11 @@ public class AuthController {
         return userClient.create(user);
     }
 
+    /**
+     * Confirm user's account.
+     * @param jwtTokenDto token
+     * @return empty response
+     */
     @PostMapping("/register/confirm")
     public Mono<Void> confirm(
             @Validated @RequestBody final JwtTokenDto jwtTokenDto
@@ -68,6 +83,11 @@ public class AuthController {
         return userClient.activate(jwtToken);
     }
 
+    /**
+     * Refresh user's tokens.
+     * @param jwtTokenDto refresh token
+     * @return pair of tokens
+     */
     @PostMapping("/refresh")
     public Mono<JwtResponseDto> refresh(
             @Validated @RequestBody final JwtTokenDto jwtTokenDto
@@ -77,11 +97,23 @@ public class AuthController {
                 .map(jwtResponseMapper::toDto);
     }
 
+    /**
+     * Send a token to user's email for restoring password.
+     * @param email user's email
+     * @return empty response
+     */
     @PostMapping("/forget")
     public Mono<Void> forget(@RequestBody final String email) {
         return authService.sendRestoreToken(email);
     }
 
+    /**
+     * Restore user's password.
+     *
+     * @param token    token
+     * @param password new password
+     * @return empty response
+     */
     @PostMapping("/password/restore")
     public Mono<Void> restore(@RequestParam final String token,
                               @RequestBody final String password) {

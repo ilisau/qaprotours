@@ -52,6 +52,11 @@ public class UserController {
     private final PasswordMapper passwordMapper;
     private static final String TICKET_SERVICE = "ticketService";
 
+    /**
+     * Updates a user.
+     * @param userDto user's data
+     * @return empty response
+     */
     @PutMapping
     @PreAuthorize("canAccessUser(#userDto.getId())")
     public Mono<Void> update(
@@ -61,12 +66,22 @@ public class UserController {
         return userClient.update(user);
     }
 
+    /**
+     * Gets a user by id.
+     * @param userId user's id
+     * @return user's data
+     */
     @GetMapping("/{userId}")
     @PreAuthorize("canAccessUser(#userId)")
     public Mono<UserDto> getById(@PathVariable final String userId) {
         return userClient.getById(userId);
     }
 
+    /**
+     * Deletes a user by id.
+     * @param userId user's id
+     * @return empty response
+     */
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("canAccessUser(#userId)")
@@ -74,6 +89,13 @@ public class UserController {
         return userClient.delete(userId);
     }
 
+    /**
+     * Updates a user's password.
+     *
+     * @param userId      user's id
+     * @param passwordDto password's data
+     * @return empty response
+     */
     @PutMapping("/{userId}/password")
     @PreAuthorize("canAccessUser(#userId)")
     public Mono<Void> updatePassword(
@@ -84,6 +106,11 @@ public class UserController {
         return userClient.updatePassword(userId, password);
     }
 
+    /**
+     * Gets a user's tickets.
+     * @param userId user's id
+     * @return list of tickets
+     */
     @GetMapping("/{userId}/tickets")
     @PreAuthorize("canAccessUser(#userId)")
     @CircuitBreaker(name = TICKET_SERVICE,
@@ -93,6 +120,13 @@ public class UserController {
                 .map(ticketMapper::toDto);
     }
 
+    /**
+     * Adds a ticket to a user.
+     * @param userId user's id
+     * @param tourId tour's id
+     * @param peopleAmount amount of people in ticket
+     * @return empty response
+     */
     @PostMapping("/{userId}/tickets/{tourId}")
     @PreAuthorize("canAccessUser(#userId)")
     @CircuitBreaker(name = TICKET_SERVICE,

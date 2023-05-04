@@ -27,6 +27,11 @@ public class EmployeeController {
     private final UserClient userClient;
     private final UserMapper userMapper;
 
+    /**
+     * Create a new employee.
+     * @param userDto employee's data
+     * @return empty response
+     */
     @PostMapping
     @PreAuthorize("hasRole('EMPLOYEE')")
     @ResponseStatus(HttpStatus.CREATED)
