@@ -2,38 +2,38 @@ package com.solvd.qaprotours.web.mapper;
 
 import java.util.List;
 
-public interface Mappable<X, Y> {
+public interface Mappable<E, D> {
 
     /**
      * Maps DTO to entity.
      *
-     * @param y DTO object
+     * @param d DTO object
      * @return entity object
      */
-    X toEntity(Y y);
+    E toEntity(D d);
 
     /**
      * Maps a list of DTO to list of entity.
      *
-     * @param y list of DTO object
+     * @param d list of DTO object
      * @return list of entity object
      */
-    List<X> toEntity(List<Y> y);
+    List<E> toEntity(List<D> d);
 
     /**
      * Maps entity to DTO.
      *
-     * @param x entity object
+     * @param e entity object
      * @return DTO object
      */
-    Y toDto(X x);
+    D toDto(E e);
 
     /**
      * Maps a list of entity to DTO.
      *
-     * @param x list of entity object
+     * @param e list of entity object
      * @return list of DTO object
      */
-    List<Y> toDto(List<X> x);
+    List<D> toDto(List<E> e);
 
 }
