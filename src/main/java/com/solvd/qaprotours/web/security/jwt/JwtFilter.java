@@ -28,7 +28,10 @@ public class JwtFilter extends GenericFilterBean {
     private final JwtService jwtService;
 
     @Override
-    public void doFilter(ServletRequest req, ServletResponse res, FilterChain filterChain) throws IOException, ServletException {
+    public void doFilter(final ServletRequest req,
+                         final ServletResponse res,
+                         final FilterChain filterChain)
+            throws IOException, ServletException {
         try {
             String token = getTokenFromRequest((HttpServletRequest) req);
             if (token != null) {
@@ -45,7 +48,7 @@ public class JwtFilter extends GenericFilterBean {
         }
     }
 
-    public String getTokenFromRequest(HttpServletRequest req) {
+    private String getTokenFromRequest(final HttpServletRequest req) {
         final String bearer = req.getHeader(AUTHORIZATION);
         if (StringUtils.hasText(bearer) && bearer.startsWith("Bearer ")) {
             return bearer.substring(7);

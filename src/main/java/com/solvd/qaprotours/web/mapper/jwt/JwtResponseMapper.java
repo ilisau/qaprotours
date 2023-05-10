@@ -10,6 +10,11 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface JwtResponseMapper {
 
+    /**
+     * Converts JwtResponse to JwtResponseDto.
+     * @param response JwtResponse object.
+     * @return JwtResponseDto object.
+     */
     JwtResponseDto toDto(JwtResponse response);
 
 }

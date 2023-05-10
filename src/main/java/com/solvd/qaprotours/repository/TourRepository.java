@@ -10,6 +10,11 @@ import reactor.core.publisher.Flux;
  */
 public interface TourRepository extends ReactiveCrudRepository<Tour, Long> {
 
+    /**
+     * Find all tours.
+     * @param sort sort type
+     * @return sorted list of tours
+     */
     Flux<Tour> findAll(Sort sort);
 
 }

@@ -8,10 +8,5 @@ import org.mapstruct.Mapper;
  * @author Lisov Ilya
  */
 @Mapper(componentModel = "spring")
-public interface UserMapper {
-
-    UserDto toDto(User user);
-
-    User toEntity(UserDto userDto);
-
+public interface UserMapper extends Mappable<User, UserDto> {
 }

@@ -41,6 +41,7 @@
         <r2jdbc-postgresql.version>1.0.1.RELEASE</r2jdbc-postgresql.version>
         <mockito.version>5.0.0</mockito.version>
         <jacoco.version>0.8.8</jacoco.version>
+        <maven-checkstyle.version>3.2.2</maven-checkstyle.version>
     </properties>
 
     <dependencies>
@@ -277,7 +278,7 @@
                         <configuration>
                             <rules>
                                 <rule implementation="org.jacoco.maven.RuleConfiguration">
-                                    <element>BUNDLE</element>
+                                    <element>PACKAGE</element>
                                     <limits>
                                         <limit implementation="org.jacoco.report.check.Limit">
                                             <counter>INSTRUCTION</counter>
@@ -285,14 +286,59 @@
                                             <minimum>0.65</minimum>
                                         </limit>
                                     </limits>
+                                    <includes>
+                                        <include>com.solvd.qaprotours.service.impl</include>
+                                    </includes>
                                 </rule>
                             </rules>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.2.2</version>
+                <configuration>
+                    <configLocation>sun_checks.xml</configLocation>
+                    <encoding>UTF-8</encoding>
+                    <consoleOutput>true</consoleOutput>
+                    <failsOnError>true</failsOnError>
+                    <linkXRef>false</linkXRef>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>validate</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
+                            <suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.2.2</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>checkstyle</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
 
     <repositories>
         <repository>

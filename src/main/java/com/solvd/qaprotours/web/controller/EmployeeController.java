@@ -9,7 +9,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
 /**
@@ -23,10 +27,17 @@ public class EmployeeController {
     private final UserClient userClient;
     private final UserMapper userMapper;
 
+    /**
+     * Create a new employee.
+     * @param userDto employee's data
+     * @return empty response
+     */
     @PostMapping
     @PreAuthorize("hasRole('EMPLOYEE')")
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<Void> create(@Validated(OnCreate.class) @RequestBody UserDto userDto) {
+    public Mono<Void> create(
+            @Validated(OnCreate.class) @RequestBody final UserDto userDto
+    ) {
         User user = userMapper.toEntity(userDto);
         user.setRole(User.Role.EMPLOYEE);
         return userClient.create(user);
