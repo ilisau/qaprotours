@@ -8,13 +8,5 @@ import org.mapstruct.Mapper;
  * @author Lisov Ilya
  */
 @Mapper(componentModel = "spring")
-public interface ImageMapper {
-
-    /**
-     * Converts Image to ImageDto.
-     * @param imageDto ImageDto object.
-     * @return ImageDto object.
-     */
-    Image toEntity(ImageDto imageDto);
-
+public interface ImageMapper extends Mappable<Image, ImageDto> {
 }
