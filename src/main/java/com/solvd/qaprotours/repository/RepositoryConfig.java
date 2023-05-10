@@ -20,7 +20,7 @@ public class RepositoryConfig {
     @Bean
     public R2dbcCustomConversions customConversions() {
         List<Converter<?, ?>> converters = new ArrayList<>();
-        converters.add(new ReadConverter());
+        converters.add(new TicketReadConverter());
         return R2dbcCustomConversions.of(MySqlDialect.INSTANCE, converters);
     }
 

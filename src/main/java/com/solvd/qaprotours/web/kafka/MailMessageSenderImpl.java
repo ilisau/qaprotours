@@ -14,13 +14,13 @@ import reactor.kafka.sender.SenderResult;
  */
 @Component
 @RequiredArgsConstructor
-public class MessageSenderImpl implements MessageSender {
+public class MailMessageSenderImpl implements MessageSender<MailDataDto> {
 
     private final KafkaSender<String, Object> sender;
 
     @Override
     public Flux<SenderResult<MailDataDto>> sendMessage(
-            final KafkaMessage kafkaMessage
+            final KafkaMessage<MailDataDto> kafkaMessage
     ) {
         return sender.send(
                 Mono.just(

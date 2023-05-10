@@ -12,7 +12,7 @@ import com.solvd.qaprotours.service.AuthService;
 import com.solvd.qaprotours.service.JwtService;
 import com.solvd.qaprotours.service.UserClient;
 import com.solvd.qaprotours.web.kafka.KafkaMessage;
-import com.solvd.qaprotours.web.kafka.MessageSender;
+import com.solvd.qaprotours.web.kafka.MailMessageSenderImpl;
 import com.solvd.qaprotours.web.mapper.MailDataMapper;
 import com.solvd.qaprotours.web.mapper.UserMapper;
 import com.solvd.qaprotours.web.security.jwt.JwtTokenType;
@@ -40,7 +40,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final MailDataMapper mailDataMapper;
     private final UserMapper userMapper;
-    private final MessageSender messageSender;
+    private final MailMessageSenderImpl messageSender;
 
     @Override
     public Mono<JwtResponse> login(final Authentication authentication) {

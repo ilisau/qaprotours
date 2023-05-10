@@ -81,6 +81,7 @@ public class TourController {
     @PreAuthorize("hasRole('EMPLOYEE')")
     public Mono<TourDto> saveDraft(@RequestBody final TourDto tourDto) {
         Tour tour = tourMapper.toEntity(tourDto);
+        tour.setDraft(true);
         return tourService.save(tour)
                 .map(tourMapper::toDto);
     }

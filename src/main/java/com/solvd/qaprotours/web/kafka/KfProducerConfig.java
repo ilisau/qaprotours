@@ -1,10 +1,11 @@
 package com.solvd.qaprotours.web.kafka;
 
 import com.jcabi.xml.XML;
-import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +21,6 @@ import java.util.Map;
  * @author Lisov Ilya
  */
 @Configuration
-@RequiredArgsConstructor
 public class KfProducerConfig {
 
     @Value("${spring.kafka.bootstrap-servers}")
@@ -28,8 +28,14 @@ public class KfProducerConfig {
 
     private final XML settings;
 
+    @Autowired
+    public KfProducerConfig(@Qualifier(value = "producer") XML settings) {
+        this.settings = settings;
+    }
+
     /**
      * Create a new topic for users.
+     *
      * @return topic
      */
     @Bean
@@ -53,7 +59,21 @@ public class KfProducerConfig {
     }
 
     /**
+     * Create a new topic for ElasticSearch.
+     *
+     * @return topic
+     */
+    @Bean
+    public NewTopic topicTour() {
+        return TopicBuilder.name("tours")
+                .partitions(5)
+                .replicas(1)
+                .build();
+    }
+
+    /**
      * Create a kafka admin object.
+     *
      * @return kafka admin
      */
     @Bean

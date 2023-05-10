@@ -6,7 +6,7 @@ import com.solvd.qaprotours.service.TicketService;
 import com.solvd.qaprotours.service.UserClient;
 import com.solvd.qaprotours.web.dto.MailDataDto;
 import com.solvd.qaprotours.web.kafka.KafkaMessage;
-import com.solvd.qaprotours.web.kafka.MessageSender;
+import com.solvd.qaprotours.web.kafka.MailMessageSenderImpl;
 import com.solvd.qaprotours.web.mapper.MailDataMapper;
 import com.solvd.qaprotours.web.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class Scheduler {
     private final UserClient userClient;
     private final MailDataMapper mailDataMapper;
     private final UserMapper userMapper;
-    private final MessageSender messageSender;
+    private final MailMessageSenderImpl messageSender;
 
     /**
      * Find all booked tickets and send notification emails to users.
