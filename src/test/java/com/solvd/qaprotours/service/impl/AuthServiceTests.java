@@ -16,20 +16,16 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.impl.DefaultClaims;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -66,7 +62,9 @@ public class AuthServiceTests {
                 .thenReturn(Mono.just(userDto));
         when(userMapper.toEntity(userDto))
                 .thenReturn(user);
-        when(passwordEncoder.matches(eq(authentication.getPassword()), anyString()))
+        when(passwordEncoder.matches(
+                ArgumentMatchers.eq(authentication.getPassword()),
+                ArgumentMatchers.anyString()))
                 .thenReturn(true);
         when(jwtService.generateToken(JwtTokenType.ACCESS, user))
                 .thenReturn(response.getAccessToken());
@@ -76,9 +74,11 @@ public class AuthServiceTests {
         StepVerifier.create(result)
                 .expectNext(response)
                 .verifyComplete();
-        verify(jwtService).generateToken(JwtTokenType.ACCESS, user);
-        verify(jwtService).generateToken(JwtTokenType.REFRESH, user);
-        verify(passwordEncoder).matches(eq(authentication.getPassword()), anyString());
+        Mockito.verify(jwtService).generateToken(JwtTokenType.ACCESS, user);
+        Mockito.verify(jwtService).generateToken(JwtTokenType.REFRESH, user);
+        Mockito.verify(passwordEncoder).matches(
+                ArgumentMatchers.eq(authentication.getPassword()),
+                ArgumentMatchers.anyString());
     }
 
     @Test
@@ -90,15 +90,21 @@ public class AuthServiceTests {
                 .thenReturn(Mono.just(userDto));
         when(userMapper.toEntity(userDto))
                 .thenReturn(user);
-        when(passwordEncoder.matches(eq(authentication.getPassword()), anyString()))
+        when(passwordEncoder.matches(
+                ArgumentMatchers.eq(authentication.getPassword()),
+                ArgumentMatchers.anyString()))
                 .thenReturn(false);
         Mono<JwtResponse> result = authService.login(authentication);
         StepVerifier.create(result)
                 .expectError(AuthException.class)
                 .verify();
-        verify(jwtService, never()).generateToken(JwtTokenType.ACCESS, user);
-        verify(jwtService, never()).generateToken(JwtTokenType.REFRESH, user);
-        verify(passwordEncoder).matches(eq(authentication.getPassword()), anyString());
+        Mockito.verify(jwtService, Mockito.never())
+                .generateToken(JwtTokenType.ACCESS, user);
+        Mockito.verify(jwtService, Mockito.never())
+                .generateToken(JwtTokenType.REFRESH, user);
+        Mockito.verify(passwordEncoder).matches(
+                ArgumentMatchers.eq(authentication.getPassword()),
+                ArgumentMatchers.anyString());
     }
 
     @Test
@@ -125,8 +131,8 @@ public class AuthServiceTests {
         StepVerifier.create(result)
                 .expectNext(response)
                 .verifyComplete();
-        verify(jwtService).generateToken(JwtTokenType.ACCESS, user);
-        verify(jwtService).generateToken(JwtTokenType.REFRESH, user);
+        Mockito.verify(jwtService).generateToken(JwtTokenType.ACCESS, user);
+        Mockito.verify(jwtService).generateToken(JwtTokenType.REFRESH, user);
     }
 
     @Test
@@ -150,13 +156,16 @@ public class AuthServiceTests {
                 .thenReturn(user);
         when(jwtService.generateToken(JwtTokenType.RESET, user))
                 .thenReturn("RESET TOKEN");
-        when(messageSender.sendMessage(eq("mail"), anyInt(), eq(userId), any()))
+        when(messageSender.sendMessage(ArgumentMatchers.eq("mail"),
+                ArgumentMatchers.anyInt(),
+                ArgumentMatchers.eq(userId),
+                ArgumentMatchers.any()))
                 .thenReturn(Flux.empty());
         Mono<Void> result = authService.sendRestoreToken(userEmail);
         StepVerifier.create(result)
                 .expectNextCount(0)
                 .verifyComplete();
-        verify(jwtService).generateToken(JwtTokenType.RESET, user);
+        Mockito.verify(jwtService).generateToken(JwtTokenType.RESET, user);
     }
 
     @Test
@@ -178,7 +187,7 @@ public class AuthServiceTests {
         StepVerifier.create(result)
                 .expectNextCount(0)
                 .verifyComplete();
-        verify(userClient).updatePassword(userId, password);
+        Mockito.verify(userClient).updatePassword(userId, password);
     }
 
     @Test
@@ -198,7 +207,8 @@ public class AuthServiceTests {
         StepVerifier.create(result)
                 .expectError()
                 .verify();
-        verify(userClient, never()).updatePassword(userId, password);
+        Mockito.verify(userClient, Mockito.never())
+                .updatePassword(userId, password);
     }
 
     @Test
@@ -212,7 +222,8 @@ public class AuthServiceTests {
         StepVerifier.create(result)
                 .expectError()
                 .verify();
-        verify(userClient, never()).updatePassword(userId, password);
+        Mockito.verify(userClient, Mockito.never())
+                .updatePassword(userId, password);
     }
 
     private User generateUser() {

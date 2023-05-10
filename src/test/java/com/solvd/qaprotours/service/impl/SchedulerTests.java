@@ -12,22 +12,16 @@ import com.solvd.qaprotours.web.mapper.MailDataMapper;
 import com.solvd.qaprotours.web.mapper.UserMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class SchedulerTests {
@@ -56,21 +50,27 @@ public class SchedulerTests {
         UserDto userDto = generateUserDto();
         Tour tour = generateTour();
         List<Ticket> tickets = generateTickets(user, tour);
-        when(ticketService.getAllSoonTickets())
+        Mockito.when(ticketService.getAllSoonTickets())
                 .thenReturn(Flux.just(tickets.toArray(new Ticket[0])));
-        when(userClient.getById(user.getId()))
+        Mockito.when(userClient.getById(user.getId()))
                 .thenReturn(Mono.just(userDto));
-        when(userMapper.toEntity(userDto))
+        Mockito.when(userMapper.toEntity(userDto))
                 .thenReturn(user);
-        when(mailDataMapper.toDto(any()))
+        Mockito.when(mailDataMapper.toDto(ArgumentMatchers.any()))
                 .thenReturn(new MailDataDto());
-        when(messageSender
-                .sendMessage(eq("mail"), anyInt(), anyString(), any())
-        )
+        Mockito.when(messageSender
+                        .sendMessage(ArgumentMatchers.eq("mail"),
+                                ArgumentMatchers.anyInt(),
+                                ArgumentMatchers.anyString(),
+                                ArgumentMatchers.any())
+                )
                 .thenReturn(Flux.empty());
         scheduler.findBookedTickets();
-        verify(messageSender, times(tickets.size()))
-                .sendMessage(eq("mail"), anyInt(), anyString(), any());
+        Mockito.verify(messageSender, Mockito.times(tickets.size()))
+                .sendMessage(ArgumentMatchers.eq("mail"),
+                        ArgumentMatchers.anyInt(),
+                        ArgumentMatchers.anyString(),
+                        ArgumentMatchers.any());
     }
 
     @Test
@@ -79,21 +79,27 @@ public class SchedulerTests {
         UserDto userDto = generateUserDto();
         Tour tour = generateTour();
         List<Ticket> tickets = generateTickets(user, tour);
-        when(ticketService.getAllSoonNotConfirmedTickets())
+        Mockito.when(ticketService.getAllSoonNotConfirmedTickets())
                 .thenReturn(Flux.just(tickets.toArray(new Ticket[0])));
-        when(userClient.getById(user.getId()))
+        Mockito.when(userClient.getById(user.getId()))
                 .thenReturn(Mono.just(userDto));
-        when(userMapper.toEntity(userDto))
+        Mockito.when(userMapper.toEntity(userDto))
                 .thenReturn(user);
-        when(mailDataMapper.toDto(any()))
+        Mockito.when(mailDataMapper.toDto(ArgumentMatchers.any()))
                 .thenReturn(new MailDataDto());
-        when(messageSender
-                .sendMessage(eq("mail"), anyInt(), anyString(), any())
-        )
+        Mockito.when(messageSender
+                        .sendMessage(ArgumentMatchers.eq("mail"),
+                                ArgumentMatchers.anyInt(),
+                                ArgumentMatchers.anyString(),
+                                ArgumentMatchers.any())
+                )
                 .thenReturn(Flux.empty());
         scheduler.findNotConfirmedTickets();
-        verify(messageSender, times(tickets.size()))
-                .sendMessage(eq("mail"), anyInt(), anyString(), any());
+        Mockito.verify(messageSender, Mockito.times(tickets.size()))
+                .sendMessage(ArgumentMatchers.eq("mail"),
+                        ArgumentMatchers.anyInt(),
+                        ArgumentMatchers.anyString(),
+                        ArgumentMatchers.any());
     }
 
     private User generateUser() {

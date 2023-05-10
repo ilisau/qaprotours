@@ -8,8 +8,10 @@ import com.solvd.qaprotours.repository.TicketRepository;
 import com.solvd.qaprotours.service.TourService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -18,12 +20,6 @@ import reactor.test.StepVerifier;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class TicketServiceTests {
@@ -41,32 +37,32 @@ public class TicketServiceTests {
     void getByExistingId() {
         Long id = 1L;
         Ticket ticket = new Ticket();
-        when(ticketRepository.findById(id))
+        Mockito.when(ticketRepository.findById(id))
                 .thenReturn(Mono.just(ticket));
         Mono<Ticket> result = ticketService.getById(id);
         StepVerifier.create(result)
                 .expectNext(ticket)
                 .verifyComplete();
-        verify(ticketRepository).findById(id);
+        Mockito.verify(ticketRepository).findById(id);
     }
 
     @Test
     void getByNotExistingId() {
         Long id = 1L;
-        when(ticketRepository.findById(id))
+        Mockito.when(ticketRepository.findById(id))
                 .thenReturn(Mono.justOrEmpty(Optional.empty()));
         Mono<Ticket> result = ticketService.getById(id);
         StepVerifier.create(result)
                 .expectError(ResourceDoesNotExistException.class)
                 .verify();
-        verify(ticketRepository).findById(id);
+        Mockito.verify(ticketRepository).findById(id);
     }
 
     @Test
     void getAllByUserId() {
         String userId = "1";
         List<Ticket> tickets = generateTickets();
-        when(ticketRepository.findAllByUserId(userId))
+        Mockito.when(ticketRepository.findAllByUserId(userId))
                 .thenReturn(Flux.just(tickets.toArray(new Ticket[0])));
         Flux<Ticket> result = ticketService.getAllByUserId(userId);
         StepVerifier.create(result)
@@ -79,10 +75,10 @@ public class TicketServiceTests {
     @Test
     void getAllSoonTickets() {
         List<Ticket> tickets = generateTickets();
-        when(ticketRepository.findAllByTourArrivalTimeIsAfterAndTourArrivalTimeIsBeforeAndStatus(
-                any(),
-                any(),
-                eq(Ticket.Status.CONFIRMED)))
+        Mockito.when(ticketRepository.findAllByTourArrivalTimeIsAfterAndTourArrivalTimeIsBeforeAndStatus(
+                        ArgumentMatchers.any(),
+                        ArgumentMatchers.any(),
+                        ArgumentMatchers.eq(Ticket.Status.CONFIRMED)))
                 .thenReturn(Flux.just(tickets.toArray(new Ticket[0])));
         Flux<Ticket> result = ticketService.getAllSoonTickets();
         StepVerifier.create(result)
@@ -95,9 +91,9 @@ public class TicketServiceTests {
     @Test
     void getAllSoonNotConfirmedTickets() {
         List<Ticket> tickets = generateTickets();
-        when(ticketRepository.findAllByTourArrivalTimeIsBeforeAndStatus(
-                any(),
-                eq(Ticket.Status.ORDERED)))
+        Mockito.when(ticketRepository.findAllByTourArrivalTimeIsBeforeAndStatus(
+                        ArgumentMatchers.any(),
+                        ArgumentMatchers.eq(Ticket.Status.ORDERED)))
                 .thenReturn(Flux.just(tickets.toArray(new Ticket[0])));
         Flux<Ticket> result = ticketService.getAllSoonNotConfirmedTickets();
         StepVerifier.create(result)
@@ -118,17 +114,17 @@ public class TicketServiceTests {
         tour.setArrivalTime(LocalDateTime.now().plusDays(1));
         Ticket ticket = new Ticket();
         ticket.setTour(tour);
-        when(tourService.getById(tourId))
+        Mockito.when(tourService.getById(tourId))
                 .thenReturn(Mono.just(tour));
-        when(ticketRepository.save(any()))
+        Mockito.when(ticketRepository.save(ArgumentMatchers.any()))
                 .thenReturn(Mono.just(ticket));
-        when(tourService.save(any()))
+        Mockito.when(tourService.save(ArgumentMatchers.any()))
                 .thenReturn(Mono.empty());
         Mono<Void> result = ticketService.create(userId, tourId, peopleAmount);
         StepVerifier.create(result)
                 .expectNextCount(0)
                 .verifyComplete();
-        verify(ticketRepository).save(any());
+        Mockito.verify(ticketRepository).save(ArgumentMatchers.any());
     }
 
     @Test
@@ -142,9 +138,10 @@ public class TicketServiceTests {
         tour.setArrivalTime(LocalDateTime.now().plusDays(1));
         Ticket ticket = new Ticket();
         ticket.setTour(tour);
-        when(tourService.getById(tourId))
+        Mockito.when(tourService.getById(tourId))
                 .thenReturn(Mono.just(tour));
-        verify(ticketRepository, never()).save(any());
+        Mockito.verify(ticketRepository, Mockito.never())
+                .save(ArgumentMatchers.any());
         StepVerifier.create(ticketService.create(userId, tourId, peopleAmount))
                 .expectError(NoFreePlacesException.class)
                 .verify();
@@ -161,18 +158,18 @@ public class TicketServiceTests {
         tour.setArrivalTime(LocalDateTime.now().plusDays(1));
         tour.setPlacesAmount(2);
         ticket.setTour(tour);
-        when(ticketRepository.findById(ticketId))
+        Mockito.when(ticketRepository.findById(ticketId))
                 .thenReturn(Mono.just(ticket));
-        when(tourService.save(any()))
+        Mockito.when(tourService.save(ArgumentMatchers.any()))
                 .thenReturn(Mono.just(tour));
-        when(ticketRepository.deleteById(ticketId))
+        Mockito.when(ticketRepository.deleteById(ticketId))
                 .thenReturn(Mono.empty());
         Mono<Void> result = ticketService.delete(ticketId);
         StepVerifier.create(result)
                 .expectNextCount(0)
                 .verifyComplete();
-        verify(ticketRepository).deleteById(ticketId);
-        verify(tourService).save(any());
+        Mockito.verify(ticketRepository).deleteById(ticketId);
+        Mockito.verify(tourService).save(ArgumentMatchers.any());
     }
 
     @Test
@@ -180,16 +177,16 @@ public class TicketServiceTests {
         Long ticketId = 1L;
         Ticket ticket = new Ticket();
         ticket.setId(ticketId);
-        when(ticketRepository.findById(ticketId))
+        Mockito.when(ticketRepository.findById(ticketId))
                 .thenReturn(Mono.just(ticket));
-        when(ticketRepository.save(any()))
+        Mockito.when(ticketRepository.save(ArgumentMatchers.any()))
                 .thenReturn(Mono.just(ticket));
         ticket.setStatus(Ticket.Status.CONFIRMED);
         Mono<Void> result = ticketService.confirm(ticketId);
         StepVerifier.create(result)
                 .expectNextCount(0)
                 .verifyComplete();
-        verify(ticketRepository).save(ticket);
+        Mockito.verify(ticketRepository).save(ticket);
     }
 
     @Test
@@ -203,18 +200,18 @@ public class TicketServiceTests {
         tour.setArrivalTime(LocalDateTime.now().plusDays(1));
         tour.setPlacesAmount(2);
         ticket.setTour(tour);
-        when(ticketRepository.findById(ticketId))
+        Mockito.when(ticketRepository.findById(ticketId))
                 .thenReturn(Mono.just(ticket));
-        when(tourService.save(any()))
+        Mockito.when(tourService.save(ArgumentMatchers.any()))
                 .thenReturn(Mono.just(tour));
-        when(ticketRepository.save(any()))
+        Mockito.when(ticketRepository.save(ArgumentMatchers.any()))
                 .thenReturn(Mono.just(ticket));
         Mono<Void> result = ticketService.cancel(ticketId);
         StepVerifier.create(result)
                 .expectNextCount(0)
                 .verifyComplete();
-        verify(ticketRepository).save(any());
-        verify(tourService).save(any());
+        Mockito.verify(ticketRepository).save(ArgumentMatchers.any());
+        Mockito.verify(tourService).save(ArgumentMatchers.any());
     }
 
     private List<Ticket> generateTickets() {

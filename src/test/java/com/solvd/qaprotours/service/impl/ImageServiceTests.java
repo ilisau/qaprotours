@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import reactor.core.publisher.Mono;
@@ -22,10 +23,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class ImageServiceTests {
@@ -50,16 +47,17 @@ public class ImageServiceTests {
         try {
             Tour tour = generateTour();
             Image image = generateImage();
-            when(minioClient.bucketExists(any()))
+            Mockito.when(minioClient.bucketExists(Mockito.any()))
                     .thenReturn(true);
-            when(minioProperties.getBucket())
+            Mockito.when(minioProperties.getBucket())
                     .thenReturn("tours");
-            when(tourService.getById(tour.getId()))
+            Mockito.when(tourService.getById(tour.getId()))
                     .thenReturn(Mono.just(tour));
-            when(tourService.addImage(eq(tour.getId()), eq("tour_1_full.jpeg")))
+            Mockito.when(tourService.addImage(Mockito.eq(tour.getId()),
+                            Mockito.eq("tour_1_full.jpeg")))
                     .thenReturn(Mono.empty());
             Integer thumbHeight = 100;
-            when(imageProperties.getThumbnails())
+            Mockito.when(imageProperties.getThumbnails())
                     .thenReturn(List.of(thumbHeight));
             Mono<Void> result = imageService.uploadImage(1L, image);
             StepVerifier.create(result)
@@ -86,7 +84,10 @@ public class ImageServiceTests {
     }
 
     private InputStream generateImageByteStream() throws Exception {
-        BufferedImage image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(
+                100,
+                100,
+                BufferedImage.TYPE_INT_RGB);
         for (int x = 0; x < 100; x++) {
             for (int y = 0; y < 100; y++) {
                 int color = (x % 2 == 0 && y % 2 == 0) ? 0xFF0000 : 0xFFFFFF;

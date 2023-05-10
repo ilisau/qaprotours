@@ -4,10 +4,13 @@ import com.solvd.qaprotours.domain.exception.ResourceDoesNotExistException;
 import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.domain.tour.TourCriteria;
 import com.solvd.qaprotours.repository.TourRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -16,13 +19,6 @@ import reactor.test.StepVerifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class TourServiceTests {
@@ -39,7 +35,7 @@ public class TourServiceTests {
         Integer pageSize = 5;
         TourCriteria tourCriteria = null;
         List<Tour> tours = generateTours();
-        when(tourRepository.findAll(any()))
+        Mockito.when(tourRepository.findAll(ArgumentMatchers.any()))
                 .thenReturn(Flux.just(tours.toArray(new Tour[0])));
         Flux<Tour> result = tourService.getAll(currentPage, pageSize, tourCriteria);
         StepVerifier.create(result)
@@ -55,7 +51,7 @@ public class TourServiceTests {
         Integer pageSize = null;
         TourCriteria tourCriteria = null;
         List<Tour> tours = generateTours();
-        when(tourRepository.findAll(any()))
+        Mockito.when(tourRepository.findAll(ArgumentMatchers.any()))
                 .thenReturn(Flux.just(tours.toArray(new Tour[0])));
         Flux<Tour> result = tourService.getAll(currentPage, pageSize, tourCriteria);
         StepVerifier.create(result)
@@ -68,79 +64,79 @@ public class TourServiceTests {
     @Test
     void save() {
         Tour tour = generateTour();
-        when(tourRepository.save(tour))
+        Mockito.when(tourRepository.save(tour))
                 .thenReturn(Mono.just(tour));
         Mono<Tour> result = tourService.save(tour);
         StepVerifier.create(result)
                 .expectNext(tour)
                 .verifyComplete();
-        verify(tourRepository).save(tour);
-        assertTrue(tour.isDraft());
+        Mockito.verify(tourRepository).save(tour);
+        Assertions.assertTrue(tour.isDraft());
     }
 
     @Test
     void publish() {
         Tour tour = generateTour();
-        when(tourRepository.save(tour))
+        Mockito.when(tourRepository.save(tour))
                 .thenReturn(Mono.just(tour));
         Mono<Tour> result = tourService.publish(tour);
         StepVerifier.create(result)
                 .expectNext(tour)
                 .verifyComplete();
-        verify(tourRepository).save(tour);
-        assertFalse(tour.isDraft());
+        Mockito.verify(tourRepository).save(tour);
+        Assertions.assertFalse(tour.isDraft());
     }
 
     @Test
     void getByExistingId() {
         Tour tour = generateTour();
-        when(tourRepository.findById(tour.getId()))
+        Mockito.when(tourRepository.findById(tour.getId()))
                 .thenReturn(Mono.just(tour));
         Mono<Tour> result = tourService.getById(tour.getId());
         StepVerifier.create(result)
                 .expectNext(tour)
                 .verifyComplete();
-        verify(tourRepository).findById(tour.getId());
+        Mockito.verify(tourRepository).findById(tour.getId());
     }
 
     @Test
     void getByNotExistingId() {
         Long id = 1L;
-        when(tourRepository.findById(id))
+        Mockito.when(tourRepository.findById(id))
                 .thenReturn(Mono.justOrEmpty(Optional.empty()));
         Mono<Tour> result = tourService.getById(id);
         StepVerifier.create(result)
                 .expectError(ResourceDoesNotExistException.class)
                 .verify();
-        verify(tourRepository).findById(id);
+        Mockito.verify(tourRepository).findById(id);
     }
 
     @Test
     void delete() {
         Long tourId = 1L;
-        when(tourRepository.deleteById(tourId))
+        Mockito.when(tourRepository.deleteById(tourId))
                 .thenReturn(Mono.empty());
         Mono<Void> result = tourService.delete(tourId);
         StepVerifier.create(result)
                 .expectNextCount(0)
                 .verifyComplete();
-        verify(tourRepository).deleteById(tourId);
+        Mockito.verify(tourRepository).deleteById(tourId);
     }
 
     @Test
     void addImage() {
         Tour tour = generateTour();
         String fileName = "image.jpeg";
-        when(tourRepository.findById(tour.getId()))
+        Mockito.when(tourRepository.findById(tour.getId()))
                 .thenReturn(Mono.just(tour));
-        when(tourRepository.save(tour))
+        Mockito.when(tourRepository.save(tour))
                 .thenReturn(Mono.just(tour));
         Mono<Void> result = tourService.addImage(tour.getId(), fileName);
         StepVerifier.create(result)
                 .expectNextCount(0)
                 .verifyComplete();
-        verify(tourRepository).save(tour);
-        assertEquals(tour.getImageUrls().size(), 1);
+        Mockito.verify(tourRepository).save(tour);
+        Assertions.assertEquals(tour.getImageUrls().size(), 1);
     }
 
     private Tour generateTour() {
