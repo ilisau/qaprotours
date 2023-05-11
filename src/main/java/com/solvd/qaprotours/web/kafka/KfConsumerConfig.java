@@ -25,8 +25,13 @@ public class KfConsumerConfig {
 
     private final XML settings;
 
+    /**
+     * Constructor.
+     *
+     * @param settings consumer settings
+     */
     @Autowired
-    public KfConsumerConfig(@Qualifier(value = "consumer") XML settings) {
+    public KfConsumerConfig(@Qualifier(value = "consumer") final XML settings) {
         this.settings = settings;
     }
 
@@ -65,7 +70,7 @@ public class KfConsumerConfig {
         );
         ReceiverOptions<String, Object> receiverOptions = ReceiverOptions
                 .create(props);
-        return receiverOptions.subscription(Collections.singleton("mail"))
+        return receiverOptions.subscription(Collections.singleton("items"))
                 .addAssignListener(partitions ->
                         System.out.println("onPartitionAssigned: "
                                 + partitions))

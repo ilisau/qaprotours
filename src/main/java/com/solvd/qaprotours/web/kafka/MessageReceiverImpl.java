@@ -26,7 +26,8 @@ public class MessageReceiverImpl implements MessageReceiver {
     public void fetch() {
         receiver.receive()
                 .subscribe(r -> {
-                    KafkaMessage<TourDto> json = (KafkaMessage<TourDto>) r.value();
+                    KafkaMessage<TourDto> json =
+                            (KafkaMessage<TourDto>) r.value();
                     //TODO push to Elastic here
                     r.receiverOffset().acknowledge();
                 });

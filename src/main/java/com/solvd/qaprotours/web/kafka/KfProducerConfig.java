@@ -28,8 +28,13 @@ public class KfProducerConfig {
 
     private final XML settings;
 
+    /**
+     * Constructor.
+     *
+     * @param settings producer settings
+     */
     @Autowired
-    public KfProducerConfig(@Qualifier(value = "producer") XML settings) {
+    public KfProducerConfig(@Qualifier(value = "producer") final XML settings) {
         this.settings = settings;
     }
 

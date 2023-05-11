@@ -5,6 +5,7 @@ import com.solvd.qaprotours.domain.exception.ResourceDoesNotExistException;
 import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.domain.tour.TourCriteria;
 import com.solvd.qaprotours.repository.TourRepository;
+import com.solvd.qaprotours.service.HotelService;
 import com.solvd.qaprotours.service.TourService;
 import com.solvd.qaprotours.web.dto.TourDto;
 import com.solvd.qaprotours.web.kafka.KafkaMessage;
@@ -28,6 +29,7 @@ public class TourServiceImpl implements TourService {
     private static final int PAGE_SIZE = 20;
     private final TourMessageSenderImpl messageSender;
     private final TourMapper tourMapper;
+    private final HotelService hotelService;
 
     @Override
     @Transactional(readOnly = true)
@@ -50,6 +52,9 @@ public class TourServiceImpl implements TourService {
     @Override
     @Transactional
     public Mono<Tour> save(final Tour tour) {
+        if (tour.getHotel() != null) {
+            hotelService.save(tour.getHotel()).subscribe();
+        }
         return tourRepository.save(tour)
                 .map(t -> {
                     KafkaMessage<TourDto> message = new KafkaMessage<>();
