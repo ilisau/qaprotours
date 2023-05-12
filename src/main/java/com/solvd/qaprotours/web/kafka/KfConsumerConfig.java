@@ -70,7 +70,7 @@ public class KfConsumerConfig {
         );
         ReceiverOptions<String, Object> receiverOptions = ReceiverOptions
                 .create(props);
-        return receiverOptions.subscription(Collections.singleton("items"))
+        return receiverOptions.subscription(Collections.singleton("tours"))
                 .addAssignListener(partitions ->
                         System.out.println("onPartitionAssigned: "
                                 + partitions))

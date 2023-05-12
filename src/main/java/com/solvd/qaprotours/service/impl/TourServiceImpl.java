@@ -9,7 +9,7 @@ import com.solvd.qaprotours.service.HotelService;
 import com.solvd.qaprotours.service.TourService;
 import com.solvd.qaprotours.web.dto.TourDto;
 import com.solvd.qaprotours.web.kafka.KafkaMessage;
-import com.solvd.qaprotours.web.kafka.TourMessageSenderImpl;
+import com.solvd.qaprotours.web.kafka.MessageSender;
 import com.solvd.qaprotours.web.mapper.TourMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -27,7 +27,7 @@ public class TourServiceImpl implements TourService {
 
     private final TourRepository tourRepository;
     private static final int PAGE_SIZE = 20;
-    private final TourMessageSenderImpl messageSender;
+    private final MessageSender<TourDto> messageSender;
     private final TourMapper tourMapper;
     private final HotelService hotelService;
 
@@ -56,13 +56,14 @@ public class TourServiceImpl implements TourService {
             hotelService.save(tour.getHotel()).subscribe();
         }
         return tourRepository.save(tour)
-                .map(t -> {
+                .flatMap(t -> {
                     KafkaMessage<TourDto> message = new KafkaMessage<>();
                     message.setTopic("tours");
                     message.setPartition(0);
                     message.setKey(t.getId().toString());
                     message.setData(tourMapper.toDto(t));
-                    return messageSender.sendMessage(message);
+                    return messageSender.sendMessage(message)
+                            .then();
                 })
                 .then(Mono.just(tour));
     }
@@ -72,13 +73,14 @@ public class TourServiceImpl implements TourService {
     public Mono<Tour> publish(final Tour tour) {
         tour.setDraft(false);
         return tourRepository.save(tour)
-                .map(t -> {
+                .flatMap(t -> {
                     KafkaMessage<TourDto> message = new KafkaMessage<>();
                     message.setTopic("tours");
                     message.setPartition(0);
                     message.setKey(t.getId().toString());
                     message.setData(tourMapper.toDto(t));
-                    return messageSender.sendMessage(message);
+                    return messageSender.sendMessage(message)
+                            .then();
                 })
                 .then(Mono.just(tour));
     }
@@ -99,13 +101,14 @@ public class TourServiceImpl implements TourService {
     @Transactional
     public Mono<Void> delete(final Long tourId) {
         return tourRepository.deleteById(tourId)
-                .map(t -> {
+                .flatMap(t -> {
                     KafkaMessage<TourDto> message = new KafkaMessage<>();
                     message.setTopic("tours");
                     message.setPartition(0);
                     message.setKey(tourId.toString());
                     message.setData(null);
-                    return messageSender.sendMessage(message);
+                    return messageSender.sendMessage(message)
+                            .then();
                 })
                 .then();
     }
@@ -119,13 +122,14 @@ public class TourServiceImpl implements TourService {
                     return tour;
                 })
                 .flatMap(tourRepository::save)
-                .map(t -> {
+                .flatMap(t -> {
                     KafkaMessage<TourDto> message = new KafkaMessage<>();
                     message.setTopic("tours");
                     message.setPartition(0);
                     message.setKey(t.getId().toString());
                     message.setData(tourMapper.toDto(t));
-                    return messageSender.sendMessage(message);
+                    return messageSender.sendMessage(message)
+                            .then();
                 })
                 .then();
     }

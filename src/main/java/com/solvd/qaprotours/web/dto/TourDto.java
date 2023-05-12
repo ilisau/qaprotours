@@ -1,5 +1,6 @@
 package com.solvd.qaprotours.web.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.web.dto.validation.OnCreate;
@@ -87,10 +88,12 @@ public class TourDto {
 
     @NotNull(message = "arrival time cannot be null",
             groups = {OnCreate.class})
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime arrivalTime;
 
     @NotNull(message = "departure time cannot be null",
             groups = {OnCreate.class})
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime departureTime;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

@@ -25,6 +25,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.File;
+import java.time.format.DateTimeFormatter;
 
 /**
  * @author Ermakovich Kseniya, Lisov Ilya
@@ -137,6 +138,11 @@ public class WebConfig {
         ElasticsearchTransport transport = new RestClientTransport(
                 restClient, new JacksonJsonpMapper());
         return new ElasticsearchClient(transport);
+    }
+
+    @Bean
+    public DateTimeFormatter dateTimeFormatter() {
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     }
 
 }

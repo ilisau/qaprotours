@@ -43,6 +43,7 @@
         <jacoco.version>0.8.8</jacoco.version>
         <maven-checkstyle.version>3.2.2</maven-checkstyle.version>
         <elastic.version>8.7.1</elastic.version>
+        <jackson-datatype.version>2.15.0</jackson-datatype.version>
     </properties>
 
     <dependencies>
@@ -242,6 +243,12 @@
             <groupId>co.elastic.clients</groupId>
             <artifactId>elasticsearch-java</artifactId>
             <version>${elastic.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>${jackson-datatype.version}</version>
         </dependency>
 
     </dependencies>

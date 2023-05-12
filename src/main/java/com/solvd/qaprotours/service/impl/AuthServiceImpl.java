@@ -11,8 +11,9 @@ import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.service.AuthService;
 import com.solvd.qaprotours.service.JwtService;
 import com.solvd.qaprotours.service.UserClient;
+import com.solvd.qaprotours.web.dto.MailDataDto;
 import com.solvd.qaprotours.web.kafka.KafkaMessage;
-import com.solvd.qaprotours.web.kafka.MailMessageSenderImpl;
+import com.solvd.qaprotours.web.kafka.MessageSenderImpl;
 import com.solvd.qaprotours.web.mapper.MailDataMapper;
 import com.solvd.qaprotours.web.mapper.UserMapper;
 import com.solvd.qaprotours.web.security.jwt.JwtTokenType;
@@ -40,7 +41,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final MailDataMapper mailDataMapper;
     private final UserMapper userMapper;
-    private final MailMessageSenderImpl messageSender;
+    private final MessageSenderImpl<MailDataDto> messageSender;
 
     @Override
     public Mono<JwtResponse> login(final Authentication authentication) {
@@ -107,13 +108,14 @@ public class AuthServiceImpl implements AuthService {
                     String token =
                             jwtService.generateToken(JwtTokenType.RESET, user);
                     params.put("token", token);
+                    params.put("user.id", user.getId());
                     params.put("user.email", user.getEmail());
                     params.put("user.name", user.getName());
                     params.put("user.surname", user.getSurname());
                     return params;
                 })
                 .flatMap(params -> {
-                    KafkaMessage message = new KafkaMessage();
+                    KafkaMessage<MailDataDto> message = new KafkaMessage<>();
                     message.setTopic("mail");
                     message.setKey(params.get("user.id").toString());
                     message.setData(mailDataMapper.toDto(new MailData(
