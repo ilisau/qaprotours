@@ -9,6 +9,7 @@ import reactor.kafka.sender.SenderRecord;
 import reactor.kafka.sender.SenderResult;
 
 /**
+ * @param <K> param of a sending object
  * @author Lisov Ilya
  */
 @Component

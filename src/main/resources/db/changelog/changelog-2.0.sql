@@ -24,8 +24,9 @@ VALUES (1, 'Inspiring Minsk', 'Tour through the most popular Minsk landmarks', '
        (4, 'Paris tour', 'Tour through the most popular Paris landmarks', 'France', 'Paris', 'CULTURE', 'ALL_INCLUSIVE',
         4, '2022-12-28 15:25:00', '2022-01-03 23:00:00', 35, 450, 3.7, 7, 48.8566, 2.3522, false);
 
-INSERT INTO tickets (id, user_id, tour_id, order_time, status, client_amount)
+INSERT INTO tickets (id, user_id, tour_id, order_time, status, clients_amount)
 VALUES (1, '641ac0ef33728c2416b8c367', 1, '2021-11-04 05:00:00', 'ORDERED', 1),
-       (2, '641ac0ef33728c2416b8c367', 2, '2021-11-02 05:00:00', 'CONFIRMED', 2),
+       (2, '641ac0ef33728c2416b8c367', 2, '2021-11-02 05:00:00', 'CONFIRMED',
+        2),
        (3, '641ac3efc26fb5145313680f', 3, '2021-11-03 05:00:00', 'ORDERED', 3),
        (4, '641ac456c26fb51453136810', 4, '2021-11-04 05:40:00', 'ORDERED', 3);

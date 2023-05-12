@@ -140,6 +140,11 @@ public class WebConfig {
         return new ElasticsearchClient(transport);
     }
 
+    /**
+     * Creates a DateTimeFormatter.
+     *
+     * @return created bean
+     */
     @Bean
     public DateTimeFormatter dateTimeFormatter() {
         return DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");

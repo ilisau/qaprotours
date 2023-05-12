@@ -37,7 +37,8 @@ public class MessageReceiverImpl implements MessageReceiver {
         receiver.receive()
                 .subscribe(r -> {
                     Gson gson = new GsonBuilder()
-                            .registerTypeAdapter(LocalDateTime.class, localDateTimeDeserializer)
+                            .registerTypeAdapter(LocalDateTime.class,
+                                    localDateTimeDeserializer)
                             .create();
                     TourDto tour = gson
                             .fromJson(r.value().toString(), TourDto.class);
