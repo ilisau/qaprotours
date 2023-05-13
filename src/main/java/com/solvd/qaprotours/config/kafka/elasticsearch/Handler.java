@@ -1,4 +1,4 @@
-package com.solvd.qaprotours.web.kafka.elasticsearch;
+package com.solvd.qaprotours.config.kafka.elasticsearch;
 
 import reactor.kafka.receiver.ReceiverRecord;
 

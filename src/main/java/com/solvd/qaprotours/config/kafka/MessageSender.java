@@ -1,4 +1,4 @@
-package com.solvd.qaprotours.web.kafka;
+package com.solvd.qaprotours.config.kafka;
 
 import reactor.core.publisher.Flux;
 import reactor.kafka.sender.SenderResult;

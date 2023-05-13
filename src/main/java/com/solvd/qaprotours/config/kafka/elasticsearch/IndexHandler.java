@@ -1,11 +1,11 @@
-package com.solvd.qaprotours.web.kafka.elasticsearch;
+package com.solvd.qaprotours.config.kafka.elasticsearch;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.IndexRequest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.solvd.qaprotours.config.kafka.LocalDateTimeDeserializer;
 import com.solvd.qaprotours.web.dto.TourDto;
-import com.solvd.qaprotours.web.kafka.LocalDateTimeDeserializer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

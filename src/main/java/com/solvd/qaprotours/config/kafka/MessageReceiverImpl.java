@@ -1,7 +1,6 @@
-package com.solvd.qaprotours.web.kafka;
+package com.solvd.qaprotours.config.kafka;
 
-import com.solvd.qaprotours.web.kafka.elasticsearch.DeleteHandler;
-import com.solvd.qaprotours.web.kafka.elasticsearch.IndexHandler;
+import com.solvd.qaprotours.config.kafka.elasticsearch.HandlersMap;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -12,8 +11,7 @@ import reactor.kafka.receiver.KafkaReceiver;
 public class MessageReceiverImpl implements MessageReceiver {
 
     private final KafkaReceiver<String, Object> receiver;
-    private final IndexHandler indexHandler;
-    private final DeleteHandler deleteHandler;
+    private final HandlersMap handlersMap;
 
     /**
      * Initialize receiver.
@@ -26,10 +24,7 @@ public class MessageReceiverImpl implements MessageReceiver {
     @Override
     public void fetch() {
         receiver.receive()
-                .subscribe(r -> {
-                    indexHandler.handleMessage(r);
-                    deleteHandler.handleMessage(r);
-                });
+                .subscribe(handlersMap::handleMessage);
     }
 
 }

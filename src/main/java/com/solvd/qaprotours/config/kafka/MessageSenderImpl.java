@@ -1,4 +1,4 @@
-package com.solvd.qaprotours.web.kafka;
+package com.solvd.qaprotours.config.kafka;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

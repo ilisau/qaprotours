@@ -1,5 +1,7 @@
 package com.solvd.qaprotours.service.impl;
 
+import com.solvd.qaprotours.config.kafka.KafkaMessage;
+import com.solvd.qaprotours.config.kafka.MessageSender;
 import com.solvd.qaprotours.domain.Pagination;
 import com.solvd.qaprotours.domain.exception.ResourceDoesNotExistException;
 import com.solvd.qaprotours.domain.tour.Tour;
@@ -8,8 +10,6 @@ import com.solvd.qaprotours.repository.TourRepository;
 import com.solvd.qaprotours.service.HotelService;
 import com.solvd.qaprotours.service.TourService;
 import com.solvd.qaprotours.web.dto.TourDto;
-import com.solvd.qaprotours.web.kafka.KafkaMessage;
-import com.solvd.qaprotours.web.kafka.MessageSender;
 import com.solvd.qaprotours.web.mapper.TourMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -26,7 +26,6 @@ import reactor.core.publisher.Mono;
 public class TourServiceImpl implements TourService {
 
     private final TourRepository tourRepository;
-    private static final int PAGE_SIZE = 20;
     private final MessageSender<TourDto> messageSender;
     private final TourMapper tourMapper;
     private final HotelService hotelService;
@@ -35,10 +34,11 @@ public class TourServiceImpl implements TourService {
     @Transactional(readOnly = true)
     public Flux<Tour> getAll(final Pagination pagination,
                              final TourCriteria tourCriteria) {
+        int pageSize = 20;
         if (pagination.getCurrentPage() == null
                 || pagination.getPageSize() == null) {
             pagination.setCurrentPage(0);
-            pagination.setPageSize(PAGE_SIZE);
+            pagination.setPageSize(pageSize);
         }
         Sort sort = Sort.by(Sort.Order.asc("arrivalTime"),
                 Sort.Order.desc("rating"));

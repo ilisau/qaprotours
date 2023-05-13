@@ -1,4 +1,4 @@
-package com.solvd.qaprotours.web.kafka;
+package com.solvd.qaprotours.config.kafka;
 
 import com.jcabi.xml.XML;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -36,28 +36,28 @@ public class KfConsumerConfig {
     }
 
     /**
-     * Creates receiver options.
+     * A map of properties for KafkaReceiver.
      *
-     * @return receiver options
+     * @return map of properties
      */
     @Bean
-    public ReceiverOptions<String, Object> receiverOptions() {
+    public Map<String, Object> receiverProps() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, servers);
         props.put(
-                "group.id",
+                ConsumerConfig.GROUP_ID_CONFIG,
                 new TextXpath(
                         this.settings, "//groupId"
                 ).toString()
         );
         props.put(
-                "key.deserializer",
+                ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
                 new TextXpath(
                         this.settings, "//keyDeserializer"
                 ).toString()
         );
         props.put(
-                "value.deserializer",
+                ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
                 new TextXpath(
                         this.settings, "//valueDeserializer"
                 ).toString()
@@ -68,8 +68,18 @@ public class KfConsumerConfig {
                         this.settings, "//trustedPackages"
                 ).toString()
         );
+        return props;
+    }
+
+    /**
+     * Creates receiver options.
+     *
+     * @return receiver options
+     */
+    @Bean
+    public ReceiverOptions<String, Object> receiverOptions() {
         ReceiverOptions<String, Object> receiverOptions = ReceiverOptions
-                .create(props);
+                .create(receiverProps());
         return receiverOptions.subscription(Collections.singleton("tours"))
                 .addAssignListener(partitions ->
                         System.out.println("onPartitionAssigned: "

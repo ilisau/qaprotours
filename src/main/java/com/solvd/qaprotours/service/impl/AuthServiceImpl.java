@@ -1,5 +1,7 @@
 package com.solvd.qaprotours.service.impl;
 
+import com.solvd.qaprotours.config.kafka.KafkaMessage;
+import com.solvd.qaprotours.config.kafka.MessageSenderImpl;
 import com.solvd.qaprotours.domain.MailData;
 import com.solvd.qaprotours.domain.MailType;
 import com.solvd.qaprotours.domain.exception.AuthException;
@@ -12,8 +14,6 @@ import com.solvd.qaprotours.service.AuthService;
 import com.solvd.qaprotours.service.JwtService;
 import com.solvd.qaprotours.service.UserClient;
 import com.solvd.qaprotours.web.dto.MailDataDto;
-import com.solvd.qaprotours.web.kafka.KafkaMessage;
-import com.solvd.qaprotours.web.kafka.MessageSenderImpl;
 import com.solvd.qaprotours.web.mapper.MailDataMapper;
 import com.solvd.qaprotours.web.mapper.UserMapper;
 import com.solvd.qaprotours.web.security.jwt.JwtTokenType;

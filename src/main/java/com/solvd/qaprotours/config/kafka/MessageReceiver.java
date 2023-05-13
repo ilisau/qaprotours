@@ -1,4 +1,4 @@
-package com.solvd.qaprotours.web.kafka;
+package com.solvd.qaprotours.config.kafka;
 
 public interface MessageReceiver {
 
