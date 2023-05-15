@@ -23,6 +23,7 @@ public class DeleteHandler implements Handler {
                         = new DeleteRequest.Builder();
                 DeleteRequest request = builder
                         .id(id)
+                        .index("tours")
                         .build();
                 client.delete(request);
                 r.receiverOffset().acknowledge();

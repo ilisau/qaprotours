@@ -100,18 +100,13 @@ public class TourServiceImpl implements TourService {
     @Override
     @Transactional
     public Mono<Void> delete(final Long tourId) {
-        TourDto tourToBeDeleted = new TourDto();
-        tourToBeDeleted.setId(tourId);
-        return tourRepository.deleteById(tourId)
-                .flatMap(t -> {
-                    KafkaMessage<TourDto> message = new KafkaMessage<>();
-                    message.setTopic("tours");
-                    message.setPartition(0);
-                    message.setKey(tourId + "_delete");
-                    message.setData(null);
-                    return messageSender.sendMessage(message)
-                            .then();
-                })
+        KafkaMessage<TourDto> message = new KafkaMessage<>();
+        message.setTopic("tours");
+        message.setPartition(0);
+        message.setKey(tourId + "_delete");
+        message.setData(null);
+        return messageSender.sendMessage(message)
+                .flatMap(r -> tourRepository.deleteById(tourId))
                 .then();
     }
 

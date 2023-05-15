@@ -24,25 +24,27 @@ public class IndexHandler implements Handler {
 
     @Override
     public void handleMessage(final ReceiverRecord<String, Object> r) {
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(LocalDateTime.class,
-                        localDateTimeDeserializer)
-                .create();
-        TourDto tour = gson
-                .fromJson(r.value().toString(), TourDto.class);
-        IndexRequest.Builder<TourDto> builder
-                = new IndexRequest.Builder<>();
-        IndexRequest<TourDto> indexRequest = builder
-                .id(tour.getId().toString())
-                .index("tours")
-                .withJson(new StringReader(r.value().toString()))
-                .build();
-        try {
-            client.index(indexRequest);
-            r.receiverOffset().acknowledge();
-        } catch (Exception e) {
-            log.warn("Request is not sent because of exception: "
-                    + e.getMessage());
+        if (r.value() != null) {
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(LocalDateTime.class,
+                            localDateTimeDeserializer)
+                    .create();
+            TourDto tour = gson
+                    .fromJson(r.value().toString(), TourDto.class);
+            IndexRequest.Builder<TourDto> builder
+                    = new IndexRequest.Builder<>();
+            IndexRequest<TourDto> indexRequest = builder
+                    .id(tour.getId().toString())
+                    .index("tours")
+                    .withJson(new StringReader(r.value().toString()))
+                    .build();
+            try {
+                client.index(indexRequest);
+                r.receiverOffset().acknowledge();
+            } catch (Exception e) {
+                log.warn("Request is not sent because of exception: "
+                        + e.getMessage());
+            }
         }
     }
 
