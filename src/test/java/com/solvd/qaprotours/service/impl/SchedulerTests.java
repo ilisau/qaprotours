@@ -1,8 +1,8 @@
 package com.solvd.qaprotours.service.impl;
 
+import com.solvd.qaprotours.config.TestConfig;
 import com.solvd.qaprotours.service.TicketService;
 import com.solvd.qaprotours.service.UserClient;
-import com.solvd.qaprotours.service.impl.fake.FakeScheduler;
 import com.solvd.qaprotours.web.kafka.MessageSender;
 import com.solvd.qaprotours.web.mapper.MailDataMapper;
 import com.solvd.qaprotours.web.mapper.UserMapper;
@@ -13,15 +13,21 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 
+@SpringBootTest
+@ActiveProfiles("test")
+@Import(TestConfig.class)
 @ExtendWith(MockitoExtension.class)
 public class SchedulerTests {
 
     @Mock
-    private TicketService ticketService;
+    private UserClient userClient;
 
     @Mock
-    private UserClient userClient;
+    private TicketService ticketService;
 
     @Mock
     private UserMapper userMapper;
@@ -33,7 +39,7 @@ public class SchedulerTests {
     private MessageSender messageSender;
 
     @InjectMocks
-    private FakeScheduler scheduler;
+    private Scheduler scheduler;
 
     @Test
     void findBookedTickets() {
@@ -45,30 +51,14 @@ public class SchedulerTests {
                         ArgumentMatchers.any());
     }
 
-//    @Test
-//    void findNotConfirmedTickets() {
-//        List<Ticket> tickets = generateTickets(user, tour);
-//        Mockito.when(ticketService.getAllSoonNotConfirmedTickets())
-//                .thenReturn(Flux.just(tickets.toArray(new Ticket[0])));
-//        Mockito.when(userClient.getById(user.getId()))
-//                .thenReturn(Mono.just(userDto));
-//        Mockito.when(userMapper.toEntity(userDto))
-//                .thenReturn(user);
-//        Mockito.when(mailDataMapper.toDto(ArgumentMatchers.any()))
-//                .thenReturn(new MailDataDto());
-//        Mockito.when(messageSender
-//                        .sendMessage(ArgumentMatchers.eq("mail"),
-//                                ArgumentMatchers.anyInt(),
-//                                ArgumentMatchers.anyString(),
-//                                ArgumentMatchers.any())
-//                )
-//                .thenReturn(Flux.empty());
-//        scheduler.findNotConfirmedTickets();
-//        Mockito.verify(messageSender, Mockito.times(tickets.size()))
-//                .sendMessage(ArgumentMatchers.eq("mail"),
-//                        ArgumentMatchers.anyInt(),
-//                        ArgumentMatchers.anyString(),
-//                        ArgumentMatchers.any());
-//    }
+    @Test
+    void findNotConfirmedTickets() {
+        scheduler.findNotConfirmedTickets();
+        Mockito.verify(messageSender)
+                .sendMessage(ArgumentMatchers.eq("mail"),
+                        ArgumentMatchers.anyInt(),
+                        ArgumentMatchers.anyString(),
+                        ArgumentMatchers.any());
+    }
 
 }
