@@ -6,6 +6,7 @@ import com.solvd.qaprotours.service.TourService;
 import com.solvd.qaprotours.service.property.ImageProperties;
 import com.solvd.qaprotours.service.property.MinioProperties;
 import io.minio.MinioClient;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -43,29 +44,26 @@ public class ImageServiceTests {
     private ImageServiceImpl imageService;
 
     @Test
+    @SneakyThrows
     void uploadImage() {
-        try {
-            Tour tour = generateTour();
-            Image image = generateImage();
-            Mockito.when(minioClient.bucketExists(Mockito.any()))
-                    .thenReturn(true);
-            Mockito.when(minioProperties.getBucket())
-                    .thenReturn("tours");
-            Mockito.when(tourService.getById(tour.getId()))
-                    .thenReturn(Mono.just(tour));
-            Mockito.when(tourService.addImage(Mockito.eq(tour.getId()),
-                            Mockito.eq("tour_1_full.jpeg")))
-                    .thenReturn(Mono.empty());
-            Integer thumbHeight = 100;
-            Mockito.when(imageProperties.getThumbnails())
-                    .thenReturn(List.of(thumbHeight));
-            Mono<Void> result = imageService.uploadImage(1L, image);
-            StepVerifier.create(result)
-                    .expectNextCount(0)
-                    .verifyComplete();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        Tour tour = generateTour();
+        Image image = generateImage();
+        Mockito.when(minioClient.bucketExists(Mockito.any()))
+                .thenReturn(true);
+        Mockito.when(minioProperties.getBucket())
+                .thenReturn("tours");
+        Mockito.when(tourService.getById(tour.getId()))
+                .thenReturn(Mono.just(tour));
+        Mockito.when(tourService.addImage(Mockito.eq(tour.getId()),
+                        Mockito.eq("tour_1_full.jpeg")))
+                .thenReturn(Mono.empty());
+        Integer thumbHeight = 100;
+        Mockito.when(imageProperties.getThumbnails())
+                .thenReturn(List.of(thumbHeight));
+        Mono<Void> result = imageService.uploadImage(1L, image);
+        StepVerifier.create(result)
+                .expectNextCount(0)
+                .verifyComplete();
     }
 
     private Image generateImage() {
@@ -84,13 +82,19 @@ public class ImageServiceTests {
     }
 
     private InputStream generateImageByteStream() throws Exception {
+        int size = 100;
         BufferedImage image = new BufferedImage(
-                100,
-                100,
+                size,
+                size,
                 BufferedImage.TYPE_INT_RGB);
-        for (int x = 0; x < 100; x++) {
-            for (int y = 0; y < 100; y++) {
-                int color = (x % 2 == 0 && y % 2 == 0) ? 0xFF0000 : 0xFFFFFF;
+        for (int x = 0; x < size; x++) {
+            for (int y = 0; y < size; y++) {
+                int color;
+                if (x % 2 == 0 && y % 2 == 0) {
+                    color = 0xFF0000;
+                } else {
+                    color = 0xFFFFFF;
+                }
                 image.setRGB(x, y, color);
             }
         }
