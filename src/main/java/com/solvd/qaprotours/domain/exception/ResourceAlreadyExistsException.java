@@ -5,7 +5,11 @@ package com.solvd.qaprotours.domain.exception;
  */
 public class ResourceAlreadyExistsException extends RuntimeException {
 
-    public ResourceAlreadyExistsException(String message) {
+    /**
+     * Create an exception with a message.
+     * @param message message to be returned to client
+     */
+    public ResourceAlreadyExistsException(final String message) {
         super(message);
     }
 

@@ -92,3 +92,6 @@ image:
     - png
     - svg
     - webp
+
+service-urls:
+  userService: ${USER_SERVICE_URL}

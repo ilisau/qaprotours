@@ -5,10 +5,5 @@ import com.solvd.qaprotours.web.dto.user.PasswordDto;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
-public interface PasswordMapper {
-
-    Password toEntity(PasswordDto dto);
-
-    PasswordDto toDto(Password password);
-
+public interface PasswordMapper extends Mappable<Password, PasswordDto> {
 }

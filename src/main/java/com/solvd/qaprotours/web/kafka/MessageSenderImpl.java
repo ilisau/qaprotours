@@ -19,15 +19,17 @@ public class MessageSenderImpl implements MessageSender {
     private final KafkaSender<String, Object> sender;
 
     @Override
-    public Flux<SenderResult<MailDataDto>> sendMessage(String topic, int partition, String key, MailDataDto data) {
+    public Flux<SenderResult<MailDataDto>> sendMessage(
+            final KafkaMessage kafkaMessage
+    ) {
         return sender.send(
                 Mono.just(
                         SenderRecord.create(
-                                topic,
-                                partition,
+                                kafkaMessage.getTopic(),
+                                kafkaMessage.getPartition(),
                                 System.currentTimeMillis(),
-                                key,
-                                data,
+                                kafkaMessage.getKey(),
+                                kafkaMessage.getData(),
                                 null
                         )
                 )

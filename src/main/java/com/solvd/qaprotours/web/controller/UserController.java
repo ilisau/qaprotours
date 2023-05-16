@@ -50,61 +50,101 @@ public class UserController {
     private final TicketMapper ticketMapper;
     private final UserMapper userMapper;
     private final PasswordMapper passwordMapper;
-    private final String TICKET_SERVICE = "ticketService";
+    private static final String TICKET_SERVICE = "ticketService";
 
+    /**
+     * Updates a user.
+     * @param userDto user's data
+     * @return empty response
+     */
     @PutMapping
     @PreAuthorize("canAccessUser(#userDto.getId())")
-    public Mono<Void> update(@Validated(OnUpdate.class) @RequestBody UserDto userDto) {
+    public Mono<Void> update(
+            @Validated(OnUpdate.class) @RequestBody final UserDto userDto
+    ) {
         User user = userMapper.toEntity(userDto);
         return userClient.update(user);
     }
 
+    /**
+     * Gets a user by id.
+     * @param userId user's id
+     * @return user's data
+     */
     @GetMapping("/{userId}")
     @PreAuthorize("canAccessUser(#userId)")
-    public Mono<UserDto> getById(@PathVariable String userId) {
+    public Mono<UserDto> getById(@PathVariable final String userId) {
         return userClient.getById(userId);
     }
 
+    /**
+     * Deletes a user by id.
+     * @param userId user's id
+     * @return empty response
+     */
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("canAccessUser(#userId)")
-    public Mono<Void> delete(@PathVariable String userId) {
+    public Mono<Void> delete(@PathVariable final String userId) {
         return userClient.delete(userId);
     }
 
+    /**
+     * Updates a user's password.
+     *
+     * @param userId      user's id
+     * @param passwordDto password's data
+     * @return empty response
+     */
     @PutMapping("/{userId}/password")
     @PreAuthorize("canAccessUser(#userId)")
-    public Mono<Void> updatePassword(@PathVariable String userId,
-                                     @Validated @RequestBody PasswordDto passwordDto) {
+    public Mono<Void> updatePassword(
+            @PathVariable final String userId,
+            @Validated @RequestBody final PasswordDto passwordDto
+    ) {
         Password password = passwordMapper.toEntity(passwordDto);
         return userClient.updatePassword(userId, password);
     }
 
+    /**
+     * Gets a user's tickets.
+     * @param userId user's id
+     * @return list of tickets
+     */
     @GetMapping("/{userId}/tickets")
     @PreAuthorize("canAccessUser(#userId)")
-    @CircuitBreaker(name = TICKET_SERVICE, fallbackMethod = "getEmptyTicketList")
-    public Flux<TicketDto> getTickets(@PathVariable String userId) {
+    @CircuitBreaker(name = TICKET_SERVICE,
+            fallbackMethod = "getEmptyTicketList")
+    public Flux<TicketDto> getTickets(@PathVariable final String userId) {
         return ticketService.getAllByUserId(userId)
                 .map(ticketMapper::toDto);
     }
 
+    /**
+     * Adds a ticket to a user.
+     * @param userId user's id
+     * @param tourId tour's id
+     * @param peopleAmount amount of people in ticket
+     * @return empty response
+     */
     @PostMapping("/{userId}/tickets/{tourId}")
     @PreAuthorize("canAccessUser(#userId)")
-    @CircuitBreaker(name = TICKET_SERVICE, fallbackMethod = "handleServiceError")
-    public Mono<Void> addTicket(@PathVariable String userId,
-                                @PathVariable Long tourId,
-                                @RequestParam Integer peopleAmount) {
+    @CircuitBreaker(name = TICKET_SERVICE,
+            fallbackMethod = "handleServiceError")
+    public Mono<Void> addTicket(@PathVariable final String userId,
+                                @PathVariable final Long tourId,
+                                @RequestParam final Integer peopleAmount) {
         return ticketService.create(userId, tourId, peopleAmount);
     }
 
-    private List<TicketDto> getEmptyTicketList(Exception e) {
+    private List<TicketDto> getEmptyTicketList(final Exception e) {
         if (e.getClass().equals(AccessDeniedException.class)) {
             throw new AuthException(e.getMessage());
         }
         return new ArrayList<>();
     }
 
-    private void handleServiceError(Exception e) {
+    private void handleServiceError(final Exception e) {
         if (e.getClass().equals(AccessDeniedException.class)) {
             throw new AuthException(e.getMessage());
         }

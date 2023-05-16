@@ -17,7 +17,12 @@ import com.solvd.qaprotours.web.mapper.jwt.JwtTokenMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
 /**
@@ -35,42 +40,83 @@ public class AuthController {
     private final AuthenticationMapper authenticationMapper;
     private final UserMapper userMapper;
 
+    /**
+     * Generate a pair of tokens for user by its email and password.
+     * @param authenticationDto user's email and password
+     * @return pair of tokens
+     */
     @PostMapping("/login")
-    public Mono<JwtResponseDto> login(@Validated @RequestBody AuthenticationDto authenticationDto) {
-        Authentication authentication = authenticationMapper.toEntity(authenticationDto);
+    public Mono<JwtResponseDto> login(
+            @Validated @RequestBody final AuthenticationDto authenticationDto
+    ) {
+        Authentication authentication = authenticationMapper
+                .toEntity(authenticationDto);
         return authService.login(authentication)
                 .map(jwtResponseMapper::toDto);
     }
 
+    /**
+     * Register a new user.
+     * @param userDto user's data
+     * @return empty response
+     */
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<Void> register(@Validated(OnCreate.class) @RequestBody UserDto userDto) {
+    public Mono<Void> register(
+            @Validated(OnCreate.class) @RequestBody final UserDto userDto
+    ) {
         User user = userMapper.toEntity(userDto);
         user.setRole(User.Role.CLIENT);
         return userClient.create(user);
     }
 
+    /**
+     * Confirm user's account.
+     * @param jwtTokenDto token
+     * @return empty response
+     */
     @PostMapping("/register/confirm")
-    public Mono<Void> confirm(@Validated @RequestBody JwtTokenDto jwtTokenDto) {
+    public Mono<Void> confirm(
+            @Validated @RequestBody final JwtTokenDto jwtTokenDto
+    ) {
         JwtToken jwtToken = jwtTokenMapper.toEntity(jwtTokenDto);
         return userClient.activate(jwtToken);
     }
 
+    /**
+     * Refresh user's tokens.
+     * @param jwtTokenDto refresh token
+     * @return pair of tokens
+     */
     @PostMapping("/refresh")
-    public Mono<JwtResponseDto> refresh(@Validated @RequestBody JwtTokenDto jwtTokenDto) {
+    public Mono<JwtResponseDto> refresh(
+            @Validated @RequestBody final JwtTokenDto jwtTokenDto
+    ) {
         JwtToken jwtToken = jwtTokenMapper.toEntity(jwtTokenDto);
         return authService.refresh(jwtToken)
                 .map(jwtResponseMapper::toDto);
     }
 
+    /**
+     * Send a token to user's email for restoring password.
+     * @param email user's email
+     * @return empty response
+     */
     @PostMapping("/forget")
-    public Mono<Void> forget(@RequestBody String email) {
+    public Mono<Void> forget(@RequestBody final String email) {
         return authService.sendRestoreToken(email);
     }
 
+    /**
+     * Restore user's password.
+     *
+     * @param token    token
+     * @param password new password
+     * @return empty response
+     */
     @PostMapping("/password/restore")
-    public Mono<Void> restore(@RequestParam String token,
-                              @RequestBody String password) {
+    public Mono<Void> restore(@RequestParam final String token,
+                              @RequestBody final String password) {
         return authService.restoreUserPassword(token, password);
     }
 

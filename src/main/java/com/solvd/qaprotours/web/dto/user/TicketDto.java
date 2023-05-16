@@ -17,7 +17,8 @@ import java.time.LocalDateTime;
 @Data
 public class TicketDto {
 
-    @NotNull(message = "id must not be null", groups = {OnUpdate.class})
+    @NotNull(message = "id must not be null",
+            groups = {OnUpdate.class})
     private Long id;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -32,8 +33,12 @@ public class TicketDto {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Ticket.Status status;
 
-    @NotNull(message = "clients amount must not be null", groups = {OnCreate.class})
-    @Size(min = 1, max = 30, message = "clients amount must be between {min} and {max}", groups = {OnCreate.class})
+    @NotNull(message = "clients amount must not be null",
+            groups = {OnCreate.class})
+    @Size(min = 1,
+            max = 30,
+            message = "clients amount must be between {min} and {max}",
+            groups = {OnCreate.class})
     private Integer clientsAmount;
 
 }

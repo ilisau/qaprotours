@@ -28,6 +28,10 @@ public class KfProducerConfig {
 
     private final XML settings;
 
+    /**
+     * Create a new topic for users.
+     * @return topic
+     */
     @Bean
     public NewTopic topicUsers() {
         return TopicBuilder.name("users")
@@ -36,6 +40,10 @@ public class KfProducerConfig {
                 .build();
     }
 
+    /**
+     * Create a new topic for mail.
+     * @return topic
+     */
     @Bean
     public NewTopic topicMail() {
         return TopicBuilder.name("mail")
@@ -44,6 +52,10 @@ public class KfProducerConfig {
                 .build();
     }
 
+    /**
+     * Create a kafka admin object.
+     * @return kafka admin
+     */
     @Bean
     public KafkaAdmin kafkaAdmin() {
         Map<String, Object> configs = new HashMap<>();
@@ -51,6 +63,10 @@ public class KfProducerConfig {
         return new KafkaAdmin(configs);
     }
 
+    /**
+     * Create a kafka sender options.
+     * @return sender options
+     */
     @Bean
     public SenderOptions<String, Object> senderOptions() {
         Map<String, Object> props = new HashMap<>(3);
@@ -68,8 +84,15 @@ public class KfProducerConfig {
         return SenderOptions.create(props);
     }
 
+    /**
+     * Create a kafka sender.
+     * @param senderOptions sender options
+     * @return kafka sender
+     */
     @Bean
-    public KafkaSender<String, Object> sender(SenderOptions<String, Object> senderOptions) {
+    public KafkaSender<String, Object> sender(
+            final SenderOptions<String, Object> senderOptions
+    ) {
         return KafkaSender.create(senderOptions);
     }
 

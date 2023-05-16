@@ -11,6 +11,7 @@ import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.service.AuthService;
 import com.solvd.qaprotours.service.JwtService;
 import com.solvd.qaprotours.service.UserClient;
+import com.solvd.qaprotours.web.kafka.KafkaMessage;
 import com.solvd.qaprotours.web.kafka.MessageSender;
 import com.solvd.qaprotours.web.mapper.MailDataMapper;
 import com.solvd.qaprotours.web.mapper.UserMapper;
@@ -103,8 +104,8 @@ public class AuthServiceImpl implements AuthService {
                 .map(userMapper::toEntity)
                 .map(user -> {
                     Map<String, Object> params = new HashMap<>();
-                    String token = jwtService.generateToken(JwtTokenType.RESET,
-                            user);
+                    String token =
+                            jwtService.generateToken(JwtTokenType.RESET, user);
                     params.put("token", token);
                     params.put("user.id", user.getId());
                     params.put("user.email", user.getEmail());
@@ -112,13 +113,16 @@ public class AuthServiceImpl implements AuthService {
                     params.put("user.surname", user.getSurname());
                     return params;
                 })
-                .flatMap(params -> messageSender.sendMessage("mail",
-                        0,
-                        params.get("user.id").toString(),
-                        mailDataMapper.toDto(
-                                new MailData(MailType.PASSWORD_RESET, params))
-                        )
-                        .then())
+                .flatMap(params -> {
+                    KafkaMessage message = new KafkaMessage();
+                    message.setTopic("mail");
+                    message.setKey(params.get("user.id").toString());
+                    message.setData(mailDataMapper.toDto(new MailData(
+                            MailType.PASSWORD_RESET,
+                            params)));
+                    return messageSender.sendMessage(message)
+                            .then();
+                })
                 .then();
     }
 
@@ -126,13 +130,11 @@ public class AuthServiceImpl implements AuthService {
     public Mono<Void> restoreUserPassword(final String token,
                                           final String password) {
         if (!jwtService.validateToken(token)) {
-            return Mono.error(() ->
-                    new InvalidTokenException("token is expired"));
+            return Mono.error(() -> new InvalidTokenException("token is expired"));
         }
         Claims claims = jwtService.parse(token);
         if (!jwtService.isTokenType(token, JwtTokenType.RESET)) {
-            return Mono.error(() ->
-                    new InvalidTokenException("invalid reset token"));
+            return Mono.error(() -> new InvalidTokenException("invalid reset token"));
         }
         JwtUserDetails userDetails = JwtUserDetailsFactory.create(claims);
         return userClient.updatePassword(userDetails.getId(), password);

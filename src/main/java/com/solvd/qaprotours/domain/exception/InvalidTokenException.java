@@ -5,7 +5,11 @@ package com.solvd.qaprotours.domain.exception;
  */
 public class InvalidTokenException extends RuntimeException {
 
-    public InvalidTokenException(String message) {
+    /**
+     * Create an exception with a message.
+     * @param message message to be returned to client
+     */
+    public InvalidTokenException(final String message) {
         super(message);
     }
 

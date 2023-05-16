@@ -8,10 +8,6 @@ import org.mapstruct.Mapper;
  * @author Lisov Ilya
  */
 @Mapper(componentModel = "spring")
-public interface TourCriteriaMapper {
-
-    TourCriteriaDto toDto(TourCriteria tourCriteria);
-
-    TourCriteria toEntity(TourCriteriaDto tourCriteriaDto);
-
+public interface TourCriteriaMapper
+        extends Mappable<TourCriteria, TourCriteriaDto> {
 }

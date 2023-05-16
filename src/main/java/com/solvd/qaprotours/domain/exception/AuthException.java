@@ -7,7 +7,11 @@ import org.springframework.security.core.AuthenticationException;
  */
 public class AuthException extends AuthenticationException {
 
-    public AuthException(String message) {
+    /**
+     * Create an exception with a message.
+     * @param message message to be returned to client
+     */
+    public AuthException(final String message) {
         super(message);
     }
 

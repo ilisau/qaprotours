@@ -10,7 +10,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class QaprotoursApplication {
 
-    public static void main(String[] args) {
+    /**
+     * Main method.
+     * @param args arguments
+     */
+    public static void main(final String[] args) {
         SpringApplication.run(QaprotoursApplication.class, args);
     }
 
