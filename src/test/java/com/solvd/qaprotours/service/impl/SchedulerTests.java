@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import reactor.core.publisher.Flux;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -28,21 +29,19 @@ public class SchedulerTests {
     @Test
     void findBookedTickets() {
         scheduler.findBookedTickets();
+        Mockito.when(messageSender.sendMessage(ArgumentMatchers.any()))
+                .thenReturn(Flux.empty());
         Mockito.verify(messageSender)
-                .sendMessage(ArgumentMatchers.eq("mail"),
-                        ArgumentMatchers.anyInt(),
-                        ArgumentMatchers.anyString(),
-                        ArgumentMatchers.any());
+                .sendMessage(ArgumentMatchers.any());
     }
 
     @Test
     void findNotConfirmedTickets() {
         scheduler.findNotConfirmedTickets();
+        Mockito.when(messageSender.sendMessage(ArgumentMatchers.any()))
+                .thenReturn(Flux.empty());
         Mockito.verify(messageSender)
-                .sendMessage(ArgumentMatchers.eq("mail"),
-                        ArgumentMatchers.anyInt(),
-                        ArgumentMatchers.anyString(),
-                        ArgumentMatchers.any());
+                .sendMessage(ArgumentMatchers.any());
     }
 
 }

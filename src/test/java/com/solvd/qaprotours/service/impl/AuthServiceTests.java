@@ -121,15 +121,14 @@ public class AuthServiceTests {
     @Test
     void sendRestoreToken() {
         User user = generateUser();
-        Mockito.when(messageSender.sendMessage(ArgumentMatchers.eq("mail"),
-                        ArgumentMatchers.anyInt(),
-                        ArgumentMatchers.eq(user.getId()),
-                        ArgumentMatchers.any()))
+        Mockito.when(messageSender.sendMessage(ArgumentMatchers.any()))
                 .thenReturn(Flux.empty());
         Mono<Void> result = authService.sendRestoreToken(user.getEmail());
         StepVerifier.create(result)
                 .expectNextCount(0)
                 .verifyComplete();
+        Mockito.verify(messageSender)
+                .sendMessage(ArgumentMatchers.any());
         Mockito.verify(jwtService).generateToken(ArgumentMatchers.eq(JwtTokenType.RESET), ArgumentMatchers.any());
     }
 
@@ -139,7 +138,7 @@ public class AuthServiceTests {
         String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWQiOiIxIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.19oTkCTJL9PZRNk3Z8bao3UdQNTX2d7fdw2ijDaW-iI";
         String password = "password";
         Claims claims = new DefaultClaims();
-        claims.put("id", "1");
+        claims.put("id", userId);
         Mockito.when(jwtService.validateToken(ArgumentMatchers.anyString()))
                 .thenReturn(true);
         Mockito.when(jwtService.isTokenType(ArgumentMatchers.anyString(), ArgumentMatchers.eq(JwtTokenType.RESET)))

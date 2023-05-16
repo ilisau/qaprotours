@@ -82,7 +82,7 @@ public class TicketServiceTests {
     @Test
     void getAllSoonTickets() {
         List<Ticket> tickets = generateTickets();
-        Mockito.when(ticketRepository.findAllByTourArrivalTimeIsAfterAndTourArrivalTimeIsBeforeAndStatus(
+        Mockito.when(ticketRepository.findAllSoonTickets(
                         ArgumentMatchers.any(),
                         ArgumentMatchers.any(),
                         ArgumentMatchers.eq(Ticket.Status.CONFIRMED)))

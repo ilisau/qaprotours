@@ -1,6 +1,7 @@
 package com.solvd.qaprotours.service.impl;
 
 import com.solvd.qaprotours.config.TestConfig;
+import com.solvd.qaprotours.domain.Pagination;
 import com.solvd.qaprotours.domain.exception.ResourceDoesNotExistException;
 import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.domain.tour.TourCriteria;
@@ -44,7 +45,8 @@ public class TourServiceTests {
         List<Tour> tours = generateTours();
         Mockito.when(tourRepository.findAll(ArgumentMatchers.any()))
                 .thenReturn(Flux.just(tours.toArray(new Tour[0])));
-        Flux<Tour> result = tourService.getAll(currentPage, pageSize, tourCriteria);
+        Pagination pagination = new Pagination(currentPage, pageSize);
+        Flux<Tour> result = tourService.getAll(pagination, tourCriteria);
         StepVerifier.create(result)
                 .expectNext(tours.get(0))
                 .expectNext(tours.get(1))
@@ -60,7 +62,8 @@ public class TourServiceTests {
         List<Tour> tours = generateTours();
         Mockito.when(tourRepository.findAll(ArgumentMatchers.any()))
                 .thenReturn(Flux.just(tours.toArray(new Tour[0])));
-        Flux<Tour> result = tourService.getAll(currentPage, pageSize, tourCriteria);
+        Pagination pagination = new Pagination(currentPage, pageSize);
+        Flux<Tour> result = tourService.getAll(pagination, tourCriteria);
         StepVerifier.create(result)
                 .expectNext(tours.get(0))
                 .expectNext(tours.get(1))
