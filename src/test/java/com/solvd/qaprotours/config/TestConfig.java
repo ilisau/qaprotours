@@ -21,17 +21,20 @@ import com.solvd.qaprotours.service.property.ImageProperties;
 import com.solvd.qaprotours.service.property.JwtProperties;
 import com.solvd.qaprotours.service.property.MinioProperties;
 import com.solvd.qaprotours.web.kafka.MessageSender;
+import com.solvd.qaprotours.web.kafka.MessageSenderImpl;
 import com.solvd.qaprotours.web.mapper.MailDataMapper;
 import com.solvd.qaprotours.web.mapper.MailDataMapperImpl;
 import com.solvd.qaprotours.web.mapper.UserMapper;
 import com.solvd.qaprotours.web.mapper.UserMapperImpl;
 import io.minio.MinioClient;
 import lombok.RequiredArgsConstructor;
+import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import reactor.kafka.sender.KafkaSender;
 
 import java.util.Collections;
 
@@ -45,11 +48,15 @@ public class TestConfig {
 
     @Bean
     public JwtProperties jwtProperties() {
+        int accessTimeInHours = 1;
+        int refreshTimeInHours = 1;
+        int activationTimeInHours = 1;
+        int restoreTimeInHours = 1;
         return new JwtProperties(
-                1,
-                24,
-                1,
-                1,
+                accessTimeInHours,
+                refreshTimeInHours,
+                activationTimeInHours,
+                restoreTimeInHours,
                 "c651749e8354adb09452a8ad14d4beadb7d57064d6cfb5c0e812bc30724458d187f43e58c22c30486303bbfc655391860952e92add87b5ce9e2ac7cdc612ad73=");
     }
 
@@ -65,7 +72,7 @@ public class TestConfig {
 
     @Bean
     public MinioClient minioClient() {
-        return null;
+        return Mockito.mock(MinioClient.class);
     }
 
     @Bean
@@ -97,7 +104,12 @@ public class TestConfig {
     @Primary
     @Bean
     public MessageSender messageSender() {
-        return null;
+        return new MessageSenderImpl(kafkaSender());
+    }
+
+    @Bean
+    public KafkaSender<String, Object> kafkaSender() {
+        return Mockito.mock(KafkaSender.class);
     }
 
     @Primary
