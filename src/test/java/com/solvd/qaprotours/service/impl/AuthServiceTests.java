@@ -1,5 +1,6 @@
 package com.solvd.qaprotours.service.impl;
 
+import com.solvd.qaprotours.config.TestConfig;
 import com.solvd.qaprotours.domain.exception.AuthException;
 import com.solvd.qaprotours.domain.jwt.Authentication;
 import com.solvd.qaprotours.domain.jwt.JwtResponse;
@@ -7,13 +8,10 @@ import com.solvd.qaprotours.domain.jwt.JwtToken;
 import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.service.JwtService;
 import com.solvd.qaprotours.service.UserClient;
-import com.solvd.qaprotours.web.dto.user.UserDto;
 import com.solvd.qaprotours.web.kafka.MessageSender;
 import com.solvd.qaprotours.web.mapper.MailDataMapper;
 import com.solvd.qaprotours.web.mapper.UserMapper;
 import com.solvd.qaprotours.web.security.jwt.JwtTokenType;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.impl.DefaultClaims;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
@@ -21,11 +19,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+@SpringBootTest
+@ActiveProfiles("test")
+@Import(TestConfig.class)
 @ExtendWith(MockitoExtension.class)
 public class AuthServiceTests {
 
@@ -53,21 +57,12 @@ public class AuthServiceTests {
     @Test
     void loginWithCorrectPassword() {
         User user = generateUser();
-        UserDto userDto = generateUserDto();
         Authentication authentication = generateAuthentication(user);
         JwtResponse response = generateResponse();
-        Mockito.when(userClient.getByEmail(authentication.getEmail()))
-                .thenReturn(Mono.just(userDto));
-        Mockito.when(userMapper.toEntity(userDto))
-                .thenReturn(user);
         Mockito.when(passwordEncoder.matches(
                         ArgumentMatchers.eq(authentication.getPassword()),
                         ArgumentMatchers.anyString()))
                 .thenReturn(true);
-        Mockito.when(jwtService.generateToken(JwtTokenType.ACCESS, user))
-                .thenReturn(response.getAccessToken());
-        Mockito.when(jwtService.generateToken(JwtTokenType.REFRESH, user))
-                .thenReturn(response.getRefreshToken());
         Mono<JwtResponse> result = authService.login(authentication);
         StepVerifier.create(result)
                 .expectNext(response)
@@ -82,12 +77,7 @@ public class AuthServiceTests {
     @Test
     void loginWithIncorrectPassword() {
         User user = generateUser();
-        UserDto userDto = generateUserDto();
         Authentication authentication = generateAuthentication(user);
-        Mockito.when(userClient.getByEmail(authentication.getEmail()))
-                .thenReturn(Mono.just(userDto));
-        Mockito.when(userMapper.toEntity(userDto))
-                .thenReturn(user);
         Mockito.when(passwordEncoder.matches(
                         ArgumentMatchers.eq(authentication.getPassword()),
                         ArgumentMatchers.anyString()))
@@ -108,23 +98,9 @@ public class AuthServiceTests {
     @Test
     void refreshWithCorrectToken() {
         User user = generateUser();
-        UserDto userDto = generateUserDto();
         JwtToken token = new JwtToken();
         token.setToken("Token");
         JwtResponse response = generateResponse();
-        Claims claims = generateClaims(user);
-        Mockito.when(jwtService.parse(token.getToken()))
-                .thenReturn(claims);
-        Mockito.when(jwtService.isTokenType(token.getToken(), JwtTokenType.REFRESH))
-                .thenReturn(true);
-        Mockito.when(userClient.getByEmail(user.getEmail()))
-                .thenReturn(Mono.just(userDto));
-        Mockito.when(userMapper.toEntity(userDto))
-                .thenReturn(user);
-        Mockito.when(jwtService.generateToken(JwtTokenType.ACCESS, user))
-                .thenReturn(response.getAccessToken());
-        Mockito.when(jwtService.generateToken(JwtTokenType.REFRESH, user))
-                .thenReturn(response.getRefreshToken());
         Mono<JwtResponse> result = authService.refresh(token);
         StepVerifier.create(result)
                 .expectNext(response)
@@ -136,13 +112,6 @@ public class AuthServiceTests {
     @Test
     void sendRestoreToken() {
         User user = generateUser();
-        UserDto userDto = generateUserDto();
-        Mockito.when(userClient.getByEmail(user.getEmail()))
-                .thenReturn(Mono.just(userDto));
-        Mockito.when(userMapper.toEntity(userDto))
-                .thenReturn(user);
-        Mockito.when(jwtService.generateToken(JwtTokenType.RESET, user))
-                .thenReturn("RESET TOKEN");
         Mockito.when(messageSender.sendMessage(ArgumentMatchers.eq("mail"),
                         ArgumentMatchers.anyInt(),
                         ArgumentMatchers.eq(user.getId()),
@@ -160,16 +129,6 @@ public class AuthServiceTests {
         String userId = "1";
         String token = "token";
         String password = "password";
-        Mockito.when(jwtService.validateToken(token))
-                .thenReturn(true);
-        Claims claims = new DefaultClaims();
-        claims.put("id", userId);
-        Mockito.when(jwtService.parse(token))
-                .thenReturn(claims);
-        Mockito.when(jwtService.isTokenType(token, JwtTokenType.RESET))
-                .thenReturn(true);
-        Mockito.when(userClient.updatePassword(userId, password))
-                .thenReturn(Mono.empty());
         Mono<Void> result = authService.restoreUserPassword(token, password);
         StepVerifier.create(result)
                 .expectNextCount(0)
@@ -182,12 +141,6 @@ public class AuthServiceTests {
         String userId = "1";
         String token = "token";
         String password = "password";
-        Mockito.when(jwtService.validateToken(token))
-                .thenReturn(true);
-        Claims claims = new DefaultClaims();
-        claims.put("id", userId);
-        Mockito.when(jwtService.parse(token))
-                .thenReturn(claims);
         Mockito.when(jwtService.isTokenType(token, JwtTokenType.RESET))
                 .thenReturn(false);
         Mono<Void> result = authService.restoreUserPassword(token, password);
@@ -229,19 +182,6 @@ public class AuthServiceTests {
         return user;
     }
 
-    private UserDto generateUserDto() {
-        String userId = "1";
-        String userName = "Mike";
-        String userSurname = "Ivanov";
-        String userEmail = "mike@example.com";
-        UserDto userDto = new UserDto();
-        userDto.setId(userId);
-        userDto.setName(userName);
-        userDto.setSurname(userSurname);
-        userDto.setEmail(userEmail);
-        return userDto;
-    }
-
     private Authentication generateAuthentication(User user) {
         Authentication authentication = new Authentication();
         authentication.setEmail("email@example.com");
@@ -256,13 +196,6 @@ public class AuthServiceTests {
         response.setAccessToken(accessToken);
         response.setRefreshToken(refreshToken);
         return response;
-    }
-
-    private Claims generateClaims(User user) {
-        Claims claims = new DefaultClaims();
-        claims.put("id", user.getId());
-        claims.setSubject(user.getEmail());
-        return claims;
     }
 
 }

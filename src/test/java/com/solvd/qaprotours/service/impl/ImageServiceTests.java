@@ -1,7 +1,7 @@
 package com.solvd.qaprotours.service.impl;
 
+import com.solvd.qaprotours.config.TestConfig;
 import com.solvd.qaprotours.domain.Image;
-import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.service.TourService;
 import com.solvd.qaprotours.service.property.ImageProperties;
 import com.solvd.qaprotours.service.property.MinioProperties;
@@ -13,7 +13,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.ActiveProfiles;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -22,9 +25,11 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.List;
 
+@SpringBootTest
+@ActiveProfiles("test")
+@Import(TestConfig.class)
 @ExtendWith(MockitoExtension.class)
 public class ImageServiceTests {
 
@@ -46,17 +51,11 @@ public class ImageServiceTests {
     @Test
     @SneakyThrows
     void uploadImage() {
-        Tour tour = generateTour();
         Image image = generateImage();
         Mockito.when(minioClient.bucketExists(Mockito.any()))
                 .thenReturn(true);
         Mockito.when(minioProperties.getBucket())
                 .thenReturn("tours");
-        Mockito.when(tourService.getById(tour.getId()))
-                .thenReturn(Mono.just(tour));
-        Mockito.when(tourService.addImage(Mockito.eq(tour.getId()),
-                        Mockito.eq("tour_1_full.jpeg")))
-                .thenReturn(Mono.empty());
         Integer thumbHeight = 100;
         Mockito.when(imageProperties.getThumbnails())
                 .thenReturn(List.of(thumbHeight));
@@ -101,14 +100,6 @@ public class ImageServiceTests {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ImageIO.write(image, "png", outputStream);
         return new ByteArrayInputStream(outputStream.toByteArray());
-    }
-
-    private Tour generateTour() {
-        Long tourId = 1L;
-        Tour tour = new Tour();
-        tour.setId(tourId);
-        tour.setImageUrls(Collections.emptyList());
-        return tour;
     }
 
 }
