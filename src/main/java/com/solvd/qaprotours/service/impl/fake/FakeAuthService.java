@@ -9,24 +9,25 @@ import reactor.core.publisher.Mono;
 public class FakeAuthService implements AuthService {
 
     @Override
-    public Mono<JwtResponse> login(Authentication authentication) {
+    public Mono<JwtResponse> login(final Authentication authentication) {
         JwtResponse response = generateResponse();
         return Mono.just(response);
     }
 
     @Override
-    public Mono<JwtResponse> refresh(JwtToken jwtToken) {
+    public Mono<JwtResponse> refresh(final JwtToken jwtToken) {
         JwtResponse response = generateResponse();
         return Mono.just(response);
     }
 
     @Override
-    public Mono<Void> sendRestoreToken(String email) {
+    public Mono<Void> sendRestoreToken(final String email) {
         return Mono.empty();
     }
 
     @Override
-    public Mono<Void> restoreUserPassword(String token, String password) {
+    public Mono<Void> restoreUserPassword(final String token,
+                                          final String password) {
         return Mono.empty();
     }
 

@@ -13,13 +13,13 @@ import java.util.List;
 public class FakeTicketService implements TicketService {
 
     @Override
-    public Mono<Ticket> getById(Long id) {
+    public Mono<Ticket> getById(final Long id) {
         Ticket ticket = generateTicket();
         return Mono.just(ticket);
     }
 
     @Override
-    public Flux<Ticket> getAllByUserId(String userId) {
+    public Flux<Ticket> getAllByUserId(final String userId) {
         User user = generateUser();
         Tour tour = generateTour();
         List<Ticket> tickets = generateTickets(user, tour);
@@ -43,26 +43,28 @@ public class FakeTicketService implements TicketService {
     }
 
     @Override
-    public Mono<Void> create(String userId, Long tourId, Integer peopleAmount) {
+    public Mono<Void> create(final String userId,
+                             final Long tourId,
+                             final Integer peopleAmount) {
         return Mono.empty();
     }
 
     @Override
-    public Mono<Void> delete(Long ticketId) {
+    public Mono<Void> delete(final Long ticketId) {
         return Mono.empty();
     }
 
     @Override
-    public Mono<Void> confirm(Long ticketId) {
+    public Mono<Void> confirm(final Long ticketId) {
         return Mono.empty();
     }
 
     @Override
-    public Mono<Void> cancel(Long ticketId) {
+    public Mono<Void> cancel(final Long ticketId) {
         return Mono.empty();
     }
 
-    private List<Ticket> generateTickets(User user, Tour tour) {
+    private List<Ticket> generateTickets(final User user, final Tour tour) {
         Ticket ticket = new Ticket();
         ticket.setUserId(user.getId());
         ticket.setTour(tour);

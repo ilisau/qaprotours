@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class FakeTourService implements TourService {
 
     @Override
-    public Mono<Tour> getById(Long tourId) {
+    public Mono<Tour> getById(final Long tourId) {
         Tour tour = new Tour();
         tour.setId(tourId);
         tour.setImageUrls(new ArrayList<>());
@@ -19,31 +19,33 @@ public class FakeTourService implements TourService {
     }
 
     @Override
-    public Flux<Tour> getAll(Integer currentPage, Integer pageSize, TourCriteria tourCriteria) {
+    public Flux<Tour> getAll(final Integer currentPage,
+                             final Integer pageSize,
+                             final TourCriteria tourCriteria) {
         Mono<Tour> tour1 = getById(1L);
         Mono<Tour> tour2 = getById(2L);
         return Flux.concat(tour1, tour2);
     }
 
     @Override
-    public Mono<Tour> save(Tour tour) {
+    public Mono<Tour> save(final Tour tour) {
         tour.setId(1L);
         return Mono.just(tour);
     }
 
     @Override
-    public Mono<Tour> publish(Tour tour) {
+    public Mono<Tour> publish(final Tour tour) {
         tour.setId(1L);
         return Mono.just(tour);
     }
 
     @Override
-    public Mono<Void> delete(Long tourId) {
+    public Mono<Void> delete(final Long tourId) {
         return Mono.empty();
     }
 
     @Override
-    public Mono<Void> addImage(Long tourId, String fileName) {
+    public Mono<Void> addImage(final Long tourId, final String fileName) {
         return Mono.empty();
     }
 

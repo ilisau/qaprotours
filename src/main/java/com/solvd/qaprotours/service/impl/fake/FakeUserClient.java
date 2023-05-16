@@ -10,44 +10,46 @@ import reactor.core.publisher.Mono;
 public class FakeUserClient implements UserClient {
 
     @Override
-    public Mono<UserDto> getById(String id) {
+    public Mono<UserDto> getById(final String id) {
         UserDto userDto = generateUserDto();
         return Mono.just(userDto);
     }
 
     @Override
-    public Mono<UserDto> getByEmail(String email) {
+    public Mono<UserDto> getByEmail(final String email) {
         UserDto userDto = generateUserDto();
         return Mono.just(userDto);
     }
 
     @Override
-    public Mono<Void> update(User user) {
+    public Mono<Void> update(final User user) {
         return Mono.empty();
     }
 
     @Override
-    public Mono<Void> updatePassword(String userId, String newPassword) {
+    public Mono<Void> updatePassword(final String userId,
+                                     final String newPassword) {
         return Mono.empty();
     }
 
     @Override
-    public Mono<Void> updatePassword(String userId, Password password) {
+    public Mono<Void> updatePassword(final String userId,
+                                     final Password password) {
         return Mono.empty();
     }
 
     @Override
-    public Mono<Void> create(User user) {
+    public Mono<Void> create(final User user) {
         return Mono.empty();
     }
 
     @Override
-    public Mono<Void> activate(JwtToken token) {
+    public Mono<Void> activate(final JwtToken token) {
         return Mono.empty();
     }
 
     @Override
-    public Mono<Void> delete(String id) {
+    public Mono<Void> delete(final String id) {
         return Mono.empty();
     }
 

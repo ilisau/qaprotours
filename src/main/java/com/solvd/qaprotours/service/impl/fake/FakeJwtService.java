@@ -26,7 +26,7 @@ public class FakeJwtService implements JwtService {
     }
 
     @Override
-    public Claims parse(String token) {
+    public Claims parse(final String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
@@ -35,23 +35,23 @@ public class FakeJwtService implements JwtService {
     }
 
     @Override
-    public String generateToken(JwtTokenType type, User user) {
+    public String generateToken(final JwtTokenType type, final User user) {
         return "token";
     }
 
     @Override
-    public Authentication getAuthentication(String token) {
+    public Authentication getAuthentication(final String token) {
         return new UsernamePasswordAuthenticationToken("user",
                 "password");
     }
 
     @Override
-    public boolean isTokenType(String token, JwtTokenType type) {
+    public boolean isTokenType(final String token, final JwtTokenType type) {
         return true;
     }
 
     @Override
-    public boolean validateToken(String token) {
+    public boolean validateToken(final String token) {
         return true;
     }
 
