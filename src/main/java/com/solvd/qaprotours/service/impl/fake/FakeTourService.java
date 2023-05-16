@@ -1,5 +1,6 @@
 package com.solvd.qaprotours.service.impl.fake;
 
+import com.solvd.qaprotours.domain.Pagination;
 import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.domain.tour.TourCriteria;
 import com.solvd.qaprotours.service.TourService;
@@ -19,8 +20,7 @@ public class FakeTourService implements TourService {
     }
 
     @Override
-    public Flux<Tour> getAll(final Integer currentPage,
-                             final Integer pageSize,
+    public Flux<Tour> getAll(final Pagination pagination,
                              final TourCriteria tourCriteria) {
         Mono<Tour> tour1 = getById(1L);
         Mono<Tour> tour2 = getById(2L);
