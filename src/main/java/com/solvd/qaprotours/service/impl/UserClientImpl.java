@@ -5,6 +5,7 @@ import com.solvd.qaprotours.domain.jwt.JwtToken;
 import com.solvd.qaprotours.domain.user.Password;
 import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.service.UserClient;
+import com.solvd.qaprotours.service.property.ServiceUrlsProperties;
 import com.solvd.qaprotours.web.dto.ErrorDto;
 import com.solvd.qaprotours.web.dto.user.UserDto;
 import com.solvd.qaprotours.web.mapper.PasswordMapper;
@@ -30,103 +31,127 @@ public class UserClientImpl implements UserClient {
     private final UserMapper userMapper;
     private final PasswordMapper passwordMapper;
     private final JwtTokenMapper jwtTokenMapper;
+    private final ServiceUrlsProperties serviceUrlsProperties;
 
     @Override
-    public Mono<UserDto> getById(String id) {
+    public Mono<UserDto> getById(final String id) {
         return webClientBuilder
                 .filter(errorHandler())
                 .build()
                 .get()
-                .uri("http://user-client/api/v1/users/" + id)
+                .uri(serviceUrlsProperties.getUserService()
+                        + "/"
+                        + id)
                 .retrieve()
                 .bodyToMono(UserDto.class);
     }
 
     @Override
-    public Mono<UserDto> getByEmail(String email) {
+    public Mono<UserDto> getByEmail(final String email) {
         return webClientBuilder
                 .filter(errorHandler())
                 .build()
                 .get()
-                .uri("http://user-client/api/v1/users/email/" + email)
+                .uri(serviceUrlsProperties.getUserService()
+                        + "/email/"
+                        + email)
                 .retrieve()
                 .bodyToMono(UserDto.class);
     }
 
     @Override
-    public Mono<Void> update(User user) {
+    public Mono<Void> update(final User user) {
         return webClientBuilder
                 .filter(errorHandler())
                 .build()
                 .put()
-                .uri("http://user-client/api/v1/users")
+                .uri(serviceUrlsProperties.getUserService())
                 .bodyValue(userMapper.toDto(user))
                 .retrieve()
                 .bodyToMono(Void.class);
     }
 
     @Override
-    public Mono<Void> updatePassword(String userId, String newPassword) {
+    public Mono<Void> updatePassword(final String userId,
+                                     final String newPassword) {
         return webClientBuilder
                 .filter(errorHandler())
                 .build()
                 .post()
-                .uri("http://user-client/api/v1/users/" + userId + "/password")
+                .uri(serviceUrlsProperties.getUserService()
+                        + "/"
+                        + userId
+                        + "/password")
                 .bodyValue(newPassword)
                 .retrieve()
                 .bodyToMono(Void.class);
     }
 
     @Override
-    public Mono<Void> updatePassword(String userId, Password password) {
+    public Mono<Void> updatePassword(final String userId,
+                                     final Password password) {
         return webClientBuilder
                 .filter(errorHandler())
                 .build()
                 .put()
-                .uri("http://user-client/api/v1/users/" + userId + "/password")
+                .uri(serviceUrlsProperties.getUserService()
+                        + "/"
+                        + userId
+                        + "/password")
                 .bodyValue(passwordMapper.toDto(password))
                 .retrieve()
                 .bodyToMono(Void.class);
     }
 
     @Override
-    public Mono<Void> create(User user) {
+    public Mono<Void> create(final User user) {
         return webClientBuilder
                 .filter(errorHandler())
                 .build()
                 .post()
-                .uri("http://user-client/api/v1/users")
+                .uri(serviceUrlsProperties.getUserService())
                 .bodyValue(userMapper.toDto(user))
                 .retrieve()
                 .bodyToMono(Void.class);
     }
 
     @Override
-    public Mono<Void> activate(JwtToken token) {
+    public Mono<Void> activate(final JwtToken token) {
         return webClientBuilder
                 .filter(errorHandler())
                 .build()
                 .post()
-                .uri("http://user-client/api/v1/users/activate")
+                .uri(serviceUrlsProperties.getUserService()
+                        + "/activate")
                 .bodyValue(jwtTokenMapper.toDto(token))
                 .retrieve()
                 .bodyToMono(Void.class);
     }
 
     @Override
-    public Mono<Void> delete(String id) {
+    public Mono<Void> delete(final String id) {
         return webClientBuilder
                 .filter(errorHandler())
                 .build()
                 .delete()
-                .uri("http://user-client/api/v1/users/" + id)
+                .uri(serviceUrlsProperties.getUserService()
+                        + id)
                 .retrieve()
                 .bodyToMono(Void.class);
     }
 
+    /**
+     * Method for handling errors from user-client.
+     * @return ExchangeFilterFunction
+     */
     public static ExchangeFilterFunction errorHandler() {
         Function<ErrorDto, Mono<ClientResponse>> error = errorBody ->
-                Mono.error(new UserClientException(errorBody.getMessage(), errorBody.getDetails()));
+                Mono.error(
+                        new UserClientException(
+                                errorBody.getMessage(),
+                                errorBody.getDetails()
+                        )
+                );
         return ExchangeFilterFunction.ofResponseProcessor(clientResponse -> {
             if (clientResponse.statusCode().isError()) {
                 return clientResponse.bodyToMono(ErrorDto.class)

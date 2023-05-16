@@ -1,5 +1,6 @@
 package com.solvd.qaprotours.service.impl;
 
+import com.solvd.qaprotours.domain.Pagination;
 import com.solvd.qaprotours.domain.exception.ResourceDoesNotExistException;
 import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.domain.tour.TourCriteria;
@@ -20,34 +21,36 @@ import reactor.core.publisher.Mono;
 public class TourServiceImpl implements TourService {
 
     private final TourRepository tourRepository;
-    private final int PAGE_SIZE = 20;
+    private static final int PAGE_SIZE = 20;
 
     @Override
     @Transactional(readOnly = true)
-    public Flux<Tour> getAll(Integer currentPage, Integer pageSize, TourCriteria tourCriteria) {
-        if (currentPage == null || pageSize == null) {
-            currentPage = 0;
-            pageSize = PAGE_SIZE;
+    public Flux<Tour> getAll(final Pagination pagination,
+                             final TourCriteria tourCriteria) {
+        if (pagination.getCurrentPage() == null
+                || pagination.getPageSize() == null) {
+            pagination.setCurrentPage(0);
+            pagination.setPageSize(PAGE_SIZE);
         }
         Sort sort = Sort.by(Sort.Order.asc("arrivalTime"),
                 Sort.Order.desc("rating"));
         return tourRepository.findAll(sort)
-                .buffer(pageSize)
-                .skip(currentPage)
+                .buffer(pagination.getPageSize())
+                .skip(pagination.getCurrentPage())
                 .take(1)
                 .flatMapIterable(tours -> tours);
     }
 
     @Override
     @Transactional
-    public Mono<Tour> save(Tour tour) {
+    public Mono<Tour> save(final Tour tour) {
         tour.setDraft(true);
         return tourRepository.save(tour);
     }
 
     @Override
     @Transactional
-    public Mono<Tour> publish(Tour tour) {
+    public Mono<Tour> publish(final Tour tour) {
         return Mono.just(tour)
                 .map(t -> {
                     t.setDraft(false);
@@ -58,9 +61,11 @@ public class TourServiceImpl implements TourService {
 
     @Override
     @Transactional(readOnly = true)
-    public Mono<Tour> getById(Long tourId) {
+    public Mono<Tour> getById(final Long tourId) {
         Mono<Tour> error = Mono.error(
-                new ResourceDoesNotExistException("tour with id " + tourId + " does not exist")
+                new ResourceDoesNotExistException(
+                        "tour with id " + tourId + " does not exist"
+                )
         );
         return tourRepository.findById(tourId)
                 .switchIfEmpty(error);
@@ -68,12 +73,13 @@ public class TourServiceImpl implements TourService {
 
     @Override
     @Transactional
-    public Mono<Void> delete(Long tourId) {
+    public Mono<Void> delete(final Long tourId) {
         return tourRepository.deleteById(tourId);
     }
 
     @Override
-    public Mono<Void> addImage(Long tourId, String fileName) {
+    public Mono<Void> addImage(final Long tourId,
+                               final String fileName) {
         return getById(tourId)
                 .map(tour -> {
                     tour.getImageUrls().add(fileName);

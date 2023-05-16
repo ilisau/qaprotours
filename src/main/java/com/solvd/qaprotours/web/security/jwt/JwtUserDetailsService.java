@@ -19,7 +19,7 @@ public class JwtUserDetailsService implements ReactiveUserDetailsService {
     private final UserMapper userMapper;
 
     @Override
-    public Mono<UserDetails> findByUsername(String email) {
+    public Mono<UserDetails> findByUsername(final String email) {
         return userClient.getByEmail(email)
                 .map(userMapper::toEntity)
                 .map(JwtUserDetailsFactory::create);

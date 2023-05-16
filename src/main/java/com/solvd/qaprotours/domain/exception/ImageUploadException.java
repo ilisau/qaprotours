@@ -5,7 +5,11 @@ package com.solvd.qaprotours.domain.exception;
  */
 public class ImageUploadException extends RuntimeException {
 
-    public ImageUploadException(String message) {
+    /**
+     * Create an exception with a message.
+     * @param message message to be returned to client
+     */
+    public ImageUploadException(final String message) {
         super(message);
     }
 

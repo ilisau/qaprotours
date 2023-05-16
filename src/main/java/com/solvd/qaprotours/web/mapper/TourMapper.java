@@ -4,18 +4,9 @@ import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.web.dto.TourDto;
 import org.mapstruct.Mapper;
 
-import java.util.List;
-
 /**
  * @author Lisov Ilya
  */
 @Mapper(componentModel = "spring")
-public interface TourMapper {
-
-    Tour toEntity(TourDto tourDto);
-
-    List<TourDto> toDto(List<Tour> tours);
-
-    TourDto toDto(Tour tour);
-
+public interface TourMapper extends Mappable<Tour, TourDto> {
 }

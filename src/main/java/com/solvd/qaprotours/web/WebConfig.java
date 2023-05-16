@@ -28,24 +28,39 @@ public class WebConfig {
 
     private final MinioProperties minioProperties;
 
+    /**
+     * Create a password encoder.
+     * @return password encoder
+     */
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Create a minio client.
+     * @return minio client
+     */
     @Bean
     public MinioClient minioClient() {
         return MinioClient.builder()
                 .endpoint(minioProperties.getUrl())
-                .credentials(minioProperties.getAccessKey(), minioProperties.getSecretKey())
+                .credentials(minioProperties.getAccessKey(),
+                        minioProperties.getSecretKey())
                 .build();
     }
 
+    /**
+     * Create a swagger open api.
+     * @return open api
+     */
     @Bean
     public OpenAPI openAPI() {
         final String securitySchemeName = "bearerAuth";
         return new OpenAPI()
-                .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
+                .addSecurityItem(
+                        new SecurityRequirement().addList(securitySchemeName)
+                )
                 .components(
                         new Components()
                                 .addSecuritySchemes(securitySchemeName,
@@ -62,16 +77,26 @@ public class WebConfig {
                         .version("v1"));
     }
 
+    /**
+     * Create a web client builder.
+     * @return web client builder
+     */
     @Bean
     @LoadBalanced
     public WebClient.Builder webClientBuilder() {
         return WebClient.builder();
     }
 
+    /**
+     * Create a xml object for producer.
+     * @return xml
+     */
     @SneakyThrows
     @Bean
     public XML producerXml() {
-        return new XMLDocument(new File("src/main/resources/kafka/producer.xml"));
+        return new XMLDocument(
+                new File("src/main/resources/kafka/producer.xml")
+        );
     }
 
 }
