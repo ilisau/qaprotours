@@ -72,7 +72,7 @@ public class TestConfig {
 
     @Primary
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public PasswordEncoder testPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 

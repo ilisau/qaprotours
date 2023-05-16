@@ -52,15 +52,18 @@ public class FakeUserClient implements UserClient {
     }
 
     private UserDto generateUserDto() {
-        String userId = "1";
-        String userName = "Mike";
-        String userSurname = "Ivanov";
-        String userEmail = "mike@example.com";
+        String id = "1";
+        String name = "Mike";
+        String surname = "Ivanov";
+        String email = "mike@example.com";
+        String password = "12345678";
         UserDto userDto = new UserDto();
-        userDto.setId(userId);
-        userDto.setName(userName);
-        userDto.setSurname(userSurname);
-        userDto.setEmail(userEmail);
+        userDto.setId(id);
+        userDto.setName(name);
+        userDto.setSurname(surname);
+        userDto.setEmail(email);
+        userDto.setPassword(password);
+        userDto.setActivated(true);
         return userDto;
     }
 

@@ -1,19 +1,15 @@
 package com.solvd.qaprotours.service.impl;
 
 import com.solvd.qaprotours.config.TestConfig;
-import com.solvd.qaprotours.service.TicketService;
-import com.solvd.qaprotours.service.UserClient;
 import com.solvd.qaprotours.web.kafka.MessageSender;
-import com.solvd.qaprotours.web.mapper.MailDataMapper;
-import com.solvd.qaprotours.web.mapper.UserMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -23,22 +19,10 @@ import org.springframework.test.context.ActiveProfiles;
 @ExtendWith(MockitoExtension.class)
 public class SchedulerTests {
 
-    @Mock
-    private UserClient userClient;
-
-    @Mock
-    private TicketService ticketService;
-
-    @Mock
-    private UserMapper userMapper;
-
-    @Mock
-    private MailDataMapper mailDataMapper;
-
-    @Mock
+    @MockBean
     private MessageSender messageSender;
 
-    @InjectMocks
+    @Autowired
     private Scheduler scheduler;
 
     @Test

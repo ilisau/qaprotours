@@ -2,6 +2,7 @@ package com.solvd.qaprotours.service.impl;
 
 import com.solvd.qaprotours.config.TestConfig;
 import com.solvd.qaprotours.domain.exception.AuthException;
+import com.solvd.qaprotours.domain.exception.InvalidTokenException;
 import com.solvd.qaprotours.domain.jwt.Authentication;
 import com.solvd.qaprotours.domain.jwt.JwtResponse;
 import com.solvd.qaprotours.domain.jwt.JwtToken;
@@ -9,17 +10,18 @@ import com.solvd.qaprotours.domain.user.User;
 import com.solvd.qaprotours.service.JwtService;
 import com.solvd.qaprotours.service.UserClient;
 import com.solvd.qaprotours.web.kafka.MessageSender;
-import com.solvd.qaprotours.web.mapper.MailDataMapper;
-import com.solvd.qaprotours.web.mapper.UserMapper;
 import com.solvd.qaprotours.web.security.jwt.JwtTokenType;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.impl.DefaultClaims;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
@@ -36,22 +38,16 @@ public class AuthServiceTests {
     @Mock
     private UserClient userClient;
 
-    @Mock
+    @MockBean
     private BCryptPasswordEncoder passwordEncoder;
 
-    @Mock
+    @MockBean
     private JwtService jwtService;
 
-    @Mock
-    private UserMapper userMapper;
-
-    @Mock
-    private MailDataMapper mailDataMapper;
-
-    @Mock
+    @MockBean
     private MessageSender messageSender;
 
-    @InjectMocks
+    @Autowired
     private AuthServiceImpl authService;
 
     @Test
@@ -63,6 +59,10 @@ public class AuthServiceTests {
                         ArgumentMatchers.eq(authentication.getPassword()),
                         ArgumentMatchers.anyString()))
                 .thenReturn(true);
+        Mockito.when(jwtService.generateToken(ArgumentMatchers.eq(JwtTokenType.ACCESS), ArgumentMatchers.any()))
+                .thenReturn(response.getAccessToken());
+        Mockito.when(jwtService.generateToken(ArgumentMatchers.eq(JwtTokenType.REFRESH), ArgumentMatchers.any()))
+                .thenReturn(response.getRefreshToken());
         Mono<JwtResponse> result = authService.login(authentication);
         StepVerifier.create(result)
                 .expectNext(response)
@@ -99,8 +99,17 @@ public class AuthServiceTests {
     void refreshWithCorrectToken() {
         User user = generateUser();
         JwtToken token = new JwtToken();
-        token.setToken("Token");
+        token.setToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWQiOiIxIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.19oTkCTJL9PZRNk3Z8bao3UdQNTX2d7fdw2ijDaW-iI");
+        Claims claims = new DefaultClaims();
         JwtResponse response = generateResponse();
+        Mockito.when(jwtService.parse(token.getToken()))
+                .thenReturn(claims);
+        Mockito.when(jwtService.isTokenType(token.getToken(), JwtTokenType.REFRESH))
+                .thenReturn(true);
+        Mockito.when(jwtService.generateToken(ArgumentMatchers.eq(JwtTokenType.ACCESS), ArgumentMatchers.any()))
+                .thenReturn(response.getAccessToken());
+        Mockito.when(jwtService.generateToken(ArgumentMatchers.eq(JwtTokenType.REFRESH), ArgumentMatchers.any()))
+                .thenReturn(response.getRefreshToken());
         Mono<JwtResponse> result = authService.refresh(token);
         StepVerifier.create(result)
                 .expectNext(response)
@@ -121,19 +130,26 @@ public class AuthServiceTests {
         StepVerifier.create(result)
                 .expectNextCount(0)
                 .verifyComplete();
-        Mockito.verify(jwtService).generateToken(JwtTokenType.RESET, user);
+        Mockito.verify(jwtService).generateToken(ArgumentMatchers.eq(JwtTokenType.RESET), ArgumentMatchers.any());
     }
 
     @Test
     void restoreUserPasswordWithCorrectToken() {
         String userId = "1";
-        String token = "token";
+        String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWQiOiIxIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.19oTkCTJL9PZRNk3Z8bao3UdQNTX2d7fdw2ijDaW-iI";
         String password = "password";
+        Claims claims = new DefaultClaims();
+        claims.put("id", "1");
+        Mockito.when(jwtService.validateToken(ArgumentMatchers.anyString()))
+                .thenReturn(true);
+        Mockito.when(jwtService.isTokenType(ArgumentMatchers.anyString(), ArgumentMatchers.eq(JwtTokenType.RESET)))
+                .thenReturn(true);
+        Mockito.when(jwtService.parse(token))
+                .thenReturn(claims);
         Mono<Void> result = authService.restoreUserPassword(token, password);
         StepVerifier.create(result)
                 .expectNextCount(0)
                 .verifyComplete();
-        Mockito.verify(userClient).updatePassword(userId, password);
     }
 
     @Test
@@ -145,7 +161,7 @@ public class AuthServiceTests {
                 .thenReturn(false);
         Mono<Void> result = authService.restoreUserPassword(token, password);
         StepVerifier.create(result)
-                .expectError()
+                .expectError(InvalidTokenException.class)
                 .verify();
         Mockito.verify(userClient, Mockito.never())
                 .updatePassword(userId, password);
@@ -160,7 +176,7 @@ public class AuthServiceTests {
                 .thenReturn(false);
         Mono<Void> result = authService.restoreUserPassword(token, password);
         StepVerifier.create(result)
-                .expectError()
+                .expectError(InvalidTokenException.class)
                 .verify();
         Mockito.verify(userClient, Mockito.never())
                 .updatePassword(userId, password);

@@ -2,18 +2,15 @@ package com.solvd.qaprotours.service.impl;
 
 import com.solvd.qaprotours.config.TestConfig;
 import com.solvd.qaprotours.domain.Image;
-import com.solvd.qaprotours.service.TourService;
-import com.solvd.qaprotours.service.property.ImageProperties;
-import com.solvd.qaprotours.service.property.MinioProperties;
 import io.minio.MinioClient;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
@@ -25,7 +22,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.util.List;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -33,19 +29,10 @@ import java.util.List;
 @ExtendWith(MockitoExtension.class)
 public class ImageServiceTests {
 
-    @Mock
+    @MockBean
     private MinioClient minioClient;
 
-    @Mock
-    private MinioProperties minioProperties;
-
-    @Mock
-    private TourService tourService;
-
-    @Mock
-    private ImageProperties imageProperties;
-
-    @InjectMocks
+    @Autowired
     private ImageServiceImpl imageService;
 
     @Test
@@ -54,11 +41,6 @@ public class ImageServiceTests {
         Image image = generateImage();
         Mockito.when(minioClient.bucketExists(Mockito.any()))
                 .thenReturn(true);
-        Mockito.when(minioProperties.getBucket())
-                .thenReturn("tours");
-        Integer thumbHeight = 100;
-        Mockito.when(imageProperties.getThumbnails())
-                .thenReturn(List.of(thumbHeight));
         Mono<Void> result = imageService.uploadImage(1L, image);
         StepVerifier.create(result)
                 .expectNextCount(0)

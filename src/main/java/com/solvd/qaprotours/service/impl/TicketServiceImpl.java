@@ -113,8 +113,7 @@ public class TicketServiceImpl implements TicketService {
                 })
                 .map(Ticket::getTour)
                 .flatMap(tourService::save)
-                .flatMap(tour -> ticketRepository.deleteById(ticketId))
-                .then();
+                .flatMap(tour -> ticketRepository.deleteById(ticketId));
     }
 
     @Override
@@ -147,7 +146,9 @@ public class TicketServiceImpl implements TicketService {
                     return ticket;
                 })
                 .flatMap(ticketRepository::save)
-                .map(Ticket::getTour)
+                .map(t -> {
+                    return t.getTour();
+                })
                 .flatMap(tourService::save)
                 .then();
     }
