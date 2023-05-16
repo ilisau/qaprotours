@@ -7,6 +7,8 @@ import com.solvd.qaprotours.domain.jwt.Authentication;
 import com.solvd.qaprotours.domain.jwt.JwtResponse;
 import com.solvd.qaprotours.domain.jwt.JwtToken;
 import com.solvd.qaprotours.domain.user.User;
+import com.solvd.qaprotours.repository.TicketRepository;
+import com.solvd.qaprotours.repository.TourRepository;
 import com.solvd.qaprotours.service.JwtService;
 import com.solvd.qaprotours.service.UserClient;
 import com.solvd.qaprotours.web.kafka.MessageSender;
@@ -20,16 +22,16 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-@SpringBootTest
+@ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @Import(TestConfig.class)
 @ExtendWith(MockitoExtension.class)
@@ -46,6 +48,12 @@ public class AuthServiceTests {
 
     @MockBean
     private MessageSender messageSender;
+
+    @MockBean
+    private TicketRepository ticketRepository;
+
+    @MockBean
+    private TourRepository tourRepository;
 
     @Autowired
     private AuthServiceImpl authService;

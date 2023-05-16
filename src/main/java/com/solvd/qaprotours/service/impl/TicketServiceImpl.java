@@ -172,9 +172,7 @@ public class TicketServiceImpl implements TicketService {
                     return ticket;
                 })
                 .flatMap(ticketRepository::save)
-                .map(t -> {
-                    return t.getTour();
-                })
+                .map(Ticket::getTour)
                 .flatMap(tourService::save)
                 .then();
     }

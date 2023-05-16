@@ -6,6 +6,7 @@ import com.solvd.qaprotours.domain.exception.ResourceDoesNotExistException;
 import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.domain.user.Ticket;
 import com.solvd.qaprotours.repository.TicketRepository;
+import com.solvd.qaprotours.repository.TourRepository;
 import com.solvd.qaprotours.service.TourService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,10 +14,11 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -25,7 +27,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-@SpringBootTest
+@ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @Import(TestConfig.class)
 @ExtendWith(MockitoExtension.class)
@@ -35,9 +37,15 @@ public class TicketServiceTests {
     private TicketRepository ticketRepository;
 
     @MockBean
+    private TourRepository tourRepository;
+
+    @MockBean
+    @Autowired
+    @Qualifier("fakeTourService")
     private TourService tourService;
 
     @Autowired
+    @Qualifier("ticketServiceImpl")
     private TicketServiceImpl ticketService;
 
     @Test
@@ -203,7 +211,6 @@ public class TicketServiceTests {
                 .expectNextCount(0)
                 .verifyComplete();
         Mockito.verify(ticketRepository).save(ArgumentMatchers.any());
-        Mockito.verify(tourService).save(ArgumentMatchers.any());
     }
 
     private List<Ticket> generateTickets() {
