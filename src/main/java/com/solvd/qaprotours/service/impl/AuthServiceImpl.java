@@ -131,11 +131,13 @@ public class AuthServiceImpl implements AuthService {
     public Mono<Void> restoreUserPassword(final String token,
                                           final String password) {
         if (!jwtService.validateToken(token)) {
-            throw new InvalidTokenException("token is expired");
+            return Mono.error(() ->
+                    new InvalidTokenException("token is expired"));
         }
         Claims claims = jwtService.parse(token);
         if (!jwtService.isTokenType(token, JwtTokenType.RESET)) {
-            throw new InvalidTokenException("invalid reset token");
+            return Mono.error(() ->
+                    new InvalidTokenException("invalid reset token"));
         }
         JwtUserDetails userDetails = JwtUserDetailsFactory.create(claims);
         return userClient.updatePassword(userDetails.getId(), password);

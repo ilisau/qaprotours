@@ -41,6 +41,7 @@
         <r2jdbc-postgresql.version>1.0.1.RELEASE</r2jdbc-postgresql.version>
         <mockito.version>5.0.0</mockito.version>
         <jacoco.version>0.8.8</jacoco.version>
+        <reactor-test.version>3.2.3.RELEASE</reactor-test.version>
         <maven-checkstyle.version>3.2.2</maven-checkstyle.version>
         <elastic.version>8.7.1</elastic.version>
         <jackson-datatype.version>2.15.0</jackson-datatype.version>
@@ -250,6 +251,13 @@
             <artifactId>jackson-datatype-jsr310</artifactId>
             <version>${jackson-datatype.version}</version>
         </dependency>
+      
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-test</artifactId>
+            <scope>test</scope>
+            <version>${reactor-test.version}</version>
+        </dependency>
 
     </dependencies>
 
@@ -288,6 +296,13 @@
                         <id>default-prepare-agent</id>
                         <goals>
                             <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
                         </goals>
                     </execution>
                     <execution>
