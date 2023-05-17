@@ -1,6 +1,7 @@
 package com.solvd.qaprotours.service.impl;
 
 import com.solvd.qaprotours.config.TestConfig;
+import com.solvd.qaprotours.config.kafka.MessageSender;
 import com.solvd.qaprotours.domain.Pagination;
 import com.solvd.qaprotours.domain.exception.ResourceDoesNotExistException;
 import com.solvd.qaprotours.domain.tour.Tour;
@@ -20,6 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.kafka.sender.SenderResult;
 import reactor.test.StepVerifier;
 
 import java.util.ArrayList;
@@ -31,6 +33,9 @@ import java.util.Optional;
 @Import(TestConfig.class)
 @ExtendWith(MockitoExtension.class)
 public class TourServiceTests {
+
+    @MockBean
+    private MessageSender messageSender;
 
     @MockBean
     private TourRepository tourRepository;
@@ -80,11 +85,15 @@ public class TourServiceTests {
         Tour tour = generateTour();
         Mockito.when(tourRepository.save(tour))
                 .thenReturn(Mono.just(tour));
+        Mockito.when(messageSender.sendMessage(ArgumentMatchers.any()))
+                .thenReturn(Flux.empty());
         Mono<Tour> result = tourService.save(tour);
         StepVerifier.create(result)
                 .expectNext(tour)
                 .verifyComplete();
         Mockito.verify(tourRepository).save(tour);
+        Mockito.verify(messageSender)
+                .sendMessage(ArgumentMatchers.any());
         Assertions.assertTrue(tour.isDraft());
     }
 
@@ -93,11 +102,15 @@ public class TourServiceTests {
         Tour tour = generateTour();
         Mockito.when(tourRepository.save(tour))
                 .thenReturn(Mono.just(tour));
+        Mockito.when(messageSender.sendMessage(ArgumentMatchers.any()))
+                .thenReturn(Flux.empty());
         Mono<Tour> result = tourService.publish(tour);
         StepVerifier.create(result)
                 .expectNext(tour)
                 .verifyComplete();
         Mockito.verify(tourRepository).save(tour);
+        Mockito.verify(messageSender)
+                .sendMessage(ArgumentMatchers.any());
         Assertions.assertFalse(tour.isDraft());
     }
 
@@ -130,11 +143,15 @@ public class TourServiceTests {
         Long tourId = 1L;
         Mockito.when(tourRepository.deleteById(tourId))
                 .thenReturn(Mono.empty());
+        Mockito.when(messageSender.sendMessage(ArgumentMatchers.any()))
+                .thenReturn(Flux.just(Mockito.mock(SenderResult.class)));
         Mono<Void> result = tourService.delete(tourId);
         StepVerifier.create(result)
                 .expectNextCount(0)
                 .verifyComplete();
         Mockito.verify(tourRepository).deleteById(tourId);
+        Mockito.verify(messageSender)
+                .sendMessage(ArgumentMatchers.any());
     }
 
     @Test
@@ -145,11 +162,15 @@ public class TourServiceTests {
                 .thenReturn(Mono.just(tour));
         Mockito.when(tourRepository.save(tour))
                 .thenReturn(Mono.just(tour));
+        Mockito.when(messageSender.sendMessage(ArgumentMatchers.any()))
+                .thenReturn(Flux.empty());
         Mono<Void> result = tourService.addImage(tour.getId(), fileName);
         StepVerifier.create(result)
                 .expectNextCount(0)
                 .verifyComplete();
         Mockito.verify(tourRepository).save(tour);
+        Mockito.verify(messageSender)
+                .sendMessage(ArgumentMatchers.any());
         Assertions.assertEquals(tour.getImageUrls().size(), 1);
     }
 

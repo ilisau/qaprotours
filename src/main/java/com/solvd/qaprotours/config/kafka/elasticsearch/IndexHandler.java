@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 import com.solvd.qaprotours.config.kafka.LocalDateTimeDeserializer;
 import com.solvd.qaprotours.web.dto.TourDto;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.kafka.receiver.ReceiverRecord;
@@ -23,6 +24,7 @@ public class IndexHandler implements Handler {
     private final LocalDateTimeDeserializer localDateTimeDeserializer;
 
     @Override
+    @SneakyThrows
     public void handleMessage(final ReceiverRecord<String, Object> r) {
         if (r.value() != null) {
             Gson gson = new GsonBuilder()
@@ -38,13 +40,8 @@ public class IndexHandler implements Handler {
                     .index("tours")
                     .withJson(new StringReader(r.value().toString()))
                     .build();
-            try {
-                client.index(indexRequest);
-                r.receiverOffset().acknowledge();
-            } catch (Exception e) {
-                log.warn("Request is not sent because of exception: "
-                        + e.getMessage());
-            }
+            client.index(indexRequest);
+            r.receiverOffset().acknowledge();
         }
     }
 

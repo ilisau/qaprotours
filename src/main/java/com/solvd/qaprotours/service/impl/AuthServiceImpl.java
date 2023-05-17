@@ -1,7 +1,7 @@
 package com.solvd.qaprotours.service.impl;
 
 import com.solvd.qaprotours.config.kafka.KafkaMessage;
-import com.solvd.qaprotours.config.kafka.MessageSenderImpl;
+import com.solvd.qaprotours.config.kafka.MessageSender;
 import com.solvd.qaprotours.domain.MailData;
 import com.solvd.qaprotours.domain.MailType;
 import com.solvd.qaprotours.domain.exception.AuthException;
@@ -41,7 +41,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final MailDataMapper mailDataMapper;
     private final UserMapper userMapper;
-    private final MessageSenderImpl<MailDataDto> messageSender;
+    private final MessageSender<MailDataDto> messageSender;
 
     @Override
     public Mono<JwtResponse> login(final Authentication authentication) {

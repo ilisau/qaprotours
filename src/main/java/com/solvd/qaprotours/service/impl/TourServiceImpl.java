@@ -52,6 +52,7 @@ public class TourServiceImpl implements TourService {
     @Override
     @Transactional
     public Mono<Tour> save(final Tour tour) {
+        tour.setDraft(true);
         if (tour.getHotel() != null) {
             hotelService.save(tour.getHotel()).subscribe();
         }
