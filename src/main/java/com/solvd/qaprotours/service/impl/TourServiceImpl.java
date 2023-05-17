@@ -44,6 +44,7 @@ public class TourServiceImpl implements TourService {
     @Override
     @Transactional
     public Mono<Tour> save(final Tour tour) {
+        tour.setDraft(true);
         return tourRepository.save(tour);
     }
 
