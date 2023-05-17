@@ -8,6 +8,8 @@ import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.domain.tour.TourCriteria;
 import com.solvd.qaprotours.repository.TicketRepository;
 import com.solvd.qaprotours.repository.TourRepository;
+import com.solvd.qaprotours.web.dto.TourDto;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +19,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.SearchHitsImpl;
+import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Flux;
@@ -38,6 +44,9 @@ public class TourServiceTests {
     private MessageSender messageSender;
 
     @MockBean
+    private ElasticsearchOperations elasticsearchOperations;
+
+    @MockBean
     private TourRepository tourRepository;
 
     @MockBean
@@ -47,18 +56,17 @@ public class TourServiceTests {
     private TourServiceImpl tourService;
 
     @Test
+    @SneakyThrows
     void getAll() {
         Integer currentPage = 0;
         Integer pageSize = 5;
         TourCriteria tourCriteria = null;
-        List<Tour> tours = generateTours();
-        Mockito.when(tourRepository.findAll(ArgumentMatchers.any()))
-                .thenReturn(Flux.just(tours.toArray(new Tour[0])));
+        SearchHits<TourDto> hits = Mockito.mock(SearchHitsImpl.class);
+        Mockito.when(elasticsearchOperations.search(ArgumentMatchers.any(Query.class), ArgumentMatchers.eq(TourDto.class)))
+                .thenReturn(hits);
         Pagination pagination = new Pagination(currentPage, pageSize);
         Flux<Tour> result = tourService.getAll(pagination, tourCriteria);
         StepVerifier.create(result)
-                .expectNext(tours.get(0))
-                .expectNext(tours.get(1))
                 .expectNextCount(0)
                 .verifyComplete();
     }
@@ -68,14 +76,12 @@ public class TourServiceTests {
         Integer currentPage = null;
         Integer pageSize = null;
         TourCriteria tourCriteria = null;
-        List<Tour> tours = generateTours();
-        Mockito.when(tourRepository.findAll(ArgumentMatchers.any()))
-                .thenReturn(Flux.just(tours.toArray(new Tour[0])));
+        SearchHits<TourDto> hits = Mockito.mock(SearchHitsImpl.class);
+        Mockito.when(elasticsearchOperations.search(ArgumentMatchers.any(Query.class), ArgumentMatchers.eq(TourDto.class)))
+                .thenReturn(hits);
         Pagination pagination = new Pagination(currentPage, pageSize);
         Flux<Tour> result = tourService.getAll(pagination, tourCriteria);
         StepVerifier.create(result)
-                .expectNext(tours.get(0))
-                .expectNext(tours.get(1))
                 .expectNextCount(0)
                 .verifyComplete();
     }

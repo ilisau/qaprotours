@@ -12,11 +12,29 @@ import com.solvd.qaprotours.service.TourService;
 import com.solvd.qaprotours.web.dto.TourDto;
 import com.solvd.qaprotours.web.mapper.TourMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import org.apache.lucene.search.join.ScoreMode;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.query.Criteria;
+import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Varya Petrova, Lisov Ilya
@@ -29,6 +47,7 @@ public class TourServiceImpl implements TourService {
     private final MessageSender<TourDto> messageSender;
     private final TourMapper tourMapper;
     private final HotelService hotelService;
+    private final ElasticsearchOperations elasticsearchOperations;
 
     @Override
     @Transactional(readOnly = true)
@@ -40,13 +59,125 @@ public class TourServiceImpl implements TourService {
             pagination.setCurrentPage(0);
             pagination.setPageSize(pageSize);
         }
-        Sort sort = Sort.by(Sort.Order.asc("arrivalTime"),
-                Sort.Order.desc("rating"));
-        return tourRepository.findAll(sort)
-                .buffer(pagination.getPageSize())
-                .skip(pagination.getCurrentPage())
-                .take(1)
-                .flatMapIterable(tours -> tours);
+        if (tourCriteria == null) {
+            List<Tour> tours = getAllByCriteria(new TourCriteria(),
+                    pagination.getCurrentPage(),
+                    pagination.getPageSize());
+            return Flux.just(tours.toArray(new Tour[0]));
+        }
+        List<Tour> tours = getAllByCriteria(tourCriteria,
+                pagination.getCurrentPage(),
+                pagination.getPageSize());
+        return Flux.just(tours.toArray(new Tour[0]));
+    }
+
+    @SneakyThrows
+    private List<Tour> getAllByCriteria(final TourCriteria tourCriteria,
+                                        final int currentPage,
+                                        final int pageSize) {
+        List<QueryBuilder> queryBuilders = new ArrayList<>();
+        CriteriaQuery searchQuery = new CriteriaQuery(new Criteria());
+
+        List<String> countries = tourCriteria.getCountries();
+        if (countries != null && !countries.isEmpty()) {
+            Criteria criteria = new Criteria("country");
+            criteria.in(countries);
+            searchQuery.addCriteria(criteria);
+        }
+
+        List<Tour.TourType> tourTypes = tourCriteria.getTourTypes();
+        if (tourTypes != null && !tourTypes.isEmpty()) {
+            Criteria criteria = new Criteria("type");
+            criteria.in(tourTypes);
+            searchQuery.addCriteria(criteria);
+        }
+
+        Integer stars = tourCriteria.getStars();
+        if (stars != null) {
+            QueryBuilder builder = QueryBuilders.nestedQuery("hotel",
+                    QueryBuilders.boolQuery()
+                            .must(QueryBuilders
+                                    .termQuery("hotel.starsAmount",
+                                            stars)),
+                    ScoreMode.Total);
+            queryBuilders.add(builder);
+        }
+
+        List<Tour.CateringType> cateringTypes = tourCriteria.getCateringTypes();
+        if (cateringTypes != null && !cateringTypes.isEmpty()) {
+            Criteria criteria = new Criteria("cateringType");
+            criteria.in(cateringTypes);
+            searchQuery.addCriteria(criteria);
+        }
+
+        List<Integer> coastLines = tourCriteria.getCoastLines();
+        if (coastLines != null && !coastLines.isEmpty()) {
+            QueryBuilder builder = QueryBuilders.nestedQuery("hotel",
+                    QueryBuilders.boolQuery()
+                            .should(QueryBuilders
+                                    .termQuery("hotel.coastline",
+                                            coastLines)),
+                    ScoreMode.Total);
+            queryBuilders.add(builder);
+        }
+
+        Integer dayDuration = tourCriteria.getDayDuration();
+        if (dayDuration != null) {
+            Criteria criteria = new Criteria("dayDuration");
+            criteria.is(dayDuration);
+            searchQuery.addCriteria(criteria);
+        }
+
+        LocalDateTime arrivedAt = tourCriteria.getArrivedAt();
+        if (arrivedAt == null || arrivedAt.isBefore(LocalDateTime.now())) {
+            arrivedAt = LocalDateTime.now();
+        }
+        Criteria arrivedAtCriteria = new Criteria("arrivalTime");
+        arrivedAtCriteria.greaterThanEqual(arrivedAt);
+        searchQuery.addCriteria(arrivedAtCriteria);
+
+        LocalDateTime leavedAt = tourCriteria.getLeavedAt();
+        if (leavedAt != null && leavedAt.isBefore(LocalDateTime.now())) {
+            leavedAt = LocalDateTime.now();
+        }
+        if (leavedAt != null) {
+            Criteria criteria = new Criteria("departureTime");
+            criteria.lessThanEqual(leavedAt);
+            searchQuery.addCriteria(criteria);
+        }
+
+        BigDecimal minCost = tourCriteria.getMinCost();
+        if (minCost != null) {
+            Criteria criteria = new Criteria("price");
+            criteria.greaterThanEqual(minCost);
+            searchQuery.addCriteria(criteria);
+        }
+
+        BigDecimal maxCost = tourCriteria.getMaxCost();
+        if (maxCost != null) {
+            Criteria criteria = new Criteria("price");
+            criteria.lessThanEqual(maxCost);
+            searchQuery.addCriteria(criteria);
+        }
+
+        BoolQueryBuilder resultQueryBuilder = QueryBuilders.boolQuery();
+        for (QueryBuilder builder : queryBuilders) {
+            resultQueryBuilder.must(builder);
+        }
+
+        Pageable pageable = PageRequest.of(currentPage, pageSize);
+        searchQuery.setPageable(pageable);
+        searchQuery.addSort(Sort.by("arrivalTime").ascending());
+        searchQuery.addSort(Sort.by("rating").descending());
+
+        SearchHits<TourDto> hits = elasticsearchOperations.search(
+                searchQuery,
+                TourDto.class
+        );
+        return hits.stream()
+                .map(SearchHit::getContent)
+                .map(tourMapper::toEntity)
+                .collect(Collectors.toList());
     }
 
     @Override

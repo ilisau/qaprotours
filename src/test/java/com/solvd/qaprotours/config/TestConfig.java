@@ -32,10 +32,12 @@ import com.solvd.qaprotours.web.mapper.UserMapper;
 import com.solvd.qaprotours.web.mapper.UserMapperImpl;
 import io.minio.MinioClient;
 import lombok.RequiredArgsConstructor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import reactor.kafka.sender.KafkaSender;
@@ -97,7 +99,12 @@ public class TestConfig {
 
     @Bean("tourServiceImpl")
     public TourServiceImpl tourServiceImpl() {
-        return new TourServiceImpl(tourRepository, messageSender(), tourMapper(), hotelService());
+        return new TourServiceImpl(tourRepository, messageSender(), tourMapper(), hotelService(), elasticsearchOperations());
+    }
+
+    @Bean
+    public ElasticsearchOperations elasticsearchOperations() {
+        return Mockito.mock(ElasticsearchOperations.class);
     }
 
     @Primary

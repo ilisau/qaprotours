@@ -131,13 +131,21 @@ public class WebConfig {
      */
     @Bean
     public ElasticsearchClient elasticsearchClient() {
-        RestClient restClient = RestClient.builder(
+        ElasticsearchTransport transport = new RestClientTransport(
+                restClient(), new JacksonJsonpMapper());
+        return new ElasticsearchClient(transport);
+    }
+
+    /**
+     * Creates rest client for Elasticsearch.
+     * @return restclient
+     */
+    @Bean
+    public RestClient restClient() {
+        return RestClient.builder(
                         new HttpHost(elasticsearchProperties.getHost(),
                                 elasticsearchProperties.getPort()))
                 .build();
-        ElasticsearchTransport transport = new RestClientTransport(
-                restClient, new JacksonJsonpMapper());
-        return new ElasticsearchClient(transport);
     }
 
     /**
