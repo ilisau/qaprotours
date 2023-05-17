@@ -41,6 +41,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import reactor.kafka.sender.KafkaSender;
 
 import java.util.Collections;
+import java.util.List;
 
 @TestConfiguration
 @EnableR2dbcRepositories
@@ -86,7 +87,7 @@ public class TestConfig {
 
     @Bean
     public ImageProperties imageProperties() {
-        return new ImageProperties(Collections.emptyList(), Collections.emptyList());
+        return new ImageProperties(List.of(100, 400), Collections.emptyList());
     }
 
     @Bean("authServiceImpl")
