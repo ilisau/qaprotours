@@ -22,17 +22,17 @@ public class FakeTourService implements TourService {
     @Override
     public Flux<Tour> getAll(final Pagination pagination,
                              final TourCriteria tourCriteria) {
-        Mono<Tour> tour1 = getById(1L);
-        Mono<Tour> tour2 = getById(2L);
-        return Flux.concat(tour1, tour2);
+        Mono<Tour> firstTour = getById(1L);
+        Mono<Tour> secondTour = getById(2L);
+        return Flux.concat(firstTour, secondTour);
     }
 
     @Override
     public Flux<Tour> getAll(final Pagination pagination,
                              final String description) {
-        Mono<Tour> tour1 = getById(1L);
-        Mono<Tour> tour2 = getById(2L);
-        return Flux.concat(tour1, tour2);
+        Mono<Tour> firstTour = getById(1L);
+        Mono<Tour> secondTour = getById(2L);
+        return Flux.concat(firstTour, secondTour);
     }
 
     @Override
