@@ -1,5 +1,6 @@
 package com.solvd.qaprotours.config;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import com.solvd.qaprotours.config.kafka.MessageSender;
 import com.solvd.qaprotours.config.kafka.MessageSenderImpl;
 import com.solvd.qaprotours.repository.TicketRepository;
@@ -32,7 +33,6 @@ import com.solvd.qaprotours.web.mapper.UserMapper;
 import com.solvd.qaprotours.web.mapper.UserMapperImpl;
 import io.minio.MinioClient;
 import lombok.RequiredArgsConstructor;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -99,12 +99,17 @@ public class TestConfig {
 
     @Bean("tourServiceImpl")
     public TourServiceImpl tourServiceImpl() {
-        return new TourServiceImpl(tourRepository, messageSender(), tourMapper(), hotelService(), elasticsearchOperations());
+        return new TourServiceImpl(tourRepository, messageSender(), tourMapper(), hotelService(), elasticsearchOperations(), elasticsearchClient());
     }
 
     @Bean
     public ElasticsearchOperations elasticsearchOperations() {
         return Mockito.mock(ElasticsearchOperations.class);
+    }
+
+    @Bean
+    public ElasticsearchClient elasticsearchClient() {
+        return Mockito.mock(ElasticsearchClient.class);
     }
 
     @Primary

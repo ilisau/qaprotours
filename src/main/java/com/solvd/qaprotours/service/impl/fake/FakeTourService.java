@@ -28,6 +28,14 @@ public class FakeTourService implements TourService {
     }
 
     @Override
+    public Flux<Tour> getAll(final Pagination pagination,
+                             final String description) {
+        Mono<Tour> tour1 = getById(1L);
+        Mono<Tour> tour2 = getById(2L);
+        return Flux.concat(tour1, tour2);
+    }
+
+    @Override
     public Mono<Tour> save(final Tour tour) {
         tour.setId(1L);
         return Mono.just(tour);

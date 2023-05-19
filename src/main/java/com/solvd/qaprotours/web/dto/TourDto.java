@@ -1,6 +1,7 @@
 package com.solvd.qaprotours.web.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.web.dto.validation.OnCreate;
@@ -108,6 +109,7 @@ public class TourDto {
     @Field(type = FieldType.Date, name = "arrivalTime",
             format = DateFormat.date_hour_minute_second_millis,
             pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonIgnore
     private LocalDateTime arrivalTime;
 
     @NotNull(message = "departure time cannot be null",
@@ -116,6 +118,7 @@ public class TourDto {
     @Field(type = FieldType.Date, name = "departureTime",
             format = DateFormat.date_hour_minute_second_millis,
             pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonIgnore
     private LocalDateTime departureTime;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

@@ -1,5 +1,9 @@
 package com.solvd.qaprotours.service.impl;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.SortOrder;
+import co.elastic.clients.elasticsearch.core.SearchResponse;
+import co.elastic.clients.elasticsearch.core.search.Hit;
 import com.solvd.qaprotours.config.kafka.KafkaMessage;
 import com.solvd.qaprotours.config.kafka.MessageSender;
 import com.solvd.qaprotours.domain.Pagination;
@@ -48,6 +52,7 @@ public class TourServiceImpl implements TourService {
     private final TourMapper tourMapper;
     private final HotelService hotelService;
     private final ElasticsearchOperations elasticsearchOperations;
+    private final ElasticsearchClient client;
 
     @Override
     @Transactional(readOnly = true)
@@ -178,6 +183,43 @@ public class TourServiceImpl implements TourService {
                 .map(SearchHit::getContent)
                 .map(tourMapper::toEntity)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @SneakyThrows
+    public Flux<Tour> getAll(final Pagination pagination,
+                             final String description) {
+        int pageSize = 20;
+        if (pagination.getCurrentPage() == null
+                || pagination.getPageSize() == null) {
+            pagination.setCurrentPage(0);
+            pagination.setPageSize(pageSize);
+        }
+        SearchResponse<TourDto> searchResponse = client.search(s -> s
+                        .index("tours")
+                        .sort(builder -> builder
+                                .field(f -> f
+                                        .field("arrivalTime")
+                                        .order(SortOrder.Asc)))
+                        .sort(builder -> builder
+                                .field(f -> f
+                                        .field("rating")
+                                        .order(SortOrder.Desc)))
+                        .from(pagination.getCurrentPage()
+                                * pagination.getPageSize())
+                        .size(pagination.getPageSize())
+                        .query(q -> q
+                                .matchPhrase(t -> t
+                                        .field("description")
+                                        .query(description)
+                                )
+                        ),
+                TourDto.class);
+        List<Tour> tours = searchResponse.hits().hits().stream()
+                .map(Hit::source)
+                .map(tourMapper::toEntity)
+                .toList();
+        return Flux.just(tours.toArray(new Tour[0]));
     }
 
     @Override
