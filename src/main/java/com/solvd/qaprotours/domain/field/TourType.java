@@ -8,15 +8,15 @@ import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import java.util.List;
 
 @Data
-public class CateringTypeField implements Field {
+public class TourType implements Field {
 
-    private List<Tour.CateringType> cateringTypes;
+    private List<Tour.TourType> tourTypes;
 
     @Override
     public void apply(final CriteriaQuery criteriaQuery) {
-        if (cateringTypes != null && !cateringTypes.isEmpty()) {
-            Criteria criteria = new Criteria("cateringType");
-            criteria.in(cateringTypes);
+        if (tourTypes != null && !tourTypes.isEmpty()) {
+            Criteria criteria = new Criteria("type");
+            criteria.in(tourTypes);
             criteriaQuery.addCriteria(criteria);
         }
     }

@@ -7,7 +7,7 @@ import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import java.math.BigDecimal;
 
 @Data
-public class PriceField implements Field {
+public class Price implements Field {
 
     private BigDecimal minPrice;
     private BigDecimal maxPrice;

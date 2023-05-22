@@ -7,7 +7,7 @@ import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import java.util.List;
 
 @Data
-public class CountryField implements Field {
+public class Country implements Field {
 
     private List<String> countries;
 

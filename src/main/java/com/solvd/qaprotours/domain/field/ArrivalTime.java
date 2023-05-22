@@ -7,7 +7,7 @@ import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import java.time.LocalDateTime;
 
 @Data
-public class ArrivalTimeField implements Field {
+public class ArrivalTime implements Field {
 
     private LocalDateTime arrivalTime;
 
