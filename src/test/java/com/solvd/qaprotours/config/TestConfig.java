@@ -1,5 +1,6 @@
 package com.solvd.qaprotours.config;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import com.solvd.qaprotours.config.kafka.MessageSender;
 import com.solvd.qaprotours.config.kafka.MessageSenderImpl;
 import com.solvd.qaprotours.repository.TicketRepository;
@@ -36,6 +37,7 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import reactor.kafka.sender.KafkaSender;
@@ -97,7 +99,17 @@ public class TestConfig {
 
     @Bean("tourServiceImpl")
     public TourServiceImpl tourServiceImpl() {
-        return new TourServiceImpl(tourRepository, messageSender(), tourMapper(), hotelService());
+        return new TourServiceImpl(tourRepository, messageSender(), tourMapper(), hotelService(), elasticsearchOperations(), elasticsearchClient());
+    }
+
+    @Bean
+    public ElasticsearchOperations elasticsearchOperations() {
+        return Mockito.mock(ElasticsearchOperations.class);
+    }
+
+    @Bean
+    public ElasticsearchClient elasticsearchClient() {
+        return Mockito.mock(ElasticsearchClient.class);
     }
 
     @Primary

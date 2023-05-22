@@ -1,12 +1,13 @@
 package com.solvd.qaprotours.web.dto;
 
-import com.solvd.qaprotours.domain.hotel.Point;
-import com.solvd.qaprotours.domain.tour.Tour;
+import com.solvd.qaprotours.domain.field.ArrivalTime;
+import com.solvd.qaprotours.domain.field.CateringType;
+import com.solvd.qaprotours.domain.field.Country;
+import com.solvd.qaprotours.domain.field.DayDuration;
+import com.solvd.qaprotours.domain.field.DepartureTime;
+import com.solvd.qaprotours.domain.field.Price;
+import com.solvd.qaprotours.domain.field.TourType;
 import lombok.Data;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * @author Varya Petrova
@@ -14,17 +15,12 @@ import java.util.List;
 @Data
 public class TourCriteriaDto {
 
-    private Point userLocation;
-    private List<String> countries;
-    private Double maxRadius;
-    private List<Tour.TourType> tourTypes;
-    private Integer stars;
-    private List<Tour.CateringType> cateringTypes;
-    private List<Integer> coastLines;
-    private LocalDateTime arrivedAt;
-    private LocalDateTime leavedAt;
-    private Integer dayDuration;
-    private BigDecimal minCost;
-    private BigDecimal maxCost;
+    private Country country;
+    private TourType tourType;
+    private CateringType cateringType;
+    private ArrivalTime arrivalTime;
+    private DepartureTime departureTime;
+    private DayDuration dayDuration;
+    private Price price;
 
 }
