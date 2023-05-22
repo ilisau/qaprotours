@@ -1,4 +1,4 @@
-package com.solvd.qaprotours.repository;
+package com.solvd.qaprotours.repository.converters;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,14 +13,19 @@ import java.util.List;
 public class RepositoryConfig {
 
     /**
-     * Custom converter for {@link TicketRepository}.
+     * Custom converter for repositories.
      *
-     * @return custom converter
+     * @return custom converters
      */
     @Bean
     public R2dbcCustomConversions customConversions() {
         List<Converter<?, ?>> converters = new ArrayList<>();
-        converters.add(new ReadConverter());
+        converters.add(new TicketReadConverter());
+        converters.add(new TicketWriteConverter());
+        converters.add(new TourReadConverter());
+        converters.add(new TourWriteConverter());
+        converters.add(new HotelWriteConverter());
+        converters.add(new AddressWriteConverter());
         return R2dbcCustomConversions.of(MySqlDialect.INSTANCE, converters);
     }
 

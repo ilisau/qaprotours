@@ -19,7 +19,7 @@ We use Kafka here for sending messages to mail client instead of blocking rest a
 
 3) Elasticsearch
 
-We use Elasticsearch for storing tours in it and have a fast access and searching by tour description.
+We use Elasticsearch to provide fast and efficient search approach to find tours.
 
 ### Arguments from .env file
 

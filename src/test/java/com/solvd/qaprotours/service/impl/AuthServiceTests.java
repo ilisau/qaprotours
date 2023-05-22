@@ -1,6 +1,7 @@
 package com.solvd.qaprotours.service.impl;
 
 import com.solvd.qaprotours.config.TestConfig;
+import com.solvd.qaprotours.config.kafka.MessageSender;
 import com.solvd.qaprotours.domain.exception.AuthException;
 import com.solvd.qaprotours.domain.exception.InvalidTokenException;
 import com.solvd.qaprotours.domain.jwt.Authentication;
@@ -11,7 +12,6 @@ import com.solvd.qaprotours.repository.TicketRepository;
 import com.solvd.qaprotours.repository.TourRepository;
 import com.solvd.qaprotours.service.JwtService;
 import com.solvd.qaprotours.service.UserClient;
-import com.solvd.qaprotours.web.kafka.MessageSender;
 import com.solvd.qaprotours.web.security.jwt.JwtTokenType;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.impl.DefaultClaims;

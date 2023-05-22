@@ -1,5 +1,8 @@
-package com.solvd.qaprotours.repository;
+package com.solvd.qaprotours.repository.converters;
 
+import com.solvd.qaprotours.domain.hotel.Address;
+import com.solvd.qaprotours.domain.hotel.Hotel;
+import com.solvd.qaprotours.domain.hotel.Point;
 import com.solvd.qaprotours.domain.tour.Tour;
 import com.solvd.qaprotours.domain.user.Ticket;
 import io.r2dbc.spi.Row;
@@ -10,7 +13,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @ReadingConverter
-public class ReadConverter implements Converter<Row, Ticket> {
+public class TicketReadConverter implements Converter<Row, Ticket> {
 
     @Override
     public Ticket convert(final Row source) {
@@ -40,7 +43,25 @@ public class ReadConverter implements Converter<Row, Ticket> {
         tour.setDraft(source.get("is_draft", Boolean.class));
         tour.setRating(source.get("rating", BigDecimal.class));
         tour.setDayDuration(source.get("day_duration", Integer.class));
+        Point point = new Point();
+        point.setLatitude(source.get("latitude", Double.class));
+        point.setLongitude(source.get("longitude", Double.class));
+        tour.setCoordinates(point);
         ticket.setTour(tour);
+        Hotel hotel = new Hotel();
+        hotel.setId(source.get("hotel_id", Long.class));
+        hotel.setName(source.get("hotel_name", String.class));
+        hotel.setCoastline(source.get("coastline", Integer.class));
+        hotel.setStarsAmount(source.get("stars_amount", Integer.class));
+        Address address = new Address();
+        address.setId(source.get("address_id", Long.class));
+        address.setCity(source.get("address_city", String.class));
+        address.setCountry(source.get("address_country", String.class));
+        address.setStreetName(source.get("street", String.class));
+        address.setHouseNumber(source.get("house_number", Integer.class));
+        hotel.setAddress(address);
+        tour.setHotel(hotel);
+        //TODO set image url
         return ticket;
     }
 

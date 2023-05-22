@@ -1,10 +1,10 @@
 package com.solvd.qaprotours.domain.tour;
 
-import com.solvd.qaprotours.domain.hotel.Point;
+import com.solvd.qaprotours.domain.field.Field;
 import lombok.Data;
+import org.cactoos.list.ListOf;
+import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -13,17 +13,34 @@ import java.util.List;
 @Data
 public class TourCriteria {
 
-    private Point userLocation;
-    private List<String> countries;
-    private Double maxRadius;
-    private List<Tour.TourType> tourTypes;
-    private Integer stars;
-    private List<Tour.CateringType> cateringTypes;
-    private List<Integer> coastLines;
-    private LocalDateTime arrivedAt;
-    private LocalDateTime leavedAt;
-    private Integer dayDuration;
-    private BigDecimal minCost;
-    private BigDecimal maxCost;
+    private List<Field> fields;
+
+    /**
+     * Creates a TourCriteria object with empty criteria.
+     *
+     * @param fields list of criteria
+     */
+    public TourCriteria(final List<Field> fields) {
+        this.fields = fields;
+    }
+
+    /**
+     * Creates a TourCriteria object with empty criteria.
+     */
+    public TourCriteria() {
+        this(new ListOf<>());
+    }
+
+    /**
+     * Applies all criteria to fields.
+     * @param searchQuery CriteriaQuery object
+     */
+    public void apply(final CriteriaQuery searchQuery) {
+        fields.forEach(f -> {
+            if (f != null) {
+                f.apply(searchQuery);
+            }
+        });
+    }
 
 }

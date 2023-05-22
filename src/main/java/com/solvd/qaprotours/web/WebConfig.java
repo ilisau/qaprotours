@@ -1,7 +1,12 @@
 package com.solvd.qaprotours.web;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.json.jackson.JacksonJsonpMapper;
+import co.elastic.clients.transport.ElasticsearchTransport;
+import co.elastic.clients.transport.rest_client.RestClientTransport;
 import com.jcabi.xml.XML;
 import com.jcabi.xml.XMLDocument;
+import com.solvd.qaprotours.service.property.ElasticsearchProperties;
 import com.solvd.qaprotours.service.property.MinioProperties;
 import io.minio.MinioClient;
 import io.swagger.v3.oas.models.Components;
@@ -11,6 +16,8 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.http.HttpHost;
+import org.elasticsearch.client.RestClient;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +25,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.File;
+import java.time.format.DateTimeFormatter;
 
 /**
  * @author Ermakovich Kseniya, Lisov Ilya
@@ -26,10 +34,13 @@ import java.io.File;
 @RequiredArgsConstructor
 public class WebConfig {
 
+    private final ElasticsearchProperties elasticsearchProperties;
+
     private final MinioProperties minioProperties;
 
     /**
      * Create a password encoder.
+     *
      * @return password encoder
      */
     @Bean
@@ -89,14 +100,62 @@ public class WebConfig {
 
     /**
      * Create a xml object for producer.
+     *
      * @return xml
      */
     @SneakyThrows
-    @Bean
+    @Bean(name = "producer")
     public XML producerXml() {
         return new XMLDocument(
                 new File("src/main/resources/kafka/producer.xml")
         );
+    }
+
+    /**
+     * Create a xml object for consumer.
+     *
+     * @return xml
+     */
+    @SneakyThrows
+    @Bean(name = "consumer")
+    public XML consumerXml() {
+        return new XMLDocument(
+                new File("src/main/resources/kafka/consumer.xml")
+        );
+    }
+
+    /**
+     * Creates Elasticsearch client.
+     *
+     * @return client
+     */
+    @Bean
+    public ElasticsearchClient elasticsearchClient() {
+        ElasticsearchTransport transport = new RestClientTransport(
+                restClient(), new JacksonJsonpMapper());
+        return new ElasticsearchClient(transport);
+    }
+
+    /**
+     * Creates rest client for Elasticsearch.
+     * @return restclient
+     */
+    @Bean
+    public RestClient restClient() {
+        return RestClient.builder(
+                        new HttpHost(elasticsearchProperties.getHost(),
+                                elasticsearchProperties.getPort()))
+                .build();
+    }
+
+    /**
+     * Creates a DateTimeFormatter.
+     *
+     * @return created bean
+     */
+    @Bean
+    public DateTimeFormatter dateTimeFormatter() {
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     }
 
 }

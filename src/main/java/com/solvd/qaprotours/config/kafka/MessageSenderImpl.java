@@ -1,6 +1,5 @@
-package com.solvd.qaprotours.web.kafka;
+package com.solvd.qaprotours.config.kafka;
 
-import com.solvd.qaprotours.web.dto.MailDataDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
@@ -10,17 +9,18 @@ import reactor.kafka.sender.SenderRecord;
 import reactor.kafka.sender.SenderResult;
 
 /**
+ * @param <K> param of a sending object
  * @author Lisov Ilya
  */
 @Component
 @RequiredArgsConstructor
-public class MessageSenderImpl implements MessageSender {
+public class MessageSenderImpl<K> implements MessageSender<K> {
 
     private final KafkaSender<String, Object> sender;
 
     @Override
-    public Flux<SenderResult<MailDataDto>> sendMessage(
-            final KafkaMessage kafkaMessage
+    public Flux<SenderResult<K>> sendMessage(
+            final KafkaMessage<K> kafkaMessage
     ) {
         return sender.send(
                 Mono.just(

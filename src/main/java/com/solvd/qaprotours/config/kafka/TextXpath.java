@@ -1,4 +1,4 @@
-package com.solvd.qaprotours.web.kafka;
+package com.solvd.qaprotours.config.kafka;
 
 import com.jcabi.xml.XML;
 import lombok.RequiredArgsConstructor;
