@@ -9,6 +9,8 @@ volumes:
     driver: local
   db-data:
     driver: local
+  elastic-data:
+    driver: local
 
 services:
   app:
@@ -18,6 +20,7 @@ services:
     depends_on:
       - postgres
       - minio
+      - elastic-search
     env_file:
       - .env
     networks:
@@ -60,5 +63,23 @@ services:
       - minio
     ports:
       - '80:80'
+    networks:
+      - app-tier
+
+  elastic-search:
+    image: elasticsearch:8.7.1
+    container_name: qaprotours-elastic-search
+    volumes:
+      - elastic-data:/usr/share/elasticsearch/data
+    ports:
+      - '9200:9200'
+    networks:
+      - app-tier
+
+  kibana:
+    image: kibana:8.7.1
+    container_name: qaprotours-kibana
+    ports:
+      - '5601:5601'
     networks:
       - app-tier
