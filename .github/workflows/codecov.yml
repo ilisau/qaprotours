@@ -5,25 +5,6 @@ on:
   pull_request:
     branches: [ main ]
 
-coverage:
-  status:
-    project:
-      default:
-        # basic
-        target: auto
-        threshold: 0%
-        base: auto
-        flags:
-          - unit
-        paths:
-          - "src/main/java/com/solvd/qaprotours/service/impl"
-        # advanced settings
-        branches:
-          - master
-        if_ci_failed: error
-        informational: false
-        only_pulls: false
-
 jobs:
   codecov:
     runs-on: ubuntu-20.04
