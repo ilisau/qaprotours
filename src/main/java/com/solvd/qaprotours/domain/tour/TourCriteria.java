@@ -2,9 +2,9 @@ package com.solvd.qaprotours.domain.tour;
 
 import com.solvd.qaprotours.domain.field.Field;
 import lombok.Data;
+import org.cactoos.list.ListOf;
 import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,9 +17,18 @@ public class TourCriteria {
 
     /**
      * Creates a TourCriteria object with empty criteria.
+     *
+     * @param fields list of criteria
+     */
+    public TourCriteria(final List<Field> fields) {
+        this.fields = fields;
+    }
+
+    /**
+     * Creates a TourCriteria object with empty criteria.
      */
     public TourCriteria() {
-        this.fields = new ArrayList<>();
+        this(new ListOf<>());
     }
 
     /**
