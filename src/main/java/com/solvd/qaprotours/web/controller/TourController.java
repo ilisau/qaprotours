@@ -73,7 +73,27 @@ public class TourController {
     }
 
     /**
+     * Gets all tours by words in description.
+     *
+     * @param description words to autocomplete by
+     * @param currentPage page number
+     * @param pageSize    page size
+     * @return list of tours
+     */
+    @GetMapping("search")
+    public Flux<TourDto> getAllByDescription(
+            @RequestParam(required = false) final String description,
+            @RequestParam(required = false) final Integer currentPage,
+            @RequestParam(required = false) final Integer pageSize
+    ) {
+        Pagination pagination = new Pagination(currentPage, pageSize);
+        return tourService.getAll(pagination, description)
+                .map(tourMapper::toDto);
+    }
+
+    /**
      * Saves draft tour.
+     *
      * @param tourDto TourDto object.
      * @return created object.
      */
@@ -81,6 +101,7 @@ public class TourController {
     @PreAuthorize("hasRole('EMPLOYEE')")
     public Mono<TourDto> saveDraft(@RequestBody final TourDto tourDto) {
         Tour tour = tourMapper.toEntity(tourDto);
+        tour.setDraft(true);
         return tourService.save(tour)
                 .map(tourMapper::toDto);
     }

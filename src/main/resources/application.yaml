@@ -95,3 +95,7 @@ image:
 
 service-urls:
   userService: ${USER_SERVICE_URL}
+
+elasticsearch:
+  host: ${ELASTIC_SEARCH_HOST}
+  port: ${ELASTIC_SEARCH_PORT}

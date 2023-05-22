@@ -29,7 +29,17 @@ public interface TourService {
                       TourCriteria tourCriteria);
 
     /**
+     * Get all tours.
+     *
+     * @param pagination  pagination
+     * @param description words to autocomplete by
+     * @return list of tours that contains description
+     */
+    Flux<Tour> getAll(Pagination pagination, String description);
+
+    /**
      * Save tour.
+     *
      * @param tour tour
      * @return saved tour
      */

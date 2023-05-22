@@ -1,16 +1,15 @@
-package com.solvd.qaprotours.web.kafka;
+package com.solvd.qaprotours.config.kafka;
 
-import com.solvd.qaprotours.web.dto.MailDataDto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class KafkaMessage {
+public class KafkaMessage<K> {
 
     private String topic;
     private int partition;
     private String key;
-    private MailDataDto data;
+    private K data;
 
 }

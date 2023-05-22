@@ -1,12 +1,12 @@
 package com.solvd.qaprotours.service.impl;
 
+import com.solvd.qaprotours.config.kafka.KafkaMessage;
+import com.solvd.qaprotours.config.kafka.MessageSender;
 import com.solvd.qaprotours.domain.MailData;
 import com.solvd.qaprotours.domain.MailType;
 import com.solvd.qaprotours.service.TicketService;
 import com.solvd.qaprotours.service.UserClient;
 import com.solvd.qaprotours.web.dto.MailDataDto;
-import com.solvd.qaprotours.web.kafka.KafkaMessage;
-import com.solvd.qaprotours.web.kafka.MessageSender;
 import com.solvd.qaprotours.web.mapper.MailDataMapper;
 import com.solvd.qaprotours.web.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class Scheduler {
     private final UserClient userClient;
     private final MailDataMapper mailDataMapper;
     private final UserMapper userMapper;
-    private final MessageSender messageSender;
+    private final MessageSender<MailDataDto> messageSender;
 
     /**
      * Find all booked tickets and send notification emails to users.
@@ -67,8 +67,8 @@ public class Scheduler {
                                                         params);
                                         MailDataDto dto =
                                                 mailDataMapper.toDto(mailData);
-                                        KafkaMessage message =
-                                                new KafkaMessage();
+                                        KafkaMessage<MailDataDto> message =
+                                                new KafkaMessage<>();
                                         message.setTopic("mail");
                                         message.setPartition(0);
                                         message.setKey(ticket.getUserId());
@@ -122,8 +122,8 @@ public class Scheduler {
                                                 params);
                                         MailDataDto dto =
                                                 mailDataMapper.toDto(mailData);
-                                        KafkaMessage message
-                                                = new KafkaMessage();
+                                        KafkaMessage<MailDataDto> message
+                                                = new KafkaMessage<>();
                                         message.setTopic("mail");
                                         message.setPartition(0);
                                         message.setKey(ticket.getUserId());

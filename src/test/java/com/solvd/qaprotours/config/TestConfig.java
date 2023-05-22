@@ -1,8 +1,12 @@
 package com.solvd.qaprotours.config;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import com.solvd.qaprotours.config.kafka.MessageSender;
+import com.solvd.qaprotours.config.kafka.MessageSenderImpl;
 import com.solvd.qaprotours.repository.TicketRepository;
 import com.solvd.qaprotours.repository.TourRepository;
 import com.solvd.qaprotours.service.AuthService;
+import com.solvd.qaprotours.service.HotelService;
 import com.solvd.qaprotours.service.JwtService;
 import com.solvd.qaprotours.service.TicketService;
 import com.solvd.qaprotours.service.TourService;
@@ -13,6 +17,7 @@ import com.solvd.qaprotours.service.impl.Scheduler;
 import com.solvd.qaprotours.service.impl.TicketServiceImpl;
 import com.solvd.qaprotours.service.impl.TourServiceImpl;
 import com.solvd.qaprotours.service.impl.fake.FakeAuthService;
+import com.solvd.qaprotours.service.impl.fake.FakeHotelService;
 import com.solvd.qaprotours.service.impl.fake.FakeJwtService;
 import com.solvd.qaprotours.service.impl.fake.FakeTicketService;
 import com.solvd.qaprotours.service.impl.fake.FakeTourService;
@@ -20,10 +25,10 @@ import com.solvd.qaprotours.service.impl.fake.FakeUserClient;
 import com.solvd.qaprotours.service.property.ImageProperties;
 import com.solvd.qaprotours.service.property.JwtProperties;
 import com.solvd.qaprotours.service.property.MinioProperties;
-import com.solvd.qaprotours.web.kafka.MessageSender;
-import com.solvd.qaprotours.web.kafka.MessageSenderImpl;
 import com.solvd.qaprotours.web.mapper.MailDataMapper;
 import com.solvd.qaprotours.web.mapper.MailDataMapperImpl;
+import com.solvd.qaprotours.web.mapper.TourMapper;
+import com.solvd.qaprotours.web.mapper.TourMapperImpl;
 import com.solvd.qaprotours.web.mapper.UserMapper;
 import com.solvd.qaprotours.web.mapper.UserMapperImpl;
 import io.minio.MinioClient;
@@ -32,11 +37,13 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import reactor.kafka.sender.KafkaSender;
 
 import java.util.Collections;
+import java.util.List;
 
 @TestConfiguration
 @EnableR2dbcRepositories
@@ -82,7 +89,7 @@ public class TestConfig {
 
     @Bean
     public ImageProperties imageProperties() {
-        return new ImageProperties(Collections.emptyList(), Collections.emptyList());
+        return new ImageProperties(List.of(100, 400), Collections.emptyList());
     }
 
     @Bean("authServiceImpl")
@@ -92,7 +99,17 @@ public class TestConfig {
 
     @Bean("tourServiceImpl")
     public TourServiceImpl tourServiceImpl() {
-        return new TourServiceImpl(tourRepository);
+        return new TourServiceImpl(tourRepository, messageSender(), tourMapper(), hotelService(), elasticsearchOperations(), elasticsearchClient());
+    }
+
+    @Bean
+    public ElasticsearchOperations elasticsearchOperations() {
+        return Mockito.mock(ElasticsearchOperations.class);
+    }
+
+    @Bean
+    public ElasticsearchClient elasticsearchClient() {
+        return Mockito.mock(ElasticsearchClient.class);
     }
 
     @Primary
@@ -144,6 +161,12 @@ public class TestConfig {
 
     @Primary
     @Bean
+    public HotelService hotelService() {
+        return new FakeHotelService();
+    }
+
+    @Primary
+    @Bean
     public MailDataMapper mailDataMapper() {
         return new MailDataMapperImpl();
     }
@@ -152,6 +175,12 @@ public class TestConfig {
     @Bean
     public UserMapper userMapper() {
         return new UserMapperImpl();
+    }
+
+    @Primary
+    @Bean
+    public TourMapper tourMapper() {
+        return new TourMapperImpl();
     }
 
     @Primary
