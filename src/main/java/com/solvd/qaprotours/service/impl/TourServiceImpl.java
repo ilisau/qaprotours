@@ -114,7 +114,7 @@ public class TourServiceImpl implements TourService {
                                 * pagination.getPageSize())
                         .size(pagination.getPageSize())
                         .query(q -> q
-                                .matchPhrase(t -> t
+                                .matchPhrasePrefix(t -> t
                                         .field("description")
                                         .query(description)
                                 )
