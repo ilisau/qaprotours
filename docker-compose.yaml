@@ -24,6 +24,7 @@ services:
     depends_on:
       - postgres
       - minio
+      - elastic-search
     env_file:
       - .env
     networks:

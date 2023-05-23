@@ -7,3 +7,5 @@ data:
   MINIO_URL: http://minio:9000
   KAFKA_HOST: my-cluster-kafka-bootstrap.kafka:9092
   USER_SERVICE_URL: http://user-client/api/v1/users
+  ELASTIC_SEARCH_HOST: elastic
+  ELASTIC_SEARCH_PORT: '9200'

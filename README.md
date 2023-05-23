@@ -17,7 +17,7 @@ You can change Circuit Breaker configuration in ```resilience4j.circuitbreaker``
 
 We use Kafka here for sending messages to mail client instead of blocking rest approach.
 
-3) ElasticSearch
+3) Elasticsearch
 
 We use Elasticsearch to provide fast and efficient search approach to find tours.
 
@@ -36,8 +36,8 @@ We use Elasticsearch to provide fast and efficient search approach to find tours
 - ```MINIO_ACCESS_KEY``` - Minio access key
 - ```MINIO_SECRET_KEY``` - Minio secret key
 
-- ```ELASTIC_SEARCH_HOST``` - host of ElasticSearch server
-- ```ELASTIC_SEARCH_PORT``` - port of ElasticSearch server
+- ```ELASTIC_SEARCH_HOST``` - host of Elasticsearch server
+- ```ELASTIC_SEARCH_PORT``` - port of Elasticsearch server
 
 To run application you need to install [Helm](https://helm.sh/docs/intro/install/) and run
 ```console

@@ -64,6 +64,16 @@ spec:
                 configMapKeyRef:
                   name: qaprotours-configmap
                   key: USER_SERVICE_URL
+            - name: ELASTIC_SEARCH_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: qaprotours-configmap
+                  key: ELASTIC_SEARCH_HOST
+            - name: ELASTIC_SEARCH_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: qaprotours-configmap
+                  key: ELASTIC_SEARCH_PORT
           volumeMounts:
             - name: my-service-account-token
               mountPath: /var/run/secrets/kubernetes.io/serviceaccount
