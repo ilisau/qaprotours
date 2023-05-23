@@ -11,12 +11,16 @@ volumes:
     driver: local
   es_data:
     driver: local
+  grafana-data:
+    driver: local
 
 services:
-  app:
+  qaprotours:
     build:
       context: .
     container_name: qaprotours
+    ports:
+      - '8080:8080'
     depends_on:
       - postgres
       - minio
@@ -68,6 +72,7 @@ services:
 
   elasticsearch:
     image: elasticsearch:8.7.1
+    container_name: qaprotours-elasticsearch
     environment:
       - discovery.type=single-node
       - ES_JAVA_OPTS=-Xms1g -Xmx1g
@@ -82,10 +87,35 @@ services:
 
   kibana:
     image: kibana:8.7.1
+    container_name: qaprotours-kibana
     ports:
       - target: 5601
         published: 5601
     depends_on:
       - elasticsearch
+    networks:
+      - app-tier
+
+  grafana:
+    image: grafana/grafana:8.2.6
+    container_name: qaprotours-grafana
+    ports:
+      - '3000:3000'
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+      - app-tier
+
+  prometheus:
+    image: prom/prometheus:v2.44.0
+    container_name: qaprotours-prometheus
+    ports:
+      - '9091:9090'
+    volumes:
+      - ./prometheus:/etc/prometheus/
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yaml'
     networks:
       - app-tier

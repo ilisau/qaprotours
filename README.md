@@ -21,6 +21,10 @@ We use Kafka here for sending messages to mail client instead of blocking rest a
 
 We use Elasticsearch to provide fast and efficient search approach to find tours.
 
+4) Prometheus and Grafana
+
+We use Prometheus and Grafana to collect and display server data. 
+
 ### Arguments from .env file
 
 - ```HOST``` - 'postgres' for PostreSQL
@@ -38,6 +42,7 @@ We use Elasticsearch to provide fast and efficient search approach to find tours
 
 - ```ELASTIC_SEARCH_HOST``` - host of Elasticsearch server
 - ```ELASTIC_SEARCH_PORT``` - port of Elasticsearch server
+- ```GRAFANA_ADMIN_PASSWORD``` - password for Grafana admin
 
 To run application you need to install [Helm](https://helm.sh/docs/intro/install/) and run
 ```console

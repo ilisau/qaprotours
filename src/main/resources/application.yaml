@@ -39,10 +39,16 @@ management:
   endpoints:
     web:
       exposure:
-        include: health
+        include:
+          - health
+          - prometheus
   endpoint:
     health:
       show-details: always
+  prometheus:
+    metrics:
+      export:
+        enabled: true
 
 resilience4j:
   circuitbreaker:
