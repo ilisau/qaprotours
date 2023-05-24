@@ -13,6 +13,10 @@ volumes:
     driver: local
   grafana-data:
     driver: local
+  logstash-data:
+    driver: local
+  logs-data:
+    driver: local
 
 services:
   qaprotours:
@@ -24,9 +28,11 @@ services:
     depends_on:
       - postgres
       - minio
-      - elastic-search
+      - elasticsearch
     env_file:
       - .env
+    volumes:
+      - logs-data:/logs
     networks:
       - app-tier
 
@@ -63,7 +69,7 @@ services:
     volumes:
       - ./nginx:/etc/nginx/conf.d/
     depends_on:
-      - app
+      - qaprotours
       - minio
     ports:
       - '80:80'
@@ -117,5 +123,18 @@ services:
       - ./prometheus:/etc/prometheus/
     command:
       - '--config.file=/etc/prometheus/prometheus.yaml'
+    networks:
+      - app-tier
+
+  logstash:
+    image: logstash:8.7.1
+    container_name: qaprotours-logstash
+    ports:
+      - '5044:5044'
+      - '9600:9600'
+    volumes:
+      - logstash-data:/usr/share/logstash/pipeline/
+      - logs-data:/home/logs
+      - ./logstash/logstash.conf:/usr/share/logstash/config/logstash.conf
     networks:
       - app-tier

@@ -46,6 +46,7 @@
         <elastic.version>8.7.1</elastic.version>
         <jackson-datatype.version>2.15.0</jackson-datatype.version>
         <micrometer.version>1.11.0</micrometer.version>
+        <log4j.version>2.19.0</log4j.version>
     </properties>
 
     <dependencies>
@@ -94,6 +95,18 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j.version}</version>
         </dependency>
 
         <dependency>
