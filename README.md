@@ -25,6 +25,10 @@ We use Elasticsearch to provide fast and efficient search approach to find tours
 
 We use Prometheus and Grafana to collect and display server data. 
 
+5) Logstash
+
+We use Logstash to collect logs from main application and send them to Elasticsearch.
+
 ### Arguments from .env file
 
 - ```HOST``` - 'postgres' for PostreSQL

@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash-configmap
+data:
+  logstash.conf: |
+    input {
+      file {
+        path => "home/logs/spring-boot-log.log"
+        start_position => "beginning"
+      }
+    }
+    output {
+      stdout {
+        codec => rubydebug
+      }
+      elasticsearch {
+        hosts => ["elasticsearch:9200"]
+        index => "qaprotours-logs"
+      }
+    }

@@ -1,8 +1,9 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: qaprotours
 spec:
+  serviceName: qaprotours
   replicas: 1
   selector:
     matchLabels:
@@ -85,3 +86,15 @@ spec:
               - serviceAccountToken:
                   path: token
                   expirationSeconds: 3600
+        - name: logs-data
+          hostPath:
+            path: /logs
+  volumeClaimTemplates:
+    - metadata:
+        name: logs-data
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: 1Gi
