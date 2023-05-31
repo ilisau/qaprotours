@@ -132,9 +132,11 @@ services:
     ports:
       - '5044:5044'
       - '9600:9600'
+    depends_on:
+      - elasticsearch
     volumes:
       - logstash-data:/usr/share/logstash/pipeline/
-      - logs-data:/home/logs
-      - ./logstash/logstash.conf:/usr/share/logstash/config/logstash.conf
+      - ./logs:/usr/share/logstash/logs
+      - ./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
     networks:
       - app-tier
