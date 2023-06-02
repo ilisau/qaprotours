@@ -11,7 +11,7 @@ import java.util.Locale;
 public class LocalDateTime implements Coercing<LocalDateTime, String> {
 
     @Override
-    public String serialize(@NotNull Object input) {
+    public String serialize(final @NotNull Object input) {
         SimpleDateFormat formatter
                 = new SimpleDateFormat(
                 "yyyy-MM-dd'T'HH:mm:ss.SSSXXX",
@@ -25,12 +25,12 @@ public class LocalDateTime implements Coercing<LocalDateTime, String> {
     }
 
     @Override
-    public @NotNull LocalDateTime parseValue(@NotNull Object input) {
+    public @NotNull LocalDateTime parseValue(final @NotNull Object input) {
         return (LocalDateTime) input;
     }
 
     @Override
-    public @NotNull LocalDateTime parseLiteral(@NotNull Object input) {
+    public @NotNull LocalDateTime parseLiteral(final @NotNull Object input) {
         return (LocalDateTime) input;
     }
 
