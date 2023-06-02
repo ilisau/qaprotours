@@ -8,7 +8,8 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.Locale;
 
-public class LocalDateTimeCoercing implements Coercing<LocalDateTimeCoercing, String> {
+public class LocalDateTimeCoercing implements Coercing<LocalDateTimeCoercing,
+        String> {
 
     @Override
     public String serialize(final @NotNull Object input) {
@@ -25,12 +26,16 @@ public class LocalDateTimeCoercing implements Coercing<LocalDateTimeCoercing, St
     }
 
     @Override
-    public @NotNull LocalDateTimeCoercing parseValue(final @NotNull Object input) {
+    public @NotNull LocalDateTimeCoercing parseValue(
+            final @NotNull Object input
+    ) {
         return (LocalDateTimeCoercing) input;
     }
 
     @Override
-    public @NotNull LocalDateTimeCoercing parseLiteral(final @NotNull Object input) {
+    public @NotNull LocalDateTimeCoercing parseLiteral(
+            final @NotNull Object input
+    ) {
         return (LocalDateTimeCoercing) input;
     }
 
