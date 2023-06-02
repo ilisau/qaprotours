@@ -18,7 +18,7 @@ public class GraphQLConfig {
         return GraphQLScalarType.newScalar()
                 .name("LocalDateTime")
                 .description("LocalDateTime scalar")
-                .coercing(new LocalDateTime())
+                .coercing(new LocalDateTimeCoercing())
                 .build();
     }
 
