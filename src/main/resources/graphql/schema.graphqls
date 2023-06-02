@@ -1,0 +1,27 @@
+type Query {
+    tourById(id: ID): Tour
+    getAllTours(currentPage: Int pageSize: Int criteria: TourCriteria): [Tour]
+    getAllToursByDescription(currentPage: Int pageSize: Int description: String): [Tour]
+    ticketById(id: ID): Ticket
+    userById(id: ID): User
+    ticketsByUserId(id: ID): [Ticket]
+    login(credentials: InputAuthentication): JwtResponse
+}
+
+type Mutation {
+    deleteTour(id: ID): Boolean
+    saveDraft(tour: InputTour): Tour
+    publish(tour: InputTour): Tour
+    deleteTicket(id: ID): Boolean
+    confirmTicket(id: ID): Boolean
+    createEmployee(user: InputUser): Boolean
+    createUser(user: InputUser): Boolean
+    updateUser(user: InputUser): Boolean
+    deleteUser(id: ID): Boolean
+    updatePassword(id: ID password: InputPassword): Boolean
+    addTicket(userId: ID tourId: ID password: InputPassword): Boolean
+    confirmUser(token: InputToken): Boolean
+    refresh(token: InputToken): JwtResponse
+    forget(email: String): Boolean
+    restore(token: String, password: String): Boolean
+}

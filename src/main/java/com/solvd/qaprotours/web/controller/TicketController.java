@@ -4,6 +4,9 @@ import com.solvd.qaprotours.service.TicketService;
 import com.solvd.qaprotours.web.dto.user.TicketDto;
 import com.solvd.qaprotours.web.mapper.TicketMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,37 +31,43 @@ public class TicketController {
 
     /**
      * Get ticket by id.
-     * @param ticketId ticket id
+     *
+     * @param id ticket id
      * @return ticket
      */
-    @GetMapping("/{ticketId}")
-    @PreAuthorize("canAccessTicket(#ticketId)")
-    public Mono<TicketDto> getTicket(@PathVariable final Long ticketId) {
-        return ticketService.getById(ticketId)
+    @GetMapping("/{id}")
+    @QueryMapping
+    @PreAuthorize("canAccessTicket(#id)")
+    public Mono<TicketDto> ticketById(@PathVariable @Argument final Long id) {
+        return ticketService.getById(id)
                 .map(ticketMapper::toDto);
     }
 
     /**
      * Delete a ticket by id.
-     * @param ticketId ticket id
+     *
+     * @param id ticket id
      * @return empty response
      */
-    @DeleteMapping("/{ticketId}")
+    @DeleteMapping("/{id}")
+    @MutationMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("canAccessTicket(#ticketId)")
-    public Mono<Void> deleteTicket(@PathVariable final Long ticketId) {
-        return ticketService.delete(ticketId);
+    @PreAuthorize("canAccessTicket(#id)")
+    public Mono<Void> deleteTicket(@PathVariable @Argument final Long id) {
+        return ticketService.delete(id);
     }
 
     /**
      * Confirm a ticket by id.
-     * @param ticketId ticket id
+     *
+     * @param id ticket id
      * @return empty response
      */
-    @PostMapping("/{ticketId}/confirm")
+    @PostMapping("/{id}/confirm")
+    @MutationMapping
     @PreAuthorize("canConfirmTicket()")
-    public Mono<Void> confirmTicket(@PathVariable final Long ticketId) {
-        return ticketService.confirm(ticketId);
+    public Mono<Void> confirmTicket(@PathVariable @Argument final Long id) {
+        return ticketService.confirm(id);
     }
 
 }

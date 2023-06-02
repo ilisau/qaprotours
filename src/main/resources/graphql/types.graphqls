@@ -1,0 +1,183 @@
+scalar LocalDateTime
+
+input InputToken {
+    token: String
+}
+
+input InputAuthentication {
+    email: String
+    password: String
+}
+
+type JwtResponse {
+    accessToken: String
+    refreshToken: String
+}
+
+input InputPassword {
+    oldPassword: String
+    newPassword: String
+}
+
+input TourCriteria {
+    country: Country
+    tourType: TourTypes
+    cateringType: CateringTypes
+    arrivalTime: ArrivalTime
+    departureTime: DepartureTime
+    dayDuration: DayDuration
+    price: Price
+}
+
+input Country {
+    countries: [String]
+}
+
+input TourTypes {
+    tourTypes: [TourType]
+}
+
+input CateringTypes {
+    cateringTypes: [CateringType]
+}
+
+input ArrivalTime {
+    arrivalTime: LocalDateTime
+}
+
+input DepartureTime {
+    departureTime: LocalDateTime
+}
+
+input DayDuration {
+    minDaysAmount: Int
+    maxDaysAmount: Int
+}
+
+input Price {
+    minPrice: Float
+    maxPrice: Float
+}
+
+type Tour {
+    id: ID
+    name: String
+    description: String
+    country: String
+    city: String
+    type: TourType
+    cateringType: CateringType
+    hotel: Hotel
+    arrivalTime: LocalDateTime
+    departureTime: LocalDateTime
+    placesAmount: Int
+    price: Float
+    rating: Float
+    dayDuration: Int
+    isDraft: Boolean
+    imageUrls: [String]
+    coordinates: Point
+    tickets: [Ticket]
+}
+
+input InputTour {
+    id: ID
+    name: String
+    description: String
+    country: String
+    city: String
+    type: TourType
+    cateringType: CateringType
+    hotel: InputHotel
+    arrivalTime: LocalDateTime
+    departureTime: LocalDateTime
+    placesAmount: Int
+    price: Float
+    rating: Float
+    dayDuration: Int
+}
+
+type Hotel {
+    id: ID
+    name: String
+    coastline: Int
+    starsAmount: Int
+    address: Address
+}
+
+input InputHotel {
+    id: ID
+    name: String
+    coastline: Int
+    starsAmount: Int
+    address: InputAddress
+}
+
+type Address {
+    id: ID
+    country: String
+    city: String
+    streetName: String
+    houseNumber: Int
+}
+
+input InputAddress {
+    id: ID
+    country: String
+    city: String
+    streetName: String
+    houseNumber: Int
+}
+
+type Ticket {
+    id: ID
+    userId: String
+    tour: Tour
+    orderTime: LocalDateTime
+    status: Status
+    clientsAmount: Int
+}
+
+enum Status {
+    ORDERED,
+    CONFIRMED,
+    CANCELED
+}
+
+type Point {
+    latitude: Float
+    longitude: Float
+}
+
+enum TourType {
+    HEALTH,
+    CULTURE
+}
+
+enum CateringType {
+    BREAKFAST,
+    ALL_INCLUSIVE
+}
+
+type User {
+    id: ID
+    name: String
+    surname: String
+    email: String
+    password: String
+    role: Role
+    isActivated: Boolean
+}
+
+input InputUser {
+    id: ID
+    name: String
+    surname: String
+    email: String
+    password: String
+}
+
+enum Role {
+    CLIENT,
+    EMPLOYEE
+}

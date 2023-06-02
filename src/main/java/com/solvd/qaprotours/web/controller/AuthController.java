@@ -15,6 +15,9 @@ import com.solvd.qaprotours.web.mapper.jwt.AuthenticationMapper;
 import com.solvd.qaprotours.web.mapper.jwt.JwtResponseMapper;
 import com.solvd.qaprotours.web.mapper.jwt.JwtTokenMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,68 +45,79 @@ public class AuthController {
 
     /**
      * Generate a pair of tokens for user by its email and password.
-     * @param authenticationDto user's email and password
+     *
+     * @param credentials user's email and password
      * @return pair of tokens
      */
     @PostMapping("/login")
+    @QueryMapping
     public Mono<JwtResponseDto> login(
-            @Validated @RequestBody final AuthenticationDto authenticationDto
+            @Validated
+            @RequestBody @Argument final AuthenticationDto credentials
     ) {
         Authentication authentication = authenticationMapper
-                .toEntity(authenticationDto);
+                .toEntity(credentials);
         return authService.login(authentication)
                 .map(jwtResponseMapper::toDto);
     }
 
     /**
      * Register a new user.
-     * @param userDto user's data
+     *
+     * @param user user's data
      * @return empty response
      */
     @PostMapping("/register")
+    @MutationMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<Void> register(
-            @Validated(OnCreate.class) @RequestBody final UserDto userDto
+    public Mono<Void> createUser(
+            @Validated(OnCreate.class) @RequestBody @Argument final UserDto user
     ) {
-        User user = userMapper.toEntity(userDto);
-        user.setRole(User.Role.CLIENT);
-        return userClient.create(user);
+        User u = userMapper.toEntity(user);
+        u.setRole(User.Role.CLIENT);
+        return userClient.create(u);
     }
 
     /**
      * Confirm user's account.
-     * @param jwtTokenDto token
+     *
+     * @param token token
      * @return empty response
      */
     @PostMapping("/register/confirm")
-    public Mono<Void> confirm(
-            @Validated @RequestBody final JwtTokenDto jwtTokenDto
+    @MutationMapping
+    public Mono<Void> confirmUser(
+            @Validated @RequestBody @Argument final JwtTokenDto token
     ) {
-        JwtToken jwtToken = jwtTokenMapper.toEntity(jwtTokenDto);
+        JwtToken jwtToken = jwtTokenMapper.toEntity(token);
         return userClient.activate(jwtToken);
     }
 
     /**
      * Refresh user's tokens.
-     * @param jwtTokenDto refresh token
+     *
+     * @param token refresh token
      * @return pair of tokens
      */
     @PostMapping("/refresh")
+    @MutationMapping
     public Mono<JwtResponseDto> refresh(
-            @Validated @RequestBody final JwtTokenDto jwtTokenDto
+            @Validated @RequestBody @Argument final JwtTokenDto token
     ) {
-        JwtToken jwtToken = jwtTokenMapper.toEntity(jwtTokenDto);
+        JwtToken jwtToken = jwtTokenMapper.toEntity(token);
         return authService.refresh(jwtToken)
                 .map(jwtResponseMapper::toDto);
     }
 
     /**
      * Send a token to user's email for restoring password.
+     *
      * @param email user's email
      * @return empty response
      */
     @PostMapping("/forget")
-    public Mono<Void> forget(@RequestBody final String email) {
+    @MutationMapping
+    public Mono<Void> forget(@RequestBody @Argument final String email) {
         return authService.sendRestoreToken(email);
     }
 
@@ -115,8 +129,9 @@ public class AuthController {
      * @return empty response
      */
     @PostMapping("/password/restore")
-    public Mono<Void> restore(@RequestParam final String token,
-                              @RequestBody final String password) {
+    @MutationMapping
+    public Mono<Void> restore(@RequestParam @Argument final String token,
+                              @RequestBody @Argument final String password) {
         return authService.restoreUserPassword(token, password);
     }
 
