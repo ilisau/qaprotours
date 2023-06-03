@@ -17,6 +17,9 @@ import com.solvd.qaprotours.web.mapper.TicketMapper;
 import com.solvd.qaprotours.web.mapper.UserMapper;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -54,69 +57,80 @@ public class UserController {
 
     /**
      * Updates a user.
-     * @param userDto user's data
+     *
+     * @param user user's data
      * @return empty response
      */
     @PutMapping
-    @PreAuthorize("canAccessUser(#userDto.getId())")
-    public Mono<Void> update(
-            @Validated(OnUpdate.class) @RequestBody final UserDto userDto
+    @MutationMapping
+    @PreAuthorize("canAccessUser(#user.getId())")
+    public Mono<Void> updateUser(
+            @Validated(OnUpdate.class) @RequestBody @Argument final UserDto user
     ) {
-        User user = userMapper.toEntity(userDto);
-        return userClient.update(user);
+        User u = userMapper.toEntity(user);
+        return userClient.update(u);
     }
 
     /**
      * Gets a user by id.
-     * @param userId user's id
+     *
+     * @param id user's id
      * @return user's data
      */
-    @GetMapping("/{userId}")
-    @PreAuthorize("canAccessUser(#userId)")
-    public Mono<UserDto> getById(@PathVariable final String userId) {
-        return userClient.getById(userId);
+    @GetMapping("/{id}")
+    @QueryMapping
+    @PreAuthorize("canAccessUser(#id)")
+    public Mono<UserDto> getUserById(@PathVariable @Argument final String id) {
+        return userClient.getById(id);
     }
 
     /**
      * Deletes a user by id.
-     * @param userId user's id
+     *
+     * @param id user's id
      * @return empty response
      */
-    @DeleteMapping("/{userId}")
+    @DeleteMapping("/{id}")
+    @QueryMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("canAccessUser(#userId)")
-    public Mono<Void> delete(@PathVariable final String userId) {
-        return userClient.delete(userId);
+    @PreAuthorize("canAccessUser(#id)")
+    public Mono<Void> deleteUser(@PathVariable @Argument final String id) {
+        return userClient.delete(id);
     }
 
     /**
      * Updates a user's password.
      *
-     * @param userId      user's id
-     * @param passwordDto password's data
+     * @param id       user's id
+     * @param password password's data
      * @return empty response
      */
-    @PutMapping("/{userId}/password")
-    @PreAuthorize("canAccessUser(#userId)")
+    @PutMapping("/{id}/password")
+    @MutationMapping
+    @PreAuthorize("canAccessUser(#id)")
     public Mono<Void> updatePassword(
-            @PathVariable final String userId,
-            @Validated @RequestBody final PasswordDto passwordDto
+            @PathVariable @Argument final String id,
+            @Validated @RequestBody @Argument final PasswordDto password
     ) {
-        Password password = passwordMapper.toEntity(passwordDto);
-        return userClient.updatePassword(userId, password);
+        Password p = passwordMapper.toEntity(password);
+        return userClient.updatePassword(id, p);
     }
 
     /**
      * Gets a user's tickets.
-     * @param userId user's id
+     *
+     * @param id user's id
      * @return list of tickets
      */
-    @GetMapping("/{userId}/tickets")
-    @PreAuthorize("canAccessUser(#userId)")
+    @GetMapping("/{id}/tickets")
+    @QueryMapping
+    @PreAuthorize("canAccessUser(#id)")
     @CircuitBreaker(name = TICKET_SERVICE,
             fallbackMethod = "getEmptyTicketList")
-    public Flux<TicketDto> getTickets(@PathVariable final String userId) {
-        return ticketService.getAllByUserId(userId)
+    public Flux<TicketDto> ticketsByUserId(
+            @PathVariable @Argument final String id
+    ) {
+        return ticketService.getAllByUserId(id)
                 .map(ticketMapper::toDto);
     }
 
@@ -128,12 +142,14 @@ public class UserController {
      * @return empty response
      */
     @PostMapping("/{userId}/tickets/{tourId}")
+    @MutationMapping
     @PreAuthorize("canAccessUser(#userId)")
     @CircuitBreaker(name = TICKET_SERVICE,
             fallbackMethod = "handleServiceError")
-    public Mono<Void> addTicket(@PathVariable final String userId,
-                                @PathVariable final Long tourId,
-                                @RequestParam final Integer peopleAmount) {
+    public Mono<Void> addTicket(@PathVariable @Argument final String userId,
+                                @PathVariable @Argument final Long tourId,
+                                @RequestParam
+                                @Argument final Integer peopleAmount) {
         return ticketService.create(userId, tourId, peopleAmount);
     }
 

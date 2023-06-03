@@ -31,6 +31,9 @@ spring:
       max-request-size: 15MB
   kafka:
     bootstrap-servers: ${KAFKA_HOST}
+  graphql:
+    graphiql:
+      enabled: true
 
 management:
   health:

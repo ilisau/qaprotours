@@ -19,6 +19,9 @@ import com.solvd.qaprotours.web.mapper.TourCriteriaMapper;
 import com.solvd.qaprotours.web.mapper.TourMapper;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -54,19 +57,23 @@ public class TourController {
     /**
      * Gets all tours by criteria and paging.
      *
-     * @param currentPage     page number.
-     * @param pageSize        page size.
-     * @param tourCriteriaDto TourCriteriaDto object.
+     * @param currentPage page number.
+     * @param pageSize    page size.
+     * @param criteria    TourCriteriaDto object.
      * @return List of tours.
      */
     @GetMapping
+    @QueryMapping
     public Flux<TourDto> getAll(
-            @RequestParam(required = false) final Integer currentPage,
-            @RequestParam(required = false) final Integer pageSize,
-            @RequestBody(required = false) final TourCriteriaDto tourCriteriaDto
+            @RequestParam(required = false)
+            @Argument final Integer currentPage,
+            @RequestParam(required = false)
+            @Argument final Integer pageSize,
+            @RequestBody(required = false)
+            @Argument final TourCriteriaDto criteria
     ) {
         TourCriteria tourCriteria = tourCriteriaMapper
-                .toEntity(tourCriteriaDto);
+                .toEntity(criteria);
         Pagination pagination = new Pagination(currentPage, pageSize);
         return tourService.getAll(pagination, tourCriteria)
                 .map(tourMapper::toDto);
@@ -81,10 +88,11 @@ public class TourController {
      * @return list of tours
      */
     @GetMapping("search")
-    public Flux<TourDto> getAllByDescription(
-            @RequestParam(required = false) final String description,
-            @RequestParam(required = false) final Integer currentPage,
-            @RequestParam(required = false) final Integer pageSize
+    @QueryMapping
+    public Flux<TourDto> getAllToursByDescription(
+            @RequestParam(required = false) @Argument final String description,
+            @RequestParam(required = false) @Argument final Integer currentPage,
+            @RequestParam(required = false) @Argument final Integer pageSize
     ) {
         Pagination pagination = new Pagination(currentPage, pageSize);
         return tourService.getAll(pagination, description)
@@ -94,56 +102,60 @@ public class TourController {
     /**
      * Saves draft tour.
      *
-     * @param tourDto TourDto object.
+     * @param tour TourDto object.
      * @return created object.
      */
     @PostMapping
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public Mono<TourDto> saveDraft(@RequestBody final TourDto tourDto) {
-        Tour tour = tourMapper.toEntity(tourDto);
-        tour.setDraft(true);
-        return tourService.save(tour)
+    @MutationMapping
+    public Mono<TourDto> saveDraft(@RequestBody @Argument final TourDto tour) {
+        Tour t = tourMapper.toEntity(tour);
+        t.setDraft(true);
+        return tourService.save(t)
                 .map(tourMapper::toDto);
     }
 
     /**
      * Publishes tour.
-     * @param tourDto TourDto object.
+     * @param tour TourDto object.
      * @return created object.
      */
     @PostMapping("/publish")
+    @MutationMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('EMPLOYEE')")
     public Mono<TourDto> publish(
-            @Validated(OnCreate.class) @RequestBody final TourDto tourDto
+            @Validated(OnCreate.class) @RequestBody @Argument final TourDto tour
     ) {
-        Tour tour = tourMapper.toEntity(tourDto);
-        return tourService.publish(tour)
+        Tour t = tourMapper.toEntity(tour);
+        return tourService.publish(t)
                 .map(tourMapper::toDto);
     }
 
     /**
      * Gets tour by id.
-     * @param tourId tour id.
+     * @param id tour id.
      * @return tour.
      */
-    @GetMapping("/{tourId}")
-    @PreAuthorize("canAccessDraftTour(#tourId)")
-    public Mono<TourDto> getById(@PathVariable final Long tourId) {
-        return tourService.getById(tourId)
+    @GetMapping("/{id}")
+    @QueryMapping
+    @PreAuthorize("canAccessDraftTour(#id)")
+    public Mono<TourDto> tourById(@PathVariable @Argument final Long id) {
+        return tourService.getById(id)
                 .map(tourMapper::toDto);
     }
 
     /**
      * Deletes tour.
-     * @param tourId tour id.
+     * @param id tour id.
      * @return empty response.
      */
-    @DeleteMapping("/{tourId}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @MutationMapping
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public Mono<Void> delete(@PathVariable final Long tourId) {
-        return tourService.delete(tourId);
+    public Mono<Void> deleteTour(@PathVariable @Argument final Long id) {
+        return tourService.delete(id);
     }
 
     /**

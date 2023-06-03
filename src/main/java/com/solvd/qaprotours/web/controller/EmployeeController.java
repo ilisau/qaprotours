@@ -6,6 +6,8 @@ import com.solvd.qaprotours.web.dto.user.UserDto;
 import com.solvd.qaprotours.web.dto.validation.OnCreate;
 import com.solvd.qaprotours.web.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -29,18 +31,20 @@ public class EmployeeController {
 
     /**
      * Create a new employee.
-     * @param userDto employee's data
+     *
+     * @param user employee's data
      * @return empty response
      */
     @PostMapping
+    @MutationMapping
     @PreAuthorize("hasRole('EMPLOYEE')")
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<Void> create(
-            @Validated(OnCreate.class) @RequestBody final UserDto userDto
+    public Mono<Void> createEmployee(
+            @Validated(OnCreate.class) @RequestBody @Argument final UserDto user
     ) {
-        User user = userMapper.toEntity(userDto);
-        user.setRole(User.Role.EMPLOYEE);
-        return userClient.create(user);
+        User u = userMapper.toEntity(user);
+        u.setRole(User.Role.EMPLOYEE);
+        return userClient.create(u);
     }
 
 }

@@ -1,10 +1,8 @@
 package com.solvd.qaprotours.repository;
 
 import com.solvd.qaprotours.domain.tour.Tour;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -48,18 +46,10 @@ public interface TourRepository extends ReactiveCrudRepository<Tour, Long> {
                    a.house_number as house_number
             FROM tours
             LEFT JOIN tour_image ti on tours.id = ti.tour_id
-            JOIN hotels h on h.id = tours.hotel_id
-            JOIN addresses a on h.address_id = a.id
+            LEFT JOIN hotels h on h.id = tours.hotel_id
+            LEFT JOIN addresses a on h.address_id = a.id
             WHERE tours.id = :id
             """)
     Mono<Tour> findById(Long id);
-
-    /**
-     * Find all tours.
-     *
-     * @param sort sort type
-     * @return sorted list of tours
-     */
-    Flux<Tour> findAll(Sort sort);
 
 }
